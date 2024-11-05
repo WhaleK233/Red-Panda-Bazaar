@@ -37,13 +37,13 @@ public class WeatherController
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
         // 如果今天是春7, 调整第二天天气为微风
-        if (Game1.Date.DayOfMonth == 7 && Game1.Date.Season == Season.Spring)
+        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 7)
         {
             Game1.weatherForTomorrow = Game1.weather_debris;
         }
 
         // 如果今天是春8, 覆盖今天天气为微风
-        if (Game1.Date.DayOfMonth == 8 && Game1.Date.Season == Season.Spring)
+        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 8)
         {
             LocationWeather weatherForLocation = Game1.netWorldState.Value.GetWeatherForLocation("Default");
             weatherForLocation.isDebrisWeather.Value = true;
