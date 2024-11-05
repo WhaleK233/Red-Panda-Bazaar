@@ -51,7 +51,6 @@ public class ModEntry : Mod
         configMenu.AddBoolOption(
             mod: this.ModManifest,
             name: () => this.Helper.Translation.Get("enabled"),
-            tooltip: () => "The switch of the mod",
             getValue: () => Config.Enabled,
             setValue: value => Config.Enabled = value
         );
