@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using RedPandaBazaarCode.Config;
+using Red_Panda_Bazaar_Code.Config;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -26,7 +26,7 @@ public class FireFlyEffects
             Helper = helper;
             Monitor = monitor;
             Config = modConfig;
-            
+
             Helper.Events.Player.Warped += OnPlayerWarped;
             Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
@@ -42,12 +42,13 @@ public class FireFlyEffects
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
+        // 事件结束后10tick生成萤火虫
         if (ticksUntilSpawn == 0)
         {
             spawnFireFly(Game1.player.currentLocation);
             ticksUntilSpawn = -1;
         }
-        else if (wasEvent == true && Game1.CurrentEvent == null) // 如果此tick有事件结束
+        else if (wasEvent == true && Game1.CurrentEvent == null)
         {
             ticksUntilSpawn = 10;
         }
@@ -68,7 +69,7 @@ public class FireFlyEffects
         if (Config.Enabled != true || location == null ||
             Game1.timeOfDay < Game1.getStartingToGetDarkTime(location)) return;
 
-        var locationName = location.name.Value ?? "";
+        var locationName = location.Name ?? "";
 
         location.instantiateCrittersList();
 
@@ -76,27 +77,44 @@ public class FireFlyEffects
 
         while (targetNumber > 0)
         {
+            // 生成一个萤火虫
             var tile = location.getRandomTile();
             location.critters.Add(SpawnNewFireFly(locationName, tile));
             targetNumber--;
 
             var chance = Game1.random.NextDouble();
+            // 20%的概率在附近生成一个萤火虫
             if (chance < 0.2 && targetNumber >= 1)
             {
-                var nearTile = new Vector2(tile.X + Game1.random.Next(-2, 3), tile.Y + Game1.random.Next(-2, 3));
+                var nearTile = GetNearTile(location, tile);
+
                 location.critters.Add(SpawnNewFireFly(locationName, nearTile));
                 targetNumber--;
             }
 
+            // 10%的概率在附近生成两个萤火虫
             if (chance < 0.1 && targetNumber >= 2)
             {
-                var nearTile = new Vector2(tile.X + Game1.random.Next(-2, 3), tile.Y + Game1.random.Next(-2, 3));
+                var nearTile = GetNearTile(location, tile);
                 location.critters.Add(SpawnNewFireFly(locationName, nearTile));
-                nearTile = new Vector2(tile.X + Game1.random.Next(-2, 3), tile.Y + Game1.random.Next(-2, 3));
+                nearTile = GetNearTile(location, tile);
                 location.critters.Add(SpawnNewFireFly(locationName, nearTile));
                 targetNumber -= 2;
             }
         }
+    }
+
+    private static Vector2 GetNearTile(GameLocation location, Vector2 tile)
+    {
+        Vector2 nearTile;
+
+        do
+        {
+            nearTile = new Vector2(tile.X + Game1.random.Next(-2, 3), tile.Y + Game1.random.Next(-2, 3));
+        } while (nearTile.X < 0 || nearTile.Y < 0 || nearTile.X >= location.Map.DisplayWidth ||
+                 nearTile.Y >= location.Map.DisplayHeight);
+
+        return nearTile;
     }
 
     /// <summary>生成萤火虫</summary>
@@ -108,18 +126,6 @@ public class FireFlyEffects
     /// <summary>根据玩家当前位置获取要生成的萤火虫的数量</summary>
     private static int GetNumberOfFireFly(string locationName)
     {
-        /*switch (locationName)
-        {
-            case "Custom_RedPandaBazaar": return Config.NumberOfFireFly;
-            case "Custom_RedPandaLake": return (int)(Config.NumberOfFireFly * 0.7);
-            case "Custom_RedPandaBridge": return (int)(Config.NumberOfFireFly * 0.6);
-            case "Custom_MirrorLake": return (int)(Config.NumberOfFireFly * 0.5);
-            case "Custom_MapleBridge": return (int)(Config.NumberOfFireFly * 0.4);
-            case "Custom_LiQingFengCourtyard": return (int)(Config.NumberOfFireFly * 0.3);
-            case "Custom_BazaarWest": return (int)(Config.NumberOfFireFly * 0.2);
-            default: return 0;
-        }*/
-        
         var fireFlyCounts = new Dictionary<string, double>
         {
             { "Custom_RedPandaBazaar", 1.0 },
