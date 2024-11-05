@@ -1,0 +1,12 @@
+{
+  "Name": "RedPandaBazaarCode",
+  "Author": "WhaleK233",
+  "Version": "1.0.0",
+  "Description": "This is Red Panda Bazaar Code",
+  "UniqueID": "WhaleK233.RedPandaBazaarCode",
+  "EntryDll": "Red Panda Bazaar Code.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [
+    "Nexus:24934"
+  ]
+}
