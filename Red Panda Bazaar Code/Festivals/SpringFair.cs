@@ -67,6 +67,8 @@ public class SpringFair
 
         if (e.Button.IsActionButton())
         {
+            Game1.player.festivalScore += 5000;
+
             // 进行钓鱼小游戏
             if (e.Cursor.GrabTile is { X: 62, Y: 75 })
             {
