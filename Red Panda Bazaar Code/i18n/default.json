@@ -1,4 +1,7 @@
 ﻿{
-  "enabled": "Enable",
-  "number-of-firefly": "Number of fireflies at night"
+  "Enabled": "Enable",
+  "Number_Of_Firefly": "Number of fireflies at night",
+  "FishingGame_Question": "Do you want to play fishing games? (50 gold)",
+  "Response_Positive": "Yes",
+  "Response_Negative": "No"
 }
