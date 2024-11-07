@@ -1,5 +1,6 @@
 ﻿using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
+using Red_Panda_Bazaar_Code.Festivals;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -20,20 +21,39 @@ public class ModEntry : Mod
         Config = this.Helper2.ReadConfig<ModConfig>();
 
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        helper.Events.Content.AssetRequested += OnAssetRequested;
     }
 
-    private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
+    private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
     {
-        // 初始化通用模组配置菜单
-        InitializeGenericModConfigMenu(sender, e);
+        if (e.Name.IsEquivalentTo("Maps/FestivalMaps/RedPandaBazaar.SpringFair"))
+        {
+            e.Edit(asset =>
+            {
+                var editor = asset.AsMap();
+                var map = editor.Data;
+
+                Console.WriteLine(map);
+            });
+        }
+    }
+
+    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    {
+        Init();
+    }
+
+    private void Init()
+    {
+        InitializeGenericModConfigMenu();
 
         FireFlyEffects.Enable(Helper2, Monitor, Config);
-        WeatherController.Enable(Helper2, Monitor, Config);
+        SpringFair.Enable(Helper2, Monitor, Config);
     }
 
     #region Generic Mod Config Menu
 
-    private void InitializeGenericModConfigMenu(object sender, GameLaunchedEventArgs e)
+    private void InitializeGenericModConfigMenu()
     {
         // 获取通用模组配置菜单的API
         var configMenu = this.Helper2.ModRegistry.GetApi<IGenericModConfigMenuApi>(ModCompat.GenericModConfigMenu);
@@ -49,14 +69,14 @@ public class ModEntry : Mod
         // 添加选项
         configMenu.AddBoolOption(
             mod: this.ModManifest,
-            name: () => this.Helper2.Translation.Get("enabled"),
+            name: () => this.Helper2.Translation.Get("Enable"),
             getValue: () => Config.Enabled,
             setValue: value => Config.Enabled = value
         );
 
         configMenu.AddNumberOption(
             mod: this.ModManifest,
-            name: () => this.Helper2.Translation.Get("number-of-firefly"),
+            name: () => this.Helper2.Translation.Get("Number_Of_Firefly"),
             getValue: () => Config.NumberOfFireFly,
             setValue: value => Config.NumberOfFireFly = value,
             min: 0,

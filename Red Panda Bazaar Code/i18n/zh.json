@@ -1,4 +1,7 @@
 ﻿{
-  "enabled": "启用",
-  "number-of-firefly": "夜晚萤火虫数量"
+  "Enabled": "启用",
+  "Number_Of_Firefly": "夜晚萤火虫数量",
+  "FishingGame_Question": "你想玩钓鱼游戏吗？(50金)",
+  "Response_Positive": "是",
+  "Response_Negative": "否"
 }
