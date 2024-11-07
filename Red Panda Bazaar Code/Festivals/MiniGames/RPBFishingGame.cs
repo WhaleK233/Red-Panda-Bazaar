@@ -8,6 +8,8 @@ using StardewValley.Menus;
 using StardewValley.Minigames;
 using StardewValley.Tools;
 using xTile.Dimensions;
+using Object = StardewValley.Object;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
 
@@ -32,12 +34,11 @@ public class RPBFishingGame : IMinigame
     public RPBFishingGame()
     {
         beforePosition = Game1.player.Position;
-        Console.WriteLine(beforePosition);
 
         Tool tool = ItemRegistry.Create<Tool>("(T)BambooPole");
         tool.AttachmentSlotsCount = 2;
-        tool.attachments[0] = ItemRegistry.Create<StardewValley.Object>("(O)690", 99);
-        tool.attachments[1] = ItemRegistry.Create<StardewValley.Object>("(O)687");
+        tool.attachments[0] = ItemRegistry.Create<Object>("(O)690", 99);
+        tool.attachments[1] = ItemRegistry.Create<Object>("(O)687");
         this.content = Game1.content.CreateTemporary();
         this.location = new GameLocation("Maps\\FishingGame", "fishingGame");
         this.location.isStructure.Value = true;
@@ -153,7 +154,7 @@ public class RPBFishingGame : IMinigame
         this.showResultsTimer = 11100;
         Game1.player.canMove = false;
         Game1.player.Position = beforePosition;
-        Game1.player.TemporaryPassableTiles.Add(new Microsoft.Xna.Framework.Rectangle(Game1.player.TilePoint.X * 64,
+        Game1.player.TemporaryPassableTiles.Add(new Rectangle(Game1.player.TilePoint.X * 64,
             Game1.player.TilePoint.Y * 64, 64, 64));
         Game1.player.currentLocation = this.originalLocation;
         Game1.currentLocation = this.originalLocation;
@@ -304,10 +305,10 @@ public class RPBFishingGame : IMinigame
             SpriteBatch spriteBatch = b;
             Texture2D shadowTexture = Game1.shadowTexture;
             Vector2 local = Game1.GlobalToLocal(Game1.viewport, Game1.player.Position + new Vector2(32f, 24f));
-            Microsoft.Xna.Framework.Rectangle? sourceRectangle =
-                new Microsoft.Xna.Framework.Rectangle?(Game1.shadowTexture.Bounds);
+            Rectangle? sourceRectangle =
+                new Rectangle?(Game1.shadowTexture.Bounds);
             Color white = Color.White;
-            Microsoft.Xna.Framework.Rectangle bounds = Game1.shadowTexture.Bounds;
+            Rectangle bounds = Game1.shadowTexture.Bounds;
             double x = (double)bounds.Center.X;
             bounds = Game1.shadowTexture.Bounds;
             double y = (double)bounds.Center.Y;
@@ -405,13 +406,13 @@ public class RPBFishingGame : IMinigame
 
             if (this.showResultsTimer <= 1000)
                 b.Draw(Game1.fadeToBlackRect,
-                    new Microsoft.Xna.Framework.Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height),
+                    new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height),
                     Color.Black * (float)(1.0 - (double)this.showResultsTimer / 1000.0));
             b.Draw(Game1.fadeToBlackRect,
-                new Microsoft.Xna.Framework.Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
+                new Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
                 Color.Black * 0.75f);
             b.Draw(Game1.mouseCursors, new Vector2(32f, 32f),
-                new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(338, 400, 8, 8)),
+                new Rectangle?(new Rectangle(338, 400, 8, 8)),
                 Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
             Game1.drawWithBorder(Game1.player.festivalScore.ToString() ?? "", Color.Black, Color.White,
                 new Vector2(72f, 29f), 0.0f, 1f, 1f, false);

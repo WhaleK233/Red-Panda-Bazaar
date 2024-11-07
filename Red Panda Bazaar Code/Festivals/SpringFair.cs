@@ -30,7 +30,7 @@ public class SpringFair
             Config = modConfig;
 
             Helper.Events.GameLoop.DayStarted += OnDayStarted;
-            
+
             added = false;
             Enabled = true;
             Monitor.Log("SpringFairFunctions Enabled", LogLevel.Debug);
@@ -61,34 +61,80 @@ public class SpringFair
     {
         if (Game1.CurrentEvent == null || Game1.CurrentEvent.FestivalName != "SpringFair" ||
             Game1.activeClickableMenu != null || !Context.CanPlayerMove)
-
         {
             return;
         }
 
         if (e.Button.IsActionButton())
         {
-            if (e.Cursor.GrabTile.X == 41 && e.Cursor.GrabTile.Y == 74)
+            Game1.player.festivalScore += 5000;
+
+            // 进行钓鱼小游戏
+            if (e.Cursor.GrabTile is { X: 62, Y: 75 })
             {
-                suppressClick();
-                Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("FishingGame_Question"),
-                    new Response[]
-                    {
-                        new Response("Positive", Helper.Translation.Get("Response_Positive")),
-                        new Response("Negative", Helper.Translation.Get("Response_Negative"))
-                    },
-                    (f, answer) =>
-                    {
-                        if (answer == "Positive")
+                //suppressClick();
+                if (CheckMoneyAndCharge(50))
+                {
+                    Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("FishingGame_Question"),
+                        new Response[]
                         {
-                            Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPBFishingGame.startMe), 0.01f);
-                        }
-                    });
+                            new Response("Positive", Helper.Translation.Get("Response_Positive")),
+                            new Response("Negative", Helper.Translation.Get("Response_Negative"))
+                        },
+                        (f, answer) =>
+                        {
+                            if (answer == "Positive")
+                            {
+                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPBFishingGame.startMe), 0.01f);
+                            }
+                        });
+                }
+            }
+
+            // 进行弹弓小游戏
+            if (e.Cursor.GrabTile is { X: 72, Y: 75 })
+            {
+                //suppressClick();
+                if (CheckMoneyAndCharge(50))
+                {
+                    Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("TargetGame_Question"),
+                        new Response[]
+                        {
+                            new Response("Positive", Helper.Translation.Get("Response_Positive")),
+                            new Response("Negative", Helper.Translation.Get("Response_Negative"))
+                        },
+                        (f, answer) =>
+                        {
+                            if (answer == "Positive")
+                            {
+                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPBTargetGame.startMe), 0.01f);
+                            }
+                        });
+                }
+            }
+
+            // 进行轮盘赌小游戏
+            if (e.Cursor.GrabTile is { X: 67, Y: 75 } or { X: 68, Y: 75 })
+            {
+                //SuppressClick();
+                Response[] answerChoices = new Response[3]
+                {
+                    new Response("Orange",
+                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1645")),
+                    new Response("Green",
+                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1647")),
+                    new Response("I",
+                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1650"))
+                };
+                Game1.currentLocation.createQuestionDialogue(
+                    Game1.parseText(
+                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
+                    answerChoices, "wheelBet");
             }
         }
     }
 
-    private static void suppressClick()
+    private static void SuppressClick()
     {
         Helper.Input.Suppress(Game1.options.actionButton[0].ToSButton());
         Helper.Input.Suppress(Game1.options.useToolButton[0].ToSButton());
@@ -96,6 +142,19 @@ public class SpringFair
         Helper.Input.Suppress(SButton.MouseRight);
     }
 
+    private static bool CheckMoneyAndCharge(int cost)
+    {
+        if (Game1.player.Money >= cost)
+        {
+            Game1.player.Money -= cost;
+            return true;
+        }
+        else
+        {
+            Game1.drawObjectDialogue(Helper.Translation.Get("Money_NotEnough"));
+            return false;
+        }
+    }
 
     private static bool added = false;
 
