@@ -1,4 +1,6 @@
-﻿using Red_Panda_Bazaar_Code.Config;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -28,11 +30,30 @@ public class SpringFair
             Config = modConfig;
 
             Helper.Events.GameLoop.DayStarted += OnDayStarted;
-            Helper.Events.Input.ButtonPressed += OnButtonPressed;
-            added = true;
-
+            
+            added = false;
             Enabled = true;
             Monitor.Log("SpringFairFunctions Enabled", LogLevel.Debug);
+        }
+    }
+
+    private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
+    {
+        if (Game1.CurrentEvent?.FestivalName == "SpringFair")
+        {
+            var b = Game1.spriteBatch;
+            e.SpriteBatch.Draw(Game1.fadeToBlackRect,
+                new Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
+                Color.Black * 0.75f);
+            e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(32f, 32f),
+                new Rectangle?(new Rectangle(338, 400, 8, 8)),
+                Color.White,
+                0.0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+            Game1.drawWithBorder(Game1.player.festivalScore.ToString() ?? "", Color.Black, Color.White,
+                new Vector2(72f,
+                    (float)(21 + (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en
+                        ? 8
+                        : (LocalizedContentManager.CurrentLanguageLatin ? 16 : 8)))), 0.0f, 1f, 1f, false);
         }
     }
 
@@ -93,6 +114,7 @@ public class SpringFair
             if (!added)
             {
                 Helper.Events.Input.ButtonPressed += OnButtonPressed;
+                Helper.Events.Display.RenderedWorld += OnRenderedWorld;
                 added = true;
             }
 
@@ -106,6 +128,7 @@ public class SpringFair
             if (added)
             {
                 Helper.Events.Input.ButtonPressed -= OnButtonPressed;
+                Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
                 added = false;
             }
         }
