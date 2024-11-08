@@ -1,0 +1,87 @@
+﻿using HarmonyLib;
+using StardewModdingAPI;
+using StardewValley;
+
+namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
+
+public static class HarmonyPatch_FishingGameEvent
+{
+    private static bool Applied { get; set; } = false;
+
+    private static IMonitor Monitor { get; set; } = null;
+
+    public static void ApplyPatch(Harmony harmony, IMonitor monitor)
+    {
+        if (!Applied && monitor != null)
+        {
+            Monitor = monitor;
+
+            Monitor.Log(
+                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.caughtFish()\".",
+                LogLevel.Trace);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), "caughtFish"),
+                prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_caughtFish))
+            );
+
+            Monitor.Log(
+                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.perfectFishing()\".",
+                LogLevel.Trace);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), "perfectFishing"),
+                prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_perfectFishing))
+            );
+
+            Applied = true;
+        }
+    }
+
+    private static bool Prefix_Event_caughtFish(Event __instance, int size)
+    {
+        try
+        {
+            if (Game1.currentMinigame is RPBFishingGame currentMinigame &&
+                Game1.CurrentEvent?.FestivalName == "SpringFair")
+            {
+                currentMinigame.score += size > 0 ? size + 5 : 1;
+                if (size > 0)
+                {
+                    ++currentMinigame.fishCaught;
+                }
+
+                Game1.player.FarmerSprite.PauseForSingleAnimation = false;
+                Game1.player.FarmerSprite.StopAnimation();
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Monitor.LogOnce(
+                $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                LogLevel.Error);
+            throw;
+        }
+    }
+
+    private static bool Prefix_Event_perfectFishing(Event __instance)
+    {
+        try
+        {
+            if (Game1.currentMinigame is RPBFishingGame currentMinigame &&
+                Game1.CurrentEvent?.FestivalName == "SpringFair")
+            {
+                ++currentMinigame.perfections;
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Monitor.LogOnce(
+                $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                LogLevel.Error);
+            throw;
+        }
+    }
+}

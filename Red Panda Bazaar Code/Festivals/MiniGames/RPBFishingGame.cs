@@ -420,7 +420,10 @@ public class RPBFishingGame : IMinigame
         }
     }
 
-    public static void startMe() => Game1.currentMinigame = (IMinigame)new RPBFishingGame();
+    public static void startMe()
+    {
+        Game1.currentMinigame = (IMinigame)new RPBFishingGame();
+    }
 
     public void changeScreenSize()
     {
