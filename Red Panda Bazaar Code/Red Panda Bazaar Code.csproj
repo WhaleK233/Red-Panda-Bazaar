@@ -5,6 +5,7 @@
         <RootNamespace>Red_Panda_Bazaar_Code</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <EnableHarmony>true</EnableHarmony>
     </PropertyGroup>
 
     <ItemGroup>

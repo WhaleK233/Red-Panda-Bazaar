@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
+using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -9,7 +10,7 @@ using StardewValley.Network;
 
 namespace Red_Panda_Bazaar_Code.Festivals;
 
-public class SpringFair
+public static class SpringFair
 {
     private static bool Enabled { get; set; } = false;
 
@@ -70,7 +71,7 @@ public class SpringFair
             // 进行钓鱼小游戏
             if (e.Cursor.GrabTile is { X: 62, Y: 75 })
             {
-                //suppressClick();
+                //SuppressClick();
                 if (CheckMoneyAndCharge(50))
                 {
                     Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("FishingGame_Question"),
@@ -87,12 +88,9 @@ public class SpringFair
                             }
                         });
                 }
-            }
-
-            // 进行弹弓小游戏
-            if (e.Cursor.GrabTile is { X: 72, Y: 75 })
+            } // 进行弹弓小游戏
+            else if (e.Cursor.GrabTile is { X: 72, Y: 75 })
             {
-                //suppressClick();
                 if (CheckMoneyAndCharge(50))
                 {
                     Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("TargetGame_Question"),
@@ -109,12 +107,9 @@ public class SpringFair
                             }
                         });
                 }
-            }
-
-            // 进行轮盘赌小游戏
-            if (e.Cursor.GrabTile is { X: 67, Y: 75 } or { X: 68, Y: 75 })
+            } // 进行轮盘赌小游戏
+            else if (e.Cursor.GrabTile is { X: 67, Y: 75 } or { X: 68, Y: 75 })
             {
-                //SuppressClick();
                 Response[] answerChoices = new Response[3]
                 {
                     new Response("Orange",
@@ -172,6 +167,7 @@ public class SpringFair
             {
                 Helper.Events.Input.ButtonPressed += OnButtonPressed;
                 Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+                Helper.Events.Player.Warped += OnPlayerWarped;
                 added = true;
             }
 
@@ -186,8 +182,17 @@ public class SpringFair
             {
                 Helper.Events.Input.ButtonPressed -= OnButtonPressed;
                 Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
+                Helper.Events.Player.Warped -= OnPlayerWarped;
                 added = false;
             }
+        }
+    }
+
+    private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
+    {
+        if (Game1.CurrentEvent?.FestivalName == "SpringFair")
+        {
+            FireFlyEffects.spawnFireFly(Game1.currentLocation);
         }
     }
 }

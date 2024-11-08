@@ -1,9 +1,12 @@
-﻿using Red_Panda_Bazaar_Code.Compatibility;
+﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals;
+using Red_Panda_Bazaar_Code.Festivals.MiniGames;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 
 namespace Red_Panda_Bazaar_Code;
 
@@ -21,21 +24,9 @@ public class ModEntry : Mod
         Config = this.Helper2.ReadConfig<ModConfig>();
 
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
-        helper.Events.Content.AssetRequested += OnAssetRequested;
-    }
 
-    private void OnAssetRequested(object? sender, AssetRequestedEventArgs e)
-    {
-        if (e.Name.IsEquivalentTo("Maps/FestivalMaps/RedPandaBazaar.SpringFair"))
-        {
-            e.Edit(asset =>
-            {
-                var editor = asset.AsMap();
-                var map = editor.Data;
-
-                Console.WriteLine(map);
-            });
-        }
+        var harmony = new Harmony(this.ModManifest.UniqueID);
+        HarmonyPatch_FishingGameEvent.ApplyPatch(harmony, Monitor);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)

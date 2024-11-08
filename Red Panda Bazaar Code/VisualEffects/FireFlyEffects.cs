@@ -64,8 +64,11 @@ public class FireFlyEffects
     }
 
     /// <summary>根据位置生成萤火虫</summary>
-    private static void spawnFireFly(GameLocation location)
+    public static void spawnFireFly(GameLocation location)
     {
+        Monitor.Log("Spawn FireFly", LogLevel.Trace);
+        Monitor.Log(Game1.currentLocation.Name, LogLevel.Trace);
+
         if (Config.Enabled != true || location == null ||
             Game1.timeOfDay < Game1.getStartingToGetDarkTime(location)) return;
 
@@ -140,6 +143,11 @@ public class FireFlyEffects
         if (fireFlyCounts.TryGetValue(locationName, out double multiplier))
         {
             return (int)(Config.NumberOfFireFly * multiplier);
+        }
+
+        if (locationName == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
+        {
+            return (int)(Config.NumberOfFireFly * 0.6);
         }
 
         return 0;
