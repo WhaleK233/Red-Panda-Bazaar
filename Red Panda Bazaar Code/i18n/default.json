@@ -1,11 +1,20 @@
 ﻿{
-  "Enable": "Enable",
-  "Number_Of_Firefly": "Number of fireflies at night",
-  "FishingGame_Question": "Do you want to play fishing games? (50 gold)",
-  "TargetGame_Question": "Do you want to play target game? (50 gold)",
-  "Response_Positive": "Yes",
-  "Response_Negative": "No",
-  "Money_NotEnough": "You don't have enough money",
-  "RedPandaBazaar_Golden_Delight.BuffDisplaySource": "Golden Delight",
-  "RedPandaBazaar_Golden_Delight.BuffDisplayName": "Exquisitely Stuffed"
+  /*********
+    ** Config
+    *********/
+  "Config.Enable": "Enable",
+  "Config.NumberOfFirefly": "Number of fireflies at night",
+  /*********
+    ** Dialogue
+    *********/
+  "Dialogue.FishingGameQuestion": "Do you want to play fishing games? (50 gold)",
+  "Dialogue.TargetGameQuestion": "Do you want to play slingshot game? (50 gold)",
+  "Dialogue.PositiveResponse": "Yes",
+  "Dialogue.NegativeResponse": "No",
+  "Dialogue.MoneyNotEnough": "you don't have enough money",
+  /*********
+    ** Display
+    *********/
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplaySource": "Golden Delight",
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "Exquisitely Stuffed"
 }

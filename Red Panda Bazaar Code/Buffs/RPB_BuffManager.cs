@@ -26,7 +26,7 @@ public static class RPB_BuffManager
 
     private static void InitCustomBuffs()
     {
-        buffDict["RedPandaBazaar_Golden_Delight"] = new Buff(
+        buffDict[Food.Golden_Delight] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: 0,
@@ -43,5 +43,10 @@ public static class RPB_BuffManager
                 FarmingLevel = { 4 }
             }
         );
+    }
+
+    public static class Food
+    {
+        public const string Golden_Delight = "RedPandaBazaar_Golden_Delight";
     }
 }
