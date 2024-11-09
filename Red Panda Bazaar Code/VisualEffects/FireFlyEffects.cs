@@ -1,37 +1,26 @@
 ﻿using Microsoft.Xna.Framework;
-using Red_Panda_Bazaar_Code.Config;
-using StardewModdingAPI;
+using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 
 namespace Red_Panda_Bazaar_Code.VisualEffects;
 
-public class FireFlyEffects
+public static class FireFlyEffects
 {
     private static bool Enabled { get; set; } = false;
 
-    private static ModConfig Config { get; set; } = null;
-
-    private static IModHelper Helper { get; set; } = null;
-
-    private static IMonitor Monitor { get; set; } = null;
-
     /// <summary>启用萤火虫效果</summary>
-    public static void Enable(IModHelper helper, IMonitor monitor, ModConfig modConfig)
+    public static void Enable()
     {
         // 如果未启用
-        if (!Enabled && helper != null && monitor != null && modConfig != null)
+        if (!Enabled)
         {
-            Helper = helper;
-            Monitor = monitor;
-            Config = modConfig;
-
-            Helper.Events.Player.Warped += OnPlayerWarped;
-            Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+            Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+            Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
             Enabled = true;
-            Monitor.Log("FireFlyEffects Enabled", LogLevel.Debug);
+            Tools.Monitor.Log("FireFlyEffects Enabled");
         }
     }
 
@@ -66,10 +55,7 @@ public class FireFlyEffects
     /// <summary>根据位置生成萤火虫</summary>
     public static void spawnFireFly(GameLocation location)
     {
-        Monitor.Log("Spawn FireFly", LogLevel.Trace);
-        Monitor.Log(Game1.currentLocation.Name, LogLevel.Trace);
-
-        if (Config.Enabled != true || location == null ||
+        if (Tools.ModConfig.Enabled != true || location == null ||
             Game1.timeOfDay < Game1.getStartingToGetDarkTime(location)) return;
 
         var locationName = location.Name ?? "";
@@ -129,7 +115,7 @@ public class FireFlyEffects
     /// <summary>根据玩家当前位置获取要生成的萤火虫的数量</summary>
     private static int GetNumberOfFireFly(string locationName)
     {
-        var fireFlyCounts = new Dictionary<string, double>
+        var fireFlyDict = new Dictionary<string, double>
         {
             { "Custom_RedPandaBazaar", 1.0 },
             { "Custom_RedPandaLake", 0.7 },
@@ -140,14 +126,14 @@ public class FireFlyEffects
             { "Custom_BazaarWest", 0.2 }
         };
 
-        if (fireFlyCounts.TryGetValue(locationName, out double multiplier))
+        if (fireFlyDict.TryGetValue(locationName, out double multiplier))
         {
-            return (int)(Config.NumberOfFireFly * multiplier);
+            return (int)(Tools.ModConfig.NumberOfFireFly * multiplier);
         }
 
         if (locationName == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
         {
-            return (int)(Config.NumberOfFireFly * 0.6);
+            return (int)(Tools.ModConfig.NumberOfFireFly * 0.6);
         }
 
         return 0;

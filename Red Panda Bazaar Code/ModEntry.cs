@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.Buffs;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
+using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
 
 namespace Red_Panda_Bazaar_Code;
 
@@ -20,13 +21,11 @@ public class ModEntry : Mod
     {
         Monitor.Log($"Red Panda Bazaar Code Initializing...", LogLevel.Debug);
 
-        Helper2 = helper;
-        Config = this.Helper2.ReadConfig<ModConfig>();
+        Config = helper.ReadConfig<ModConfig>();
 
-        helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        Tools.Init(helper, Config, Monitor);
 
-        var harmony = new Harmony(this.ModManifest.UniqueID);
-        HarmonyPatch_FishingGameEvent.ApplyPatch(harmony, Monitor);
+        Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -37,9 +36,13 @@ public class ModEntry : Mod
     private void Init()
     {
         InitializeGenericModConfigMenu();
+        FireFlyEffects.Enable();
+        SpringFair.Enable();
+        RPB_BuffManager.Enable();
 
-        FireFlyEffects.Enable(Helper2, Monitor, Config);
-        SpringFair.Enable(Helper2, Monitor, Config);
+        var harmony = new Harmony(this.ModManifest.UniqueID);
+        HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
+        HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
     }
 
     #region Generic Mod Config Menu
@@ -47,7 +50,7 @@ public class ModEntry : Mod
     private void InitializeGenericModConfigMenu()
     {
         // 获取通用模组配置菜单的API
-        var configMenu = this.Helper2.ModRegistry.GetApi<IGenericModConfigMenuApi>(ModCompat.GenericModConfigMenu);
+        var configMenu = Tools.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ModCompat.GenericModConfigMenu);
         if (configMenu is null) return;
 
         // 注册模组
@@ -60,14 +63,14 @@ public class ModEntry : Mod
         // 添加选项
         configMenu.AddBoolOption(
             mod: this.ModManifest,
-            name: () => this.Helper2.Translation.Get("Enable"),
+            name: () => Tools.I18n.Get("Enable"),
             getValue: () => Config.Enabled,
             setValue: value => Config.Enabled = value
         );
 
         configMenu.AddNumberOption(
             mod: this.ModManifest,
-            name: () => this.Helper2.Translation.Get("Number_Of_Firefly"),
+            name: () => Tools.I18n.Get("Number_Of_Firefly"),
             getValue: () => Config.NumberOfFireFly,
             setValue: value => Config.NumberOfFireFly = value,
             min: 0,
