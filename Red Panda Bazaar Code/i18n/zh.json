@@ -5,5 +5,7 @@
   "TargetGame_Question": "你想玩弹弓游戏吗？(50金)",
   "Response_Positive": "是",
   "Response_Negative": "否",
-  "Money_NotEnough": "你的钱不够"
+  "Money_NotEnough": "你的钱不够",
+  "GoldenDelight": "金怡口",
+  "ExquisitelyStuffed.DisplayName": "酒足饭饱"
 }

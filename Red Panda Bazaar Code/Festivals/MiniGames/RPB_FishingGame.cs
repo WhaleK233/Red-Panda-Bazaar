@@ -13,7 +13,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
 
-public class RPBFishingGame : IMinigame
+public class RPB_FishingGame : IMinigame
 {
     private Vector2 beforePosition = Vector2.Zero;
 
@@ -31,7 +31,7 @@ public class RPBFishingGame : IMinigame
     public int perfectionBonus;
     public GameLocation originalLocation;
 
-    public RPBFishingGame()
+    public RPB_FishingGame()
     {
         beforePosition = Game1.player.Position;
 
@@ -422,7 +422,7 @@ public class RPBFishingGame : IMinigame
 
     public static void startMe()
     {
-        Game1.currentMinigame = (IMinigame)new RPBFishingGame();
+        Game1.currentMinigame = (IMinigame)new RPB_FishingGame();
     }
 
     public void changeScreenSize()

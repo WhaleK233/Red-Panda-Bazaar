@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
+using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -14,27 +15,17 @@ public static class SpringFair
 {
     private static bool Enabled { get; set; } = false;
 
-    private static ModConfig Config { get; set; } = null;
-
-    private static IModHelper Helper { get; set; } = null;
-
-    private static IMonitor Monitor { get; set; } = null;
-
     /// <summary>启用春8的一些效果</summary>
-    public static void Enable(IModHelper helper, IMonitor monitor, ModConfig modConfig)
+    public static void Enable()
     {
         // 如果未启用
-        if (!Enabled && helper != null && monitor != null && modConfig != null)
+        if (!Enabled)
         {
-            Helper = helper;
-            Monitor = monitor;
-            Config = modConfig;
-
-            Helper.Events.GameLoop.DayStarted += OnDayStarted;
+            Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
             added = false;
             Enabled = true;
-            Monitor.Log("SpringFairFunctions Enabled", LogLevel.Debug);
+            Tools.Monitor.Log("SpringFairFunctions Enabled");
         }
     }
 
@@ -74,17 +65,17 @@ public static class SpringFair
                 //SuppressClick();
                 if (CheckMoneyAndCharge(50))
                 {
-                    Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("FishingGame_Question"),
+                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get("FishingGame_Question"),
                         new Response[]
                         {
-                            new Response("Positive", Helper.Translation.Get("Response_Positive")),
-                            new Response("Negative", Helper.Translation.Get("Response_Negative"))
+                            new Response("Positive", Tools.I18n.Get("Response_Positive")),
+                            new Response("Negative", Tools.I18n.Get("Response_Negative"))
                         },
                         (f, answer) =>
                         {
                             if (answer == "Positive")
                             {
-                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPBFishingGame.startMe), 0.01f);
+                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_FishingGame.startMe), 0.01f);
                             }
                         });
                 }
@@ -93,17 +84,17 @@ public static class SpringFair
             {
                 if (CheckMoneyAndCharge(50))
                 {
-                    Game1.currentLocation.createQuestionDialogue(Helper.Translation.Get("TargetGame_Question"),
+                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get("TargetGame_Question"),
                         new Response[]
                         {
-                            new Response("Positive", Helper.Translation.Get("Response_Positive")),
-                            new Response("Negative", Helper.Translation.Get("Response_Negative"))
+                            new Response("Positive", Tools.I18n.Get("Response_Positive")),
+                            new Response("Negative", Tools.I18n.Get("Response_Negative"))
                         },
                         (f, answer) =>
                         {
                             if (answer == "Positive")
                             {
-                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPBTargetGame.startMe), 0.01f);
+                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_TargetGame.startMe), 0.01f);
                             }
                         });
                 }
@@ -129,10 +120,10 @@ public static class SpringFair
 
     private static void SuppressClick()
     {
-        Helper.Input.Suppress(Game1.options.actionButton[0].ToSButton());
-        Helper.Input.Suppress(Game1.options.useToolButton[0].ToSButton());
-        Helper.Input.Suppress(SButton.MouseLeft);
-        Helper.Input.Suppress(SButton.MouseRight);
+        Tools.Helper.Input.Suppress(Game1.options.actionButton[0].ToSButton());
+        Tools.Helper.Input.Suppress(Game1.options.useToolButton[0].ToSButton());
+        Tools.Helper.Input.Suppress(SButton.MouseLeft);
+        Tools.Helper.Input.Suppress(SButton.MouseRight);
     }
 
     private static bool CheckMoneyAndCharge(int cost)
@@ -144,7 +135,7 @@ public static class SpringFair
         }
         else
         {
-            Game1.drawObjectDialogue(Helper.Translation.Get("Money_NotEnough"));
+            Game1.drawObjectDialogue(Tools.I18n.Get("Money_NotEnough"));
             return false;
         }
     }
@@ -165,9 +156,9 @@ public static class SpringFair
         {
             if (!added)
             {
-                Helper.Events.Input.ButtonPressed += OnButtonPressed;
-                Helper.Events.Display.RenderedWorld += OnRenderedWorld;
-                Helper.Events.Player.Warped += OnPlayerWarped;
+                Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+                Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+                Tools.Helper.Events.Player.Warped += OnPlayerWarped;
                 added = true;
             }
 
@@ -180,9 +171,9 @@ public static class SpringFair
         {
             if (added)
             {
-                Helper.Events.Input.ButtonPressed -= OnButtonPressed;
-                Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
-                Helper.Events.Player.Warped -= OnPlayerWarped;
+                Tools.Helper.Events.Input.ButtonPressed -= OnButtonPressed;
+                Tools.Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
+                Tools.Helper.Events.Player.Warped -= OnPlayerWarped;
                 added = false;
             }
         }

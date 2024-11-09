@@ -12,7 +12,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
 
-public class RPBTargetGame : IMinigame
+public class RPB_TargetGame : IMinigame
 {
     private GameLocation location;
     private int timerToStart = 1000;
@@ -30,7 +30,7 @@ public class RPBTargetGame : IMinigame
 
     private Vector2 beforePosition = Vector2.Zero;
 
-    public RPBTargetGame()
+    public RPB_TargetGame()
     {
         beforePosition = Game1.player.Position;
 
@@ -407,7 +407,7 @@ public class RPBTargetGame : IMinigame
 
     public static void startMe()
     {
-        Game1.currentMinigame = (IMinigame)new RPBTargetGame();
+        Game1.currentMinigame = (IMinigame)new RPB_TargetGame();
         Game1.changeMusicTrack("none", music_context: MusicContext.MiniGame);
     }
 
@@ -509,7 +509,7 @@ public class RPBTargetGame : IMinigame
     {
     }
 
-    public string minigameId() => nameof(RPBTargetGame);
+    public string minigameId() => nameof(RPB_TargetGame);
 
     public bool doMainGameUpdates() => false;
 
