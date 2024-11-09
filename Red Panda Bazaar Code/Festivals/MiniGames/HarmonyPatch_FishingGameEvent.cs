@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
@@ -8,15 +9,11 @@ public static class HarmonyPatch_FishingGameEvent
 {
     private static bool Applied { get; set; } = false;
 
-    private static IMonitor Monitor { get; set; } = null;
-
-    public static void ApplyPatch(Harmony harmony, IMonitor monitor)
+    public static void ApplyPatch(Harmony harmony)
     {
-        if (!Applied && monitor != null)
+        if (!Applied)
         {
-            Monitor = monitor;
-
-            Monitor.Log(
+            Tools.Monitor.Log(
                 $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.caughtFish()\".",
                 LogLevel.Trace);
             harmony.Patch(
@@ -24,7 +21,7 @@ public static class HarmonyPatch_FishingGameEvent
                 prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_caughtFish))
             );
 
-            Monitor.Log(
+            Tools.Monitor.Log(
                 $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.perfectFishing()\".",
                 LogLevel.Trace);
             harmony.Patch(
@@ -40,7 +37,7 @@ public static class HarmonyPatch_FishingGameEvent
     {
         try
         {
-            if (Game1.currentMinigame is RPBFishingGame currentMinigame &&
+            if (Game1.currentMinigame is RPB_FishingGame currentMinigame &&
                 Game1.CurrentEvent?.FestivalName == "SpringFair")
             {
                 currentMinigame.score += size > 0 ? size + 5 : 1;
@@ -57,7 +54,7 @@ public static class HarmonyPatch_FishingGameEvent
         }
         catch (Exception e)
         {
-            Monitor.LogOnce(
+            Tools.Monitor.LogOnce(
                 $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;
@@ -68,7 +65,7 @@ public static class HarmonyPatch_FishingGameEvent
     {
         try
         {
-            if (Game1.currentMinigame is RPBFishingGame currentMinigame &&
+            if (Game1.currentMinigame is RPB_FishingGame currentMinigame &&
                 Game1.CurrentEvent?.FestivalName == "SpringFair")
             {
                 ++currentMinigame.perfections;
@@ -78,7 +75,7 @@ public static class HarmonyPatch_FishingGameEvent
         }
         catch (Exception e)
         {
-            Monitor.LogOnce(
+            Tools.Monitor.LogOnce(
                 $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;

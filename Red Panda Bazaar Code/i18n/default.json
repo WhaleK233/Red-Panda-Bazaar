@@ -5,5 +5,7 @@
   "TargetGame_Question": "Do you want to play target game? (50 gold)",
   "Response_Positive": "Yes",
   "Response_Negative": "No",
-  "Money_NotEnough": "you don't have enough money"
+  "Money_NotEnough": "You don't have enough money",
+  "GoldenDelight": "Golden Delight",
+  "ExquisitelyStuffed.DisplayName": "Exquisitely Stuffed"
 }
