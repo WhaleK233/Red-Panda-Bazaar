@@ -63,14 +63,14 @@ public class ModEntry : Mod
         // 添加选项
         configMenu.AddBoolOption(
             mod: this.ModManifest,
-            name: () => Tools.I18n.Get("Enable"),
+            name: () => Tools.I18n.Get(I18nKeys.Config_Enable),
             getValue: () => Config.Enabled,
             setValue: value => Config.Enabled = value
         );
 
         configMenu.AddNumberOption(
             mod: this.ModManifest,
-            name: () => Tools.I18n.Get("Number_Of_Firefly"),
+            name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfFirefly),
             getValue: () => Config.NumberOfFireFly,
             setValue: value => Config.NumberOfFireFly = value,
             min: 0,

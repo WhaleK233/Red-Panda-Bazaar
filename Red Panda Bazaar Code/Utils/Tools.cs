@@ -15,7 +15,7 @@ public static class Tools
         Helper = helper;
         ModConfig = modConfig;
         Monitor = monitor;
-        
+
         I18n = Helper.Translation;
     }
 }
