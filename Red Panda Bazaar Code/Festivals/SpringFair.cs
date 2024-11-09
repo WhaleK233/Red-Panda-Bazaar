@@ -65,11 +65,11 @@ public static class SpringFair
                 //SuppressClick();
                 if (CheckMoneyAndCharge(50))
                 {
-                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get("FishingGame_Question"),
+                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_FishingGameQuestion),
                         new Response[]
                         {
-                            new Response("Positive", Tools.I18n.Get("Response_Positive")),
-                            new Response("Negative", Tools.I18n.Get("Response_Negative"))
+                            new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                            new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
                         },
                         (f, answer) =>
                         {
@@ -84,11 +84,11 @@ public static class SpringFair
             {
                 if (CheckMoneyAndCharge(50))
                 {
-                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get("TargetGame_Question"),
+                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_TargetGameQuestion),
                         new Response[]
                         {
-                            new Response("Positive", Tools.I18n.Get("Response_Positive")),
-                            new Response("Negative", Tools.I18n.Get("Response_Negative"))
+                            new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                            new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
                         },
                         (f, answer) =>
                         {
@@ -135,7 +135,7 @@ public static class SpringFair
         }
         else
         {
-            Game1.drawObjectDialogue(Tools.I18n.Get("Money_NotEnough"));
+            Game1.drawObjectDialogue(Tools.I18n.Get(I18nKeys.Dialogue_MoneyNotEnough));
             return false;
         }
     }

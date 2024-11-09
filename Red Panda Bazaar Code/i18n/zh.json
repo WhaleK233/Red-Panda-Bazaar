@@ -1,11 +1,20 @@
 ﻿{
-  "Enable": "启用",
-  "Number_Of_Firefly": "夜晚萤火虫数量",
-  "FishingGame_Question": "你想玩钓鱼游戏吗？(50金)",
-  "TargetGame_Question": "你想玩弹弓游戏吗？(50金)",
-  "Response_Positive": "是",
-  "Response_Negative": "否",
-  "Money_NotEnough": "你的钱不够",
-  "RedPandaBazaar_Golden_Delight.BuffDisplaySource": "精美毛绒玩具",
-  "RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱"
+  /*********
+    ** Config
+    *********/
+  "Config.Enable": "启用",
+  "Config.NumberOfFirefly": "夜晚萤火虫数量",
+  /*********
+    ** Dialogue
+    *********/
+  "Dialogue.FishingGameQuestion": "你想玩钓鱼游戏吗？(50金)",
+  "Dialogue.TargetGameQuestion": "你想玩弹弓游戏吗？(50金)",
+  "Dialogue.PositiveResponse": "是",
+  "Dialogue.NegativeResponse": "否",
+  "Dialogue.MoneyNotEnough": "你的钱不够",
+  /*********
+    ** Display
+    *********/
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplaySource": "精美毛绒玩具",
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱"
 }

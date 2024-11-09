@@ -25,17 +25,29 @@ public class HarmonyPatch_CustomBuffEffects
         }
     }
 
+    private static bool initBuff = false;
+
+    private static void initBuffDisplay(Dictionary<string, Buff> buffDict)
+    {
+        buffDict[RPB_BuffManager.Food.Golden_Delight].displayName =
+            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName);
+        buffDict[RPB_BuffManager.Food.Golden_Delight].displaySource =
+            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource);
+    }
+
     private static bool Prefix_Farmer_doneEating(Farmer __instance)
     {
         try
         {
             var buffDict = RPB_BuffManager.buffDict;
+            if (!initBuff)
+            {
+                initBuffDisplay(buffDict);
+                initBuff = true;
+            }
+
             if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
             {
-                buffDict[__instance.itemToEat.ItemId].displayName =
-                    Tools.I18n.Get(__instance.itemToEat.ItemId + ".BuffDisplayName");
-                buffDict[__instance.itemToEat.ItemId].displaySource =
-                    Tools.I18n.Get(__instance.itemToEat.ItemId + ".BuffDisplaySource");
                 __instance.applyBuff(buffDict[__instance.itemToEat.ItemId]);
             }
 
