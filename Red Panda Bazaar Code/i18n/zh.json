@@ -1,11 +1,11 @@
 ﻿{
-  "Enabled": "启用",
+  "Enable": "启用",
   "Number_Of_Firefly": "夜晚萤火虫数量",
   "FishingGame_Question": "你想玩钓鱼游戏吗？(50金)",
   "TargetGame_Question": "你想玩弹弓游戏吗？(50金)",
   "Response_Positive": "是",
   "Response_Negative": "否",
   "Money_NotEnough": "你的钱不够",
-  "GoldenDelight": "金怡口",
-  "ExquisitelyStuffed.DisplayName": "酒足饭饱"
+  "RedPandaBazaar_Golden_Delight.BuffDisplaySource": "金怡口",
+  "RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱"
 }

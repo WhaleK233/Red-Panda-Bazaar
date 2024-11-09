@@ -1,11 +1,11 @@
 ﻿{
-  "Enabled": "Enable",
+  "Enable": "Enable",
   "Number_Of_Firefly": "Number of fireflies at night",
   "FishingGame_Question": "Do you want to play fishing games? (50 gold)",
   "TargetGame_Question": "Do you want to play target game? (50 gold)",
   "Response_Positive": "Yes",
   "Response_Negative": "No",
   "Money_NotEnough": "You don't have enough money",
-  "GoldenDelight": "Golden Delight",
-  "ExquisitelyStuffed.DisplayName": "Exquisitely Stuffed"
+  "RedPandaBazaar_Golden_Delight.BuffDisplaySource": "Golden Delight",
+  "RedPandaBazaar_Golden_Delight.BuffDisplayName": "Exquisitely Stuffed"
 }
