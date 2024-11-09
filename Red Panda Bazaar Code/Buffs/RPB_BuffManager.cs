@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buffs;
-using StardewValley.GameData.Buffs;
 
 namespace Red_Panda_Bazaar_Code.Buffs;
 
@@ -30,10 +28,8 @@ public static class RPB_BuffManager
     {
         buffDict["RedPandaBazaar_Golden_Delight"] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
-            displayName: Tools.I18n.Get("ExquisitelyStuffed.DisplayName"),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: 0,
-            displaySource: Tools.I18n.Get("GoldenDelight"),
             duration: Buff.ENDLESS,
             effects: new BuffEffects()
             {

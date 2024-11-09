@@ -32,6 +32,10 @@ public class HarmonyPatch_CustomBuffEffects
             var buffDict = RPB_BuffManager.buffDict;
             if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
             {
+                buffDict[__instance.itemToEat.ItemId].displayName =
+                    Tools.I18n.Get(__instance.itemToEat.ItemId + ".BuffDisplayName");
+                buffDict[__instance.itemToEat.ItemId].displaySource =
+                    Tools.I18n.Get(__instance.itemToEat.ItemId + ".BuffDisplaySource");
                 __instance.applyBuff(buffDict[__instance.itemToEat.ItemId]);
             }
 
