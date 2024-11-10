@@ -18,7 +18,7 @@ public class RPB_MenusEffects
             InitCustomMenus();
 
             Enabled = true;
-            Tools.Monitor.Log("Custom Buffs Enabled");
+            Tools.Log("Custom Buffs Enabled");
         }
     }
 

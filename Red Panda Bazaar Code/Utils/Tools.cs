@@ -18,4 +18,9 @@ public static class Tools
 
         I18n = Helper.Translation;
     }
+
+    public static void Log(string message, LogLevel level = LogLevel.Trace) => Tools.Monitor.Log(message, level);
+
+    public static void LogOnce(string message, LogLevel level = LogLevel.Trace) =>
+        Tools.Monitor.LogOnce(message, level);
 }

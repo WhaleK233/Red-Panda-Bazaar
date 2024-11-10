@@ -20,11 +20,11 @@ public class ModEntry : Mod
 
     public override void Entry(IModHelper helper)
     {
-        Monitor.Log($"Red Panda Bazaar Code Initializing...", LogLevel.Debug);
-
         Config = helper.ReadConfig<ModConfig>();
 
         Tools.Init(helper, Config, Monitor);
+
+        Tools.Log($"Red Panda Bazaar Code Initializing...");
 
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }

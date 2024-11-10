@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -25,7 +24,7 @@ public static class FireFlyEffects
             Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
             Enabled = true;
-            Tools.Monitor.Log("FireFlyEffects Enabled");
+            Tools.Log("FireFlyEffects Enabled");
         }
     }
 

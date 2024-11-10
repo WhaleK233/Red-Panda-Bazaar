@@ -1,5 +1,4 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
@@ -14,7 +13,7 @@ public static class HarmonyPatch_FishingGameEvent
     {
         if (!Applied)
         {
-            Tools.Monitor.Log(
+            Tools.Log(
                 $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.caughtFish()\".",
                 LogLevel.Trace);
             harmony.Patch(
@@ -22,7 +21,7 @@ public static class HarmonyPatch_FishingGameEvent
                 prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_caughtFish))
             );
 
-            Tools.Monitor.Log(
+            Tools.Log(
                 $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.perfectFishing()\".",
                 LogLevel.Trace);
             harmony.Patch(
@@ -55,7 +54,7 @@ public static class HarmonyPatch_FishingGameEvent
         }
         catch (Exception e)
         {
-            Tools.Monitor.LogOnce(
+            Tools.LogOnce(
                 $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;
@@ -76,7 +75,7 @@ public static class HarmonyPatch_FishingGameEvent
         }
         catch (Exception e)
         {
-            Tools.Monitor.LogOnce(
+            Tools.LogOnce(
                 $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;

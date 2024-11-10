@@ -28,7 +28,7 @@ public static class SpringFairEffects
 
             added = false;
             Enabled = true;
-            Tools.Monitor.Log("SpringFairFunctions Enabled");
+            Tools.Log("SpringFairFunctions Enabled");
         }
     }
 
