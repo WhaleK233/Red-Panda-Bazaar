@@ -7,18 +7,24 @@
   /*********
     ** Dialogue
     *********/
-  "Dialogue.FishingGameQuestion": "Do you want to play fishing games? (50 gold)",
-  "Dialogue.TargetGameQuestion": "Do you want to play slingshot game? (50 gold)",
+  "Dialogue.FishingGameQuestion": "Do you want to play fishing games? (50 Gold)",
+  "Dialogue.TargetGameQuestion": "Do you want to play slingshot game? (50 Gold)",
+  "Dialogue.WheelBetChargeQuestion": "Do you want to gamble some Star Tokens? (50 Gold)",
   "Dialogue.PositiveResponse": "Yes",
   "Dialogue.NegativeResponse": "No",
-  "Dialogue.MoneyNotEnough": "you don't have enough money",
-  "Dialogue.BuyBackpack_PositiveResponseTo24Slots": "购买 (1999金)",
-  "Dialogue.BuyBackpack_PositiveResponseTo36Slots": "购买 (9999金)",
-  "Dialogue.WheelBet_RedResponse": "红色",
-  "Dialogue.WheelBet_WhiteResponse": "白色",
+  "Dialogue.MoneyNotEnough": "You don't have enough money",
+  "Dialogue.BuyBackpack_PositiveResponseTo24Slots": "Purchase (1999 Gold)",
+  "Dialogue.BuyBackpack_PositiveResponseTo36Slots": "Purchase (9999 Gold)",
+  "Dialogue.WheelBet_RedResponse": "Red",
+  "Dialogue.WheelBet_WhiteResponse": "White",
+  "Dialogue.WheelBet_GiveUpResponse": "Give up (No refund)",
   /*********
     ** Display
     *********/
   "Display.RedPandaBazaar_Golden_Delight.BuffDisplaySource": "Golden Delight",
-  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "Exquisitely Stuffed"
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "Exquisitely Stuffed",
+  /*********
+    ** Text
+    *********/
+  "Text.50Gold": "50 Gold"
 }
