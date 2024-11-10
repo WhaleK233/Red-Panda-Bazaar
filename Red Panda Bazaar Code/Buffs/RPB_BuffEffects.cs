@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.Buffs;
@@ -20,7 +19,7 @@ public static class RPB_BuffEffects
             InitCustomBuffs();
 
             Enabled = true;
-            Tools.Monitor.Log("Custom Buffs Enabled");
+            Tools.Log("Custom Buffs Enabled");
         }
     }
 
