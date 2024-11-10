@@ -12,6 +12,8 @@
   "Dialogue.PositiveResponse": "是",
   "Dialogue.NegativeResponse": "否",
   "Dialogue.MoneyNotEnough": "你的钱不够",
+  "Dialogue.BuyBackpack_PositiveResponseTo24Slots": "购买 (1999金)",
+  "Dialogue.BuyBackpack_PositiveResponseTo36Slots": "购买 (9999金)",
   /*********
     ** Display
     *********/

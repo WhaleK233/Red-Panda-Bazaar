@@ -5,7 +5,7 @@ using StardewValley.Buffs;
 
 namespace Red_Panda_Bazaar_Code.Buffs;
 
-public static class RPB_BuffManager
+public static class RPB_BuffEffects
 {
     private static bool Enabled { get; set; } = false;
 
@@ -36,7 +36,6 @@ public static class RPB_BuffManager
                 Speed = { 2 },
                 Defense = { 4 },
                 Attack = { 10 },
-                WeaponSpeedMultiplier = { 10 },
                 CriticalChanceMultiplier = { 4 },
                 FishingLevel = { 6 },
                 ForagingLevel = { 4 },

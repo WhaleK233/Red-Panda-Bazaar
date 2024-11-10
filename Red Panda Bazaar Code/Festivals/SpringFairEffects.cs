@@ -1,17 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
+using Red_Panda_Bazaar_Code.Menus.Custom_Menus;
 using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Network;
+using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Festivals;
 
-public static class SpringFair
+public static class SpringFairEffects
 {
     private static bool Enabled { get; set; } = false;
 
@@ -33,7 +35,6 @@ public static class SpringFair
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
         {
-            var b = Game1.spriteBatch;
             e.SpriteBatch.Draw(Game1.fadeToBlackRect,
                 new Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
                 Color.Black * 0.75f);
@@ -114,6 +115,62 @@ public static class SpringFair
                     Game1.parseText(
                         Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
                     answerChoices, "wheelBet");
+            } // 打开兑奖机菜单
+            else if (e.Cursor.GrabTile is { X: 40, Y: 62 })
+            {
+                Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu();
+            } // 购买背包
+            else if (e.Cursor.GrabTile is { X: 26, Y: 77 })
+            {
+                Console.WriteLine("Buy");
+                Response response1 = new Response("Purchase",
+                    Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
+                Response response2 = new Response("Purchase",
+                    Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
+                Response response3 = new Response("Not",
+                    Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
+                Console.WriteLine(Game1.player.maxItems.Value);
+                if (Game1.player.maxItems.Value == 12)
+                {
+                    Game1.currentLocation.createQuestionDialogue(
+                        Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question24"), new Response[2]
+                        {
+                            response1,
+                            response3
+                        }, (who, answer) =>
+                        {
+                            if (answer == "Purchase" && CheckMoneyAndCharge(1999))
+                            {
+                                Game1.player.increaseBackpackSize(12);
+                                Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
+                            }
+                        }
+                    );
+                }
+                else if (Game1.player.maxItems.Value < 36)
+                {
+                    Game1.currentLocation.createQuestionDialogue(
+                        Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question36"), new Response[2]
+                        {
+                            response2,
+                            response3
+                        }, (who, answer) =>
+                        {
+                            if (answer == "Purchase" && CheckMoneyAndCharge(9999))
+                            {
+                                Game1.player.maxItems.Value += 12;
+                                Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8709")));
+                                for (int index = 0; index < Game1.player.maxItems.Value; ++index)
+                                {
+                                    if (Game1.player.Items.Count <= index)
+                                        Game1.player.Items.Add((Item)null);
+                                }
+                            }
+                        }
+                    );
+                }
             }
         }
     }
