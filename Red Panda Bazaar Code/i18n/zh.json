@@ -9,14 +9,22 @@
     *********/
   "Dialogue.FishingGameQuestion": "你想玩钓鱼游戏吗？(50金)",
   "Dialogue.TargetGameQuestion": "你想玩弹弓游戏吗？(50金)",
+  "Dialogue.WheelBetChargeQuestion": "你想拿一些星星币来赌吗？(50金)",
   "Dialogue.PositiveResponse": "是",
   "Dialogue.NegativeResponse": "否",
   "Dialogue.MoneyNotEnough": "你的钱不够",
   "Dialogue.BuyBackpack_PositiveResponseTo24Slots": "购买 (1999金)",
   "Dialogue.BuyBackpack_PositiveResponseTo36Slots": "购买 (9999金)",
+  "Dialogue.WheelBet_RedResponse": "红色",
+  "Dialogue.WheelBet_WhiteResponse": "白色",
+  "Dialogue.WheelBet_GiveUpResponse": "我放弃 (不退款)",
   /*********
     ** Display
     *********/
   "Display.RedPandaBazaar_Golden_Delight.BuffDisplaySource": "精美毛绒玩具",
-  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱"
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱",
+  /*********
+    ** Text
+    *********/
+  "Text.50Gold": "50金"
 }

@@ -103,19 +103,29 @@ public static class SpringFairEffects
             } // 进行轮盘赌小游戏
             else if (e.Cursor.GrabTile is { X: 67, Y: 75 } or { X: 68, Y: 75 })
             {
-                Response[] answerChoices = new Response[3]
-                {
-                    new Response("Orange",
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1645")),
-                    new Response("Green",
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1647")),
-                    new Response("I",
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1650"))
-                };
-                Game1.currentLocation.createQuestionDialogue(
-                    Game1.parseText(
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
-                    answerChoices, "wheelBet");
+                Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_WheelBetChargeQuestion),
+                    new Response[]
+                    {
+                        new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                        new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    },
+                    (f, answer) =>
+                    {
+                        if (answer == "Positive" && CheckMoneyAndCharge(50))
+                        {
+                            Response[] answerChoices = new Response[3]
+                            {
+                                new Response("Orange", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_WhiteResponse)),
+                                new Response("Green", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_RedResponse)),
+                                new Response("I",
+                                    Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_GiveUpResponse))
+                            };
+                            Game1.currentLocation.createQuestionDialogue(
+                                Game1.parseText(
+                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
+                                answerChoices, "wheelBet");
+                        }
+                    });
             } // 打开兑奖机菜单
             else if (e.Cursor.GrabTile is { X: 40, Y: 62 })
             {
@@ -123,54 +133,59 @@ public static class SpringFairEffects
             } // 购买背包
             else if (e.Cursor.GrabTile is { X: 26, Y: 77 })
             {
-                Response response1 = new Response("Purchase",
-                    Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
-                Response response2 = new Response("Purchase",
-                    Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
-                Response response3 = new Response("Not",
-                    Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
-                if (Game1.player.maxItems.Value == 12)
-                {
-                    Game1.currentLocation.createQuestionDialogue(
-                        Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question24"), new Response[2]
-                        {
-                            response1,
-                            response3
-                        }, (who, answer) =>
-                        {
-                            if (answer == "Purchase" && CheckMoneyAndCharge(1999))
-                            {
-                                Game1.player.increaseBackpackSize(12);
-                                Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
-                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
-                            }
-                        }
-                    );
-                }
-                else if (Game1.player.maxItems.Value < 36)
-                {
-                    Game1.currentLocation.createQuestionDialogue(
-                        Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question36"), new Response[2]
-                        {
-                            response2,
-                            response3
-                        }, (who, answer) =>
-                        {
-                            if (answer == "Purchase" && CheckMoneyAndCharge(9999))
-                            {
-                                Game1.player.maxItems.Value += 12;
-                                Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
-                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8709")));
-                                for (int index = 0; index < Game1.player.maxItems.Value; ++index)
-                                {
-                                    if (Game1.player.Items.Count <= index)
-                                        Game1.player.Items.Add((Item)null);
-                                }
-                            }
-                        }
-                    );
-                }
+                BuyBackpack();
             }
+        }
+    }
+
+    private static void BuyBackpack()
+    {
+        Response response1 = new Response("Purchase",
+            Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
+        Response response2 = new Response("Purchase",
+            Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
+        Response response3 = new Response("Not",
+            Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
+        if (Game1.player.maxItems.Value == 12)
+        {
+            Game1.currentLocation.createQuestionDialogue(
+                Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question24"), new Response[2]
+                {
+                    response1,
+                    response3
+                }, (who, answer) =>
+                {
+                    if (answer == "Purchase" && CheckMoneyAndCharge(1999))
+                    {
+                        Game1.player.increaseBackpackSize(12);
+                        Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                            Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
+                    }
+                }
+            );
+        }
+        else if (Game1.player.maxItems.Value < 36)
+        {
+            Game1.currentLocation.createQuestionDialogue(
+                Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question36"), new Response[2]
+                {
+                    response2,
+                    response3
+                }, (who, answer) =>
+                {
+                    if (answer == "Purchase" && CheckMoneyAndCharge(9999))
+                    {
+                        Game1.player.maxItems.Value += 12;
+                        Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                            Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8709")));
+                        for (int index = 0; index < Game1.player.maxItems.Value; ++index)
+                        {
+                            if (Game1.player.Items.Count <= index)
+                                Game1.player.Items.Add((Item)null);
+                        }
+                    }
+                }
+            );
         }
     }
 
