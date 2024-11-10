@@ -1,8 +1,0 @@
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\bin\Debug\net6.0\Red Panda Bazaar Code.deps.json
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\bin\Debug\net6.0\Red Panda Bazaar Code.dll
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.csproj.AssemblyReference.cache
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.GeneratedMSBuildEditorConfig.editorconfig
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.AssemblyInfoInputs.cache
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.AssemblyInfo.cs
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.csproj.CoreCompileInputs.cache
-E:\theSecondDesktop\Games\Stardew Valley\ModDev\Red Panda Bazaar Code\Red Panda Bazaar Code\obj\Debug\net6.0\Red Panda Bazaar Code.dll
