@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
@@ -56,7 +54,7 @@ public class HarmonyPatch_CustomBuffEffects
         }
         catch (Exception e)
         {
-            Tools.Monitor.LogOnce(
+            Tools.LogOnce(
                 $"Harmony patch \"{nameof(HarmonyPatch_CustomBuffEffects)}\" has encountered an error. Custom Buffs might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;
