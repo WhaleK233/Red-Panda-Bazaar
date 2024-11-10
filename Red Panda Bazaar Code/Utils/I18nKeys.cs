@@ -15,4 +15,10 @@ public static class I18nKeys
 
     public const string Display_RedPandaBazaar_Golden_Delight_BuffDisplayName =
         "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName";
+
+    public const string Dialogue_BuyBackpack_PositiveResponseTo24Slots =
+        "Dialogue.BuyBackpack_PositiveResponseTo24Slots";
+
+    public const string Dialogue_BuyBackpack_PositiveResponseTo36Slots =
+        "Dialogue.BuyBackpack_PositiveResponseTo36Slots";
 }
