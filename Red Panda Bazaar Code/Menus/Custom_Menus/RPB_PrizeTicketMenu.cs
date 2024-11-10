@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.Extensions;
 using StardewValley.Menus;
 
 namespace Red_Panda_Bazaar_Code.Menus.Custom_Menus;
@@ -35,10 +32,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
-        this.currentPrizeTrack.Add(RPB_PrizeTicketMenu.getPrizeItem((int)Game1.stats.Get("ticketPrizesClaimed")));
-        this.currentPrizeTrack.Add(RPB_PrizeTicketMenu.getPrizeItem((int)Game1.stats.Get("ticketPrizesClaimed") + 1));
-        this.currentPrizeTrack.Add(RPB_PrizeTicketMenu.getPrizeItem((int)Game1.stats.Get("ticketPrizesClaimed") + 2));
-        this.currentPrizeTrack.Add(RPB_PrizeTicketMenu.getPrizeItem((int)Game1.stats.Get("ticketPrizesClaimed") + 3));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 1));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 2));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 3));
         this.currentlySnappedComponent = (ClickableComponent)this.mainButton;
         this.snapCursorToCurrentSnappedComponent();
     }
@@ -61,90 +58,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public static Item getPrizeItem(int prizeLevel)
     {
-        Random random1 =
-            Utility.CreateRandom((double)Game1.uniqueIDForThisGame, (double)Game1.player.UniqueMultiplayerID);
-        switch (prizeLevel)
-        {
-            case 0:
-                return Utility.getRaccoonSeedForCurrentTimeOfYear(Game1.player, random1, 12);
-            case 1:
-                return ItemRegistry.Create(random1.Choose<string>("(O)631", "(O)630"));
-            case 2:
-                return random1.Choose<Item>(ItemRegistry.Create("(O)770", 10),
-                    ItemRegistry.Create("(O)MixedFlowerSeeds", 15));
-            case 3:
-                return ItemRegistry.Create("(O)MysteryBox", 3);
-            case 4:
-                return ItemRegistry.Create("(O)StardropTea");
-            case 5:
-                return ItemRegistry.Create(Game1.player.HouseUpgradeLevel > 0
-                    ? "(F)BluePinstripeDoubleBed"
-                    : "(F)BluePinstripeBed");
-            case 6:
-                return ItemRegistry.Create(random1.Choose<string>("(O)621", "(BC)15", "(BC)MushroomLog"), 4);
-            case 7:
-                return ItemRegistry.Create(random1.Choose<string>("(O)633", "(O)632"));
-            case 8:
-                return ItemRegistry.Create("(O)Book_Friendship");
-            case 9:
-                return random1.Choose<Item>(ItemRegistry.Create("(O)286", 20), ItemRegistry.Create("(O)287", 12),
-                    ItemRegistry.Create("(O)288", 6));
-            case 10:
-                return ItemRegistry.Create("(H)SportsCap");
-            case 11:
-                return ItemRegistry.Create(random1.Choose<string>("(BC)FishSmoker", "(BC)Dehydrator"));
-            case 12:
-                return ItemRegistry.Create(random1.Choose<string>("(O)275", "(O)MysteryBox"), 4);
-            case 13:
-                return ItemRegistry.Create(random1.Choose<string>("(F)FancyHousePlant1", "(F)FancyHousePlant2",
-                    "(F)FancyHousePlant3"));
-            case 14:
-                return ItemRegistry.Create("(O)SkillBook_" + random1.Next(5).ToString());
-            case 15:
-                return ItemRegistry.Create("(O)StardropTea");
-            case 16:
-                return ItemRegistry.Create("(F)CowDecal");
-            case 17:
-                return ItemRegistry.Create("(O)749", 8);
-            case 18:
-                return ItemRegistry.Create(random1.Choose<string>("(BC)10", "(BC)12"), 4);
-            case 19:
-                return ItemRegistry.Create("(O)72", 5);
-            case 20:
-                return ItemRegistry.Create("(O)MysteryBox", 5);
-            case 21:
-                return ItemRegistry.Create("(O)279");
-            default:
-                Random random2 = Utility.CreateRandom((double)Game1.uniqueIDForThisGame,
-                    (double)(prizeLevel - prizeLevel % 9));
-                switch (prizeLevel % 9)
-                {
-                    case 0:
-                        return ItemRegistry.Create("(O)MysteryBox", 5);
-                    case 1:
-                        return ItemRegistry.Create("(O)872", random2.Next(1, 3));
-                    case 2:
-                        return ItemRegistry.Create(
-                            random2.Choose<string>("(O)337", "(O)226", "(O)253", "(O)732", "(O)275"), 5);
-                    case 3:
-                        return ItemRegistry.Create(random2.Choose<string>("(F)FancyHousePlant1", "(F)FancyHousePlant2",
-                            "(F)FancyHousePlant3"));
-                    case 4:
-                        return ItemRegistry.Create("(O)StardropTea");
-                    case 5:
-                        return ItemRegistry.Create("(O)166");
-                    case 6:
-                        return ItemRegistry.Create("(O)645");
-                    case 7:
-                        return ItemRegistry.Create(random2.Choose<string>("(F)FancyTree1", "(F)FancyTree2",
-                            "(F)FancyTree3", "(F)PigPainting"));
-                    case 8:
-                        return random2.Choose<Item>(ItemRegistry.Create("(O)287", 15),
-                            ItemRegistry.Create("(O)288", 8));
-                    default:
-                        return ItemRegistry.Create("MysteryBox", 5);
-                }
-        }
+        int i = prizeLevel % MenuEffects.PrizeDict.Count;
+        string itemId = MenuEffects.PrizeDict[i].Item1;
+        int amount = MenuEffects.PrizeDict[i].Item2;
+        return ItemRegistry.Create(itemId, amount);
     }
 
     public override bool readyToClose() => !this.gettingReward && base.readyToClose();
@@ -189,7 +106,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                     Game1.createItemDebris(this.currentPrizeTrack[0], Game1.player.getStandingPosition(), 1,
                         Game1.player.currentLocation);
                 Game1.player.Items.ReduceId(TicketItemId, 1);
-                int num = (int)Game1.stats.Increment("ticketPrizesClaimed");
+                int num = Tools.PrizeIncrement();
                 this.currentPrizeTrack.RemoveAt(0);
                 this.moveRewardTrackPreTimer = 500f;
                 this.gettingReward = false;
@@ -212,7 +129,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 {
                     this.movingRewardTrack = false;
                     this.currentPrizeTrack.Add(
-                        RPB_PrizeTicketMenu.getPrizeItem((int)Game1.stats.Get("ticketPrizesClaimed") + 3));
+                        getPrizeItem(Tools.PrizeRandomInt + 3));
                 }
             }
         }
