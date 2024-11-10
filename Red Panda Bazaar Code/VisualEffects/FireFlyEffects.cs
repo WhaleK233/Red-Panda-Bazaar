@@ -55,13 +55,14 @@ public static class FireFlyEffects
     public static void spawnFireFly(GameLocation location)
     {
         if (Tools.ModConfig.Enabled != true || location == null ||
-            Game1.timeOfDay < Game1.getStartingToGetDarkTime(location)) return;
+            Game1.timeOfDay < Game1.getStartingToGetDarkTime(location) ||
+            Game1.season is Season.Winter or Season.Fall) return;
 
         var locationName = location.Name ?? "";
 
         location.instantiateCrittersList();
 
-        int targetNumber = GetNumberOfFireFly(locationName);
+        var targetNumber = GetNumberOfFireFly(locationName);
 
         while (targetNumber > 0)
         {
