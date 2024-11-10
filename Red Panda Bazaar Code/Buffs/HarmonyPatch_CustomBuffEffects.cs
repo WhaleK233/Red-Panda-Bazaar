@@ -28,9 +28,9 @@ public class HarmonyPatch_CustomBuffEffects
 
     private static void initBuffDisplay(Dictionary<string, Buff> buffDict)
     {
-        buffDict[RPB_BuffEffects.Food.Golden_Delight].displayName =
+        buffDict[BuffEffects.Food.Golden_Delight].displayName =
             Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName);
-        buffDict[RPB_BuffEffects.Food.Golden_Delight].displaySource =
+        buffDict[BuffEffects.Food.Golden_Delight].displaySource =
             Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource);
     }
 
@@ -38,7 +38,7 @@ public class HarmonyPatch_CustomBuffEffects
     {
         try
         {
-            var buffDict = RPB_BuffEffects.buffDict;
+            var buffDict = BuffEffects.buffDict;
             if (!initBuff)
             {
                 initBuffDisplay(buffDict);
