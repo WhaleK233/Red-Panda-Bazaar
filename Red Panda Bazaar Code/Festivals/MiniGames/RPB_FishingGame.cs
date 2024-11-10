@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,20 +17,20 @@ namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
 public class RPB_FishingGame : IMinigame
 {
     private Vector2 beforePosition = Vector2.Zero;
+    private LocalizedContentManager content;
+    public bool exit;
+    public int fishCaught;
+    public bool gameDone;
+    private int gameEndTimer;
 
     private GameLocation location;
-    private LocalizedContentManager content;
-    private int timerToStart = 1000;
-    private int gameEndTimer;
-    private int showResultsTimer;
-    public bool exit;
-    public bool gameDone;
-    public int score;
-    public int fishCaught;
-    public int starTokensWon;
-    public int perfections;
-    public int perfectionBonus;
     public GameLocation originalLocation;
+    public int perfectionBonus;
+    public int perfections;
+    public int score;
+    private int showResultsTimer;
+    public int starTokensWon;
+    private int timerToStart = 1000;
 
     public RPB_FishingGame()
     {
@@ -149,22 +150,6 @@ public class RPB_FishingGame : IMinigame
         return this.exit;
     }
 
-    public void gameDoneAfterFade()
-    {
-        this.showResultsTimer = 11100;
-        Game1.player.canMove = false;
-        Game1.player.Position = beforePosition;
-        Game1.player.TemporaryPassableTiles.Add(new Rectangle(Game1.player.TilePoint.X * 64,
-            Game1.player.TilePoint.Y * 64, 64, 64));
-        Game1.player.currentLocation = this.originalLocation;
-        Game1.currentLocation = this.originalLocation;
-        Game1.player.faceDirection(2);
-        Utility.killAllStaticLoopingSoundCues();
-        if (FishingRod.reelSound == null || !FishingRod.reelSound.IsPlaying)
-            return;
-        FishingRod.reelSound.Stop(AudioStopOptions.Immediate);
-    }
-
     public void receiveLeftClick(int x, int y, bool playSound = true)
     {
         if (Game1.isAnyGamePadButtonBeingPressed())
@@ -237,60 +222,6 @@ public class RPB_FishingGame : IMinigame
         if (!Game1.options.doesInputListContain(Game1.options.useToolButton, k))
             return;
         this.handleCastInputReleased();
-    }
-
-    public virtual void EmergencyCancel()
-    {
-        Game1.player.Halt();
-        Game1.player.isEating = false;
-        Game1.player.CanMove = true;
-        Game1.player.UsingTool = false;
-        Game1.player.usingSlingshot = false;
-        Game1.player.FarmerSprite.PauseForSingleAnimation = false;
-        if (!(Game1.player.CurrentTool is FishingRod currentTool))
-            return;
-        currentTool.resetState();
-    }
-
-    private void handleCastInput()
-    {
-        if (this.timerToStart <= 0 && this.showResultsTimer < 0 && !this.gameDone &&
-            Game1.activeClickableMenu == null && !(Game1.player.CurrentTool as FishingRod).hit &&
-            !(Game1.player.CurrentTool as FishingRod).pullingOutOfWater &&
-            !(Game1.player.CurrentTool as FishingRod).isCasting &&
-            !(Game1.player.CurrentTool as FishingRod).fishCaught &&
-            !(Game1.player.CurrentTool as FishingRod).castedButBobberStillInAir)
-        {
-            Game1.player.lastClick = Vector2.Zero;
-            Game1.player.Halt();
-            Game1.pressUseToolButton();
-        }
-        else if (this.showResultsTimer > 11000)
-            this.showResultsTimer = 11001;
-        else if (this.showResultsTimer > 9000)
-            this.showResultsTimer = 9001;
-        else if (this.showResultsTimer > 7000)
-            this.showResultsTimer = 7001;
-        else if (this.showResultsTimer > 5000)
-        {
-            this.showResultsTimer = 5001;
-        }
-        else
-        {
-            if (this.showResultsTimer >= 5000 || this.showResultsTimer <= 1000)
-                return;
-            this.showResultsTimer = 1500;
-            Game1.playSound("smallSelect");
-        }
-    }
-
-    private void handleCastInputReleased()
-    {
-        if (this.showResultsTimer >= 0 || Game1.player.CurrentTool == null ||
-            (Game1.player.CurrentTool as FishingRod).isCasting || Game1.activeClickableMenu != null ||
-            !Game1.player.CurrentTool.onRelease(this.location, 0, 0, Game1.player))
-            return;
-        Game1.player.Halt();
     }
 
     public void draw(SpriteBatch b)
@@ -420,11 +351,6 @@ public class RPB_FishingGame : IMinigame
         }
     }
 
-    public static void startMe()
-    {
-        Game1.currentMinigame = (IMinigame)new RPB_FishingGame();
-    }
-
     public void changeScreenSize()
     {
         Game1.viewport.X = this.location.Map.Layers[0].LayerWidth * 64 / 2 -
@@ -459,4 +385,79 @@ public class RPB_FishingGame : IMinigame
     public bool doMainGameUpdates() => true;
 
     public bool forceQuit() => false;
+
+    public void gameDoneAfterFade()
+    {
+        this.showResultsTimer = 11100;
+        Game1.player.canMove = false;
+        Game1.player.Position = beforePosition;
+        Game1.player.TemporaryPassableTiles.Add(new Rectangle(Game1.player.TilePoint.X * 64,
+            Game1.player.TilePoint.Y * 64, 64, 64));
+        Game1.player.currentLocation = this.originalLocation;
+        Game1.currentLocation = this.originalLocation;
+        Game1.player.faceDirection(2);
+        Utility.killAllStaticLoopingSoundCues();
+        if (FishingRod.reelSound == null || !FishingRod.reelSound.IsPlaying)
+            return;
+        FishingRod.reelSound.Stop(AudioStopOptions.Immediate);
+    }
+
+    public virtual void EmergencyCancel()
+    {
+        Game1.player.Halt();
+        Game1.player.isEating = false;
+        Game1.player.CanMove = true;
+        Game1.player.UsingTool = false;
+        Game1.player.usingSlingshot = false;
+        Game1.player.FarmerSprite.PauseForSingleAnimation = false;
+        if (!(Game1.player.CurrentTool is FishingRod currentTool))
+            return;
+        currentTool.resetState();
+    }
+
+    private void handleCastInput()
+    {
+        if (this.timerToStart <= 0 && this.showResultsTimer < 0 && !this.gameDone &&
+            Game1.activeClickableMenu == null && !(Game1.player.CurrentTool as FishingRod).hit &&
+            !(Game1.player.CurrentTool as FishingRod).pullingOutOfWater &&
+            !(Game1.player.CurrentTool as FishingRod).isCasting &&
+            !(Game1.player.CurrentTool as FishingRod).fishCaught &&
+            !(Game1.player.CurrentTool as FishingRod).castedButBobberStillInAir)
+        {
+            Game1.player.lastClick = Vector2.Zero;
+            Game1.player.Halt();
+            Game1.pressUseToolButton();
+        }
+        else if (this.showResultsTimer > 11000)
+            this.showResultsTimer = 11001;
+        else if (this.showResultsTimer > 9000)
+            this.showResultsTimer = 9001;
+        else if (this.showResultsTimer > 7000)
+            this.showResultsTimer = 7001;
+        else if (this.showResultsTimer > 5000)
+        {
+            this.showResultsTimer = 5001;
+        }
+        else
+        {
+            if (this.showResultsTimer >= 5000 || this.showResultsTimer <= 1000)
+                return;
+            this.showResultsTimer = 1500;
+            Game1.playSound("smallSelect");
+        }
+    }
+
+    private void handleCastInputReleased()
+    {
+        if (this.showResultsTimer >= 0 || Game1.player.CurrentTool == null ||
+            (Game1.player.CurrentTool as FishingRod).isCasting || Game1.activeClickableMenu != null ||
+            !Game1.player.CurrentTool.onRelease(this.location, 0, 0, Game1.player))
+            return;
+        Game1.player.Halt();
+    }
+
+    public static void startMe()
+    {
+        Game1.currentMinigame = (IMinigame)new RPB_FishingGame();
+    }
 }

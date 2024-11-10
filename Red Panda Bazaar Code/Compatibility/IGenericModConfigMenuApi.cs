@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -10,11 +11,11 @@ namespace Red_Panda_Bazaar_Code.Compatibility
     public interface IGenericModConfigMenuApi
     {
         /*********
-        ** Methods
-        *********/
+         ** Methods
+         *********/
         /****
-        ** Must be called first
-        ****/
+         ** Must be called first
+         ****/
         /// <summary>Register a mod whose config can be edited through the UI.</summary>
         /// <param name="mod">The mod's manifest.</param>
         /// <param name="reset">Reset the mod's config to its default values.</param>
@@ -25,8 +26,8 @@ namespace Red_Panda_Bazaar_Code.Compatibility
 
 
         /****
-        ** Basic options
-        ****/
+         ** Basic options
+         ****/
         /// <summary>Add a section title at the current position in the form.</summary>
         /// <param name="mod">The mod's manifest.</param>
         /// <param name="text">The title text shown in the form.</param>
@@ -111,8 +112,8 @@ namespace Red_Panda_Bazaar_Code.Compatibility
 
 
         /****
-        ** Multi-page management
-        ****/
+         ** Multi-page management
+         ****/
         /// <summary>Start a new page in the mod's config UI, or switch to that page if it already exists. All options registered after this will be part of that page.</summary>
         /// <param name="mod">The mod's manifest.</param>
         /// <param name="pageId">The unique page ID.</param>
@@ -129,8 +130,8 @@ namespace Red_Panda_Bazaar_Code.Compatibility
 
 
         /****
-        ** Advanced
-        ****/
+         ** Advanced
+         ****/
         /// <summary>Add an option at the current position in the form using custom rendering logic.</summary>
         /// <param name="mod">The mod's manifest.</param>
         /// <param name="name">The label text to show in the form.</param>

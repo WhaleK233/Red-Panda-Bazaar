@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
@@ -14,15 +16,15 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public const int WIDTH = 116;
     public const int HEIGHT = 94;
-    public Texture2D texture;
-    public ClickableTextureComponent mainButton;
-    public float pressedButtonTimer;
     public List<Item> currentPrizeTrack = new List<Item>();
     public float getRewardTimer;
-    public float moveRewardTrackTimer;
-    public float moveRewardTrackPreTimer;
     public bool gettingReward;
+    public ClickableTextureComponent mainButton;
+    public float moveRewardTrackPreTimer;
+    public float moveRewardTrackTimer;
     public bool movingRewardTrack;
+    public float pressedButtonTimer;
+    public Texture2D texture;
 
     public RPB_PrizeTicketMenu()
         : base((int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).X,
