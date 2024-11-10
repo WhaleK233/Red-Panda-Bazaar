@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
@@ -14,21 +16,21 @@ namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
 
 public class RPB_TargetGame : IMinigame
 {
-    private GameLocation location;
-    private int timerToStart = 1000;
-    private int gameEndTimer = 61000;
-    private int showResultsTimer = -1;
-    private bool gameDone;
-    private bool exit;
     public static int score;
     public static int shotsFired;
     public static int successShots;
     public static int accuracy = -1;
     public static int starTokensWon;
-    public List<Target> targets;
-    private float modifierBonus;
 
     private Vector2 beforePosition = Vector2.Zero;
+    private bool exit;
+    private bool gameDone;
+    private int gameEndTimer = 61000;
+    private GameLocation location;
+    private float modifierBonus;
+    private int showResultsTimer = -1;
+    public List<Target> targets;
+    private int timerToStart = 1000;
 
     public RPB_TargetGame()
     {
@@ -156,17 +158,6 @@ public class RPB_TargetGame : IMinigame
         }
 
         return this.exit;
-    }
-
-    public void gameDoneAfterFade()
-    {
-        this.showResultsTimer = 16100;
-        Game1.player.canMove = false;
-        Game1.player.freezePause = 16100;
-        Game1.player.Position = beforePosition;
-        Game1.player.TemporaryPassableTiles.Add(new Rectangle(Game1.player.TilePoint.X * 64,
-            Game1.player.TilePoint.Y * 64, 64, 64));
-        Game1.player.faceDirection(2);
     }
 
     public void receiveLeftClick(int x, int y, bool playSound = true)
@@ -405,12 +396,6 @@ public class RPB_TargetGame : IMinigame
         }
     }
 
-    public static void startMe()
-    {
-        Game1.currentMinigame = (IMinigame)new RPB_TargetGame();
-        Game1.changeMusicTrack("none", music_context: MusicContext.MiniGame);
-    }
-
     public void changeScreenSize()
     {
         Game1.viewport.X = this.location.Map.Layers[0].LayerWidth * 64 / 2 - Game1.viewport.Width / 2;
@@ -424,8 +409,35 @@ public class RPB_TargetGame : IMinigame
         Game1.player.forceCanMove();
         Game1.stopMusicTrack(MusicContext.MiniGame);
     }
-    
-    
+
+    public void receiveEventPoke(int data)
+    {
+    }
+
+    public string minigameId() => nameof(RPB_TargetGame);
+
+    public bool doMainGameUpdates() => false;
+
+    public bool forceQuit() => false;
+
+    public void gameDoneAfterFade()
+    {
+        this.showResultsTimer = 16100;
+        Game1.player.canMove = false;
+        Game1.player.freezePause = 16100;
+        Game1.player.Position = beforePosition;
+        Game1.player.TemporaryPassableTiles.Add(new Rectangle(Game1.player.TilePoint.X * 64,
+            Game1.player.TilePoint.Y * 64, 64, 64));
+        Game1.player.faceDirection(2);
+    }
+
+    public static void startMe()
+    {
+        Game1.currentMinigame = (IMinigame)new RPB_TargetGame();
+        Game1.changeMusicTrack("none", music_context: MusicContext.MiniGame);
+    }
+
+
     public void addTargets()
     {
         this.addRowOfTargetsOnLane(0, Target.middleLane, 1500, 5, Target.mediumSpeed, false);
@@ -505,16 +517,6 @@ public class RPB_TargetGame : IMinigame
                 targetType, speed, spawnFromRight));
     }
 
-    public void receiveEventPoke(int data)
-    {
-    }
-
-    public string minigameId() => nameof(RPB_TargetGame);
-
-    public bool doMainGameUpdates() => false;
-
-    public bool forceQuit() => false;
-
     public class Target
     {
         public static int width = 56;
@@ -537,15 +539,15 @@ public class RPB_TargetGame : IMinigame
         public static int pauseMiddleLeft = 384;
         public static int pauseLeft = 256;
         public static int pauseFarLeft = 128;
-        public Rectangle Position;
-        private int targetType;
+        private bool atPausePosition;
         private int countdownBeforeSpawn;
+        public Rectangle Position;
+        private Rectangle sourceRect;
+        private bool spawned;
+        private int speed;
+        private int targetType;
         private int xPausePosition;
         private int xPauseTime;
-        private int speed;
-        private bool spawned;
-        private bool atPausePosition;
-        private Rectangle sourceRect;
 
         public Target(
             int countdownBeforeSpawn,
