@@ -15,6 +15,7 @@ namespace Red_Panda_Bazaar_Code.Festivals;
 
 public static class SpringFairEffects
 {
+    private static bool added = false;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用春8的一些效果</summary>
@@ -122,14 +123,12 @@ public static class SpringFairEffects
             } // 购买背包
             else if (e.Cursor.GrabTile is { X: 26, Y: 77 })
             {
-                Console.WriteLine("Buy");
                 Response response1 = new Response("Purchase",
                     Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
                 Response response2 = new Response("Purchase",
                     Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
                 Response response3 = new Response("Not",
                     Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
-                Console.WriteLine(Game1.player.maxItems.Value);
                 if (Game1.player.maxItems.Value == 12)
                 {
                     Game1.currentLocation.createQuestionDialogue(
@@ -196,8 +195,6 @@ public static class SpringFairEffects
             return false;
         }
     }
-
-    private static bool added = false;
 
     [EventPriority(EventPriority.High)]
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)

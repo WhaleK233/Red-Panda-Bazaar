@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using HarmonyLib;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
@@ -7,6 +9,7 @@ namespace Red_Panda_Bazaar_Code.Buffs;
 
 public class HarmonyPatch_CustomBuffEffects
 {
+    private static bool initBuff = false;
     private static bool Applied { get; set; } = false;
 
     public static void ApplyPatch(Harmony harmony)
@@ -24,8 +27,6 @@ public class HarmonyPatch_CustomBuffEffects
             Applied = true;
         }
     }
-
-    private static bool initBuff = false;
 
     private static void initBuffDisplay(Dictionary<string, Buff> buffDict)
     {

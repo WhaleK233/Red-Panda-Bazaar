@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.Buffs;
@@ -7,9 +8,8 @@ namespace Red_Panda_Bazaar_Code.Buffs;
 
 public static class RPB_BuffEffects
 {
-    private static bool Enabled { get; set; } = false;
-
     public static Dictionary<string, Buff> buffDict = new Dictionary<string, Buff>();
+    private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义Buff</summary>
     public static void Enable()

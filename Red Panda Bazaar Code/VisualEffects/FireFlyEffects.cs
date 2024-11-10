@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -8,6 +9,10 @@ namespace Red_Panda_Bazaar_Code.VisualEffects;
 
 public static class FireFlyEffects
 {
+    /// <summary>判断前一tick是否在事件中</summary>
+    private static bool wasEvent = false;
+
+    private static int ticksUntilSpawn = -1;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用萤火虫效果</summary>
@@ -23,11 +28,6 @@ public static class FireFlyEffects
             Tools.Monitor.Log("FireFlyEffects Enabled");
         }
     }
-
-    /// <summary>判断前一tick是否在事件中</summary>
-    private static bool wasEvent = false;
-
-    private static int ticksUntilSpawn = -1;
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
