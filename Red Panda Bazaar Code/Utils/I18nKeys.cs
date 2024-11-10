@@ -21,4 +21,14 @@ public static class I18nKeys
 
     public const string Dialogue_BuyBackpack_PositiveResponseTo36Slots =
         "Dialogue.BuyBackpack_PositiveResponseTo36Slots";
+
+    public const string Dialogue_WheelBetChargeQuestion = "Dialogue.WheelBetChargeQuestion";
+
+    public const string Dialogue_WheelBet_RedResponse = "Dialogue.WheelBet_RedResponse";
+
+    public const string Dialogue_WheelBet_WhiteResponse = "Dialogue.WheelBet_WhiteResponse";
+
+    public const string Dialogue_WheelBet_GiveUpResponse = "Dialogue.WheelBet_GiveUpResponse";
+
+    public const string Text_50Coins = "Text.50Gold";
 }
