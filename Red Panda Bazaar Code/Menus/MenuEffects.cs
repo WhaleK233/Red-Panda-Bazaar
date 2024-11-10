@@ -5,7 +5,7 @@ using StardewValley.Menus;
 
 namespace Red_Panda_Bazaar_Code.Menus;
 
-public class RPB_MenusEffects
+public class MenuEffects
 {
     private static bool Enabled { get; set; } = false;
 

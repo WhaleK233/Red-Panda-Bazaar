@@ -37,11 +37,20 @@ public class ModEntry : Mod
     private void Init()
     {
         InitializeGenericModConfigMenu();
+        EnableEffects();
+        PatchHarmony();
+    }
+
+    private static void EnableEffects()
+    {
         FireFlyEffects.Enable();
         SpringFairEffects.Enable();
-        RPB_BuffEffects.Enable();
-        RPB_MenusEffects.Enable();
+        BuffEffects.Enable();
+        MenuEffects.Enable();
+    }
 
+    private void PatchHarmony()
+    {
         var harmony = new Harmony(this.ModManifest.UniqueID);
         HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
         HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
