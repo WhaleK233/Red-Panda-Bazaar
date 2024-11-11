@@ -32,6 +32,7 @@ public static class SpringFairEffects
         }
     }
 
+    /// <summary>渲染星星币数量</summary>
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
@@ -51,6 +52,7 @@ public static class SpringFairEffects
         }
     }
 
+    /// <summary>检测是否为节日交互图块</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
         if (Game1.CurrentEvent == null || Game1.CurrentEvent.FestivalName != "SpringFair" ||
@@ -160,6 +162,8 @@ public static class SpringFairEffects
                         Game1.player.increaseBackpackSize(12);
                         Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
                             Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
+                        Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                            .globalChatInfoMessage("BackpackLarge", Game1.player.Name);
                     }
                 }
             );
@@ -183,6 +187,9 @@ public static class SpringFairEffects
                             if (Game1.player.Items.Count <= index)
                                 Game1.player.Items.Add((Item)null);
                         }
+
+                        Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                            .globalChatInfoMessage("BackpackDeluxe", Game1.player.Name);
                     }
                 }
             );

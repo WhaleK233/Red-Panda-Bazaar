@@ -42,7 +42,7 @@ public static class Tools
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        if (Game1.dayOfMonth is 1 or 8 or 15 or 22)
+        if (Game1.dayOfMonth % 7 == 1)
         {
             PrizeRandomInt = Game1.random.Next();
         }

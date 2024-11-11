@@ -56,7 +56,8 @@ public static class FireFlyEffects
     {
         if (Tools.ModConfig.Enabled != true || location == null ||
             Game1.timeOfDay < Game1.getStartingToGetDarkTime(location) ||
-            Game1.season is Season.Winter or Season.Fall) return;
+            Game1.season is Season.Winter or Season.Fall || Game1.isRaining || Game1.isLightning ||
+            Game1.isSnowing) return;
 
         var locationName = location.Name ?? "";
 
@@ -81,6 +82,7 @@ public static class FireFlyEffects
                 targetNumber--;
             }
 
+            chance = Game1.random.NextDouble();
             // 10%的概率在附近生成两个萤火虫
             if (chance < 0.1 && targetNumber >= 2)
             {

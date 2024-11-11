@@ -58,9 +58,9 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public static Item getPrizeItem(int prizeLevel)
     {
-        int i = prizeLevel % MenuEffects.PrizeDict.Count;
-        string itemId = MenuEffects.PrizeDict[i].Item1;
-        int amount = MenuEffects.PrizeDict[i].Item2;
+        int i = prizeLevel % MenuEffects.PrizeList.Count;
+        string itemId = MenuEffects.PrizeList[i].Item1;
+        int amount = MenuEffects.PrizeList[i].Item2;
         return ItemRegistry.Create(itemId, amount);
     }
 
