@@ -12,14 +12,13 @@ public static class Tools
     public static IMonitor Monitor { get; set; } = null;
     public static ITranslationHelper I18n { get; set; } = null;
 
-    public static int PrizeRandomInt { get; set; }
+    public static int PrizeRandomIntPerWeek { get; set; }
 
     public static void Init(IModHelper helper, ModConfig modConfig, IMonitor monitor)
     {
         Helper = helper;
         ModConfig = modConfig;
         Monitor = monitor;
-
         I18n = Helper.Translation;
 
         Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
@@ -29,13 +28,13 @@ public static class Tools
 
     private static void OnSaving(object? sender, SavingEventArgs e)
     {
-        Tools.Helper.Data.WriteSaveData(Keys.PrizeRandomIntKey, PrizeRandomInt.ToString());
+        Tools.Helper.Data.WriteSaveData(Keys.PrizeRandomIntKey, PrizeRandomIntPerWeek.ToString());
         Tools.Log($"Saving Prize Random Number");
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
-        PrizeRandomInt = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeRandomIntKey) ??
+        PrizeRandomIntPerWeek = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeRandomIntKey) ??
                                    $"{Game1.random.Next()}");
         Tools.Log($"Loaded Prize Random Number");
     }
@@ -44,15 +43,15 @@ public static class Tools
     {
         if (Game1.dayOfMonth % 7 == 1)
         {
-            PrizeRandomInt = Game1.random.Next();
+            PrizeRandomIntPerWeek = Game1.random.Next();
         }
 
-        Tools.Log($"Today's Prize Random Number is {PrizeRandomInt}");
+        Tools.Log($"Today's Prize Random Number is {PrizeRandomIntPerWeek}");
     }
 
     public static int PrizeIncrement()
     {
-        return ++PrizeRandomInt;
+        return ++PrizeRandomIntPerWeek;
     }
 
     public static void Log(string message, LogLevel level = LogLevel.Trace) => Tools.Monitor.Log(message, level);
