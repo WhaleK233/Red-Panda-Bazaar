@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -32,10 +33,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 1));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 2));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 3));
+        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek));
+        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 1));
+        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 2));
+        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 3));
         this.currentlySnappedComponent = (ClickableComponent)this.mainButton;
         this.snapCursorToCurrentSnappedComponent();
     }
@@ -106,7 +107,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                     Game1.createItemDebris(this.currentPrizeTrack[0], Game1.player.getStandingPosition(), 1,
                         Game1.player.currentLocation);
                 Game1.player.Items.ReduceId(TicketItemId, 1);
-                int num = Tools.PrizeIncrement();
+                int num = RPBData.PrizeRandomIntIncrement();
                 this.currentPrizeTrack.RemoveAt(0);
                 this.moveRewardTrackPreTimer = 500f;
                 this.gettingReward = false;
@@ -129,7 +130,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 {
                     this.movingRewardTrack = false;
                     this.currentPrizeTrack.Add(
-                        getPrizeItem(Tools.PrizeRandomIntPerWeek + 3));
+                        getPrizeItem(RPBData.PrizeRandomIntPerWeek + 3));
                 }
             }
         }
