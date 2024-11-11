@@ -31,11 +31,6 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        Init();
-    }
-
-    private void Init()
-    {
         InitializeGenericModConfigMenu();
         EnableEffects();
         PatchHarmony();

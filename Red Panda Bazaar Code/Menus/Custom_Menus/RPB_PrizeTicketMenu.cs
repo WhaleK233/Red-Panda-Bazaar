@@ -32,10 +32,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 1));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 2));
-        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomInt + 3));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 1));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 2));
+        this.currentPrizeTrack.Add(getPrizeItem(Tools.PrizeRandomIntPerWeek + 3));
         this.currentlySnappedComponent = (ClickableComponent)this.mainButton;
         this.snapCursorToCurrentSnappedComponent();
     }
@@ -129,7 +129,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 {
                     this.movingRewardTrack = false;
                     this.currentPrizeTrack.Add(
-                        getPrizeItem(Tools.PrizeRandomInt + 3));
+                        getPrizeItem(Tools.PrizeRandomIntPerWeek + 3));
                 }
             }
         }
