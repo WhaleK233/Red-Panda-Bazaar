@@ -2,6 +2,7 @@
 using Red_Panda_Bazaar_Code.Buffs;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
+using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.Festivals;
 using Red_Panda_Bazaar_Code.Festivals.MiniGames;
 using Red_Panda_Bazaar_Code.Menus;
@@ -38,6 +39,7 @@ public class ModEntry : Mod
 
     private static void EnableEffects()
     {
+        RPBData.Init();
         FireFlyEffects.Enable();
         SpringFairEffects.Enable();
         BuffEffects.Enable();
