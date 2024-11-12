@@ -7,7 +7,6 @@ using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.Network;
 using StardewValley.Objects;
 
@@ -61,82 +60,95 @@ public static class SpringFairEffects
             return;
         }
 
-        if (e.Button.IsActionButton())
+        if (!e.Button.IsActionButton()) return;
+
+        var tile = e.Cursor.GrabTile;
+
+        switch (tile.X, tile.Y)
         {
-            // 进行钓鱼小游戏
-            if (e.Cursor.GrabTile is { X: 62, Y: 75 })
+            case (62, 75):
+                HandleFishingGame(); // 进行钓鱼小游戏
+                break;
+            case (72, 75):
+                HandleTargetGame(); // 进行射击小游戏
+                break;
+            case (67, 75):
+            case (68, 75):
+                HandleWheetBetGame(); // 进行轮盘赌小游戏
+                break;
+            case (40, 62):
+                Game1.activeClickableMenu = new RPB_PrizeTicketMenu(); // 打开兑奖机界面
+                break;
+            case (26, 77):
+                BuyBackpack(); // 购买背包
+                break;
+        }
+    }
+
+    private static void HandleWheetBetGame()
+    {
+        Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_WheelBetChargeQuestion),
+            new Response[]
             {
-                //SuppressClick();
-                if (CheckMoneyAndCharge(50))
+                new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+            },
+            (f, answer) =>
+            {
+                if (answer == "Positive" && CheckMoneyAndCharge(50))
                 {
-                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_FishingGameQuestion),
-                        new Response[]
-                        {
-                            new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                            new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
-                        },
-                        (f, answer) =>
-                        {
-                            if (answer == "Positive")
-                            {
-                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_FishingGame.startMe), 0.01f);
-                            }
-                        });
+                    Response[] answerChoices = new Response[3]
+                    {
+                        new Response("Orange", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_WhiteResponse)),
+                        new Response("Green", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_RedResponse)),
+                        new Response("I",
+                            Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_GiveUpResponse))
+                    };
+                    Game1.currentLocation.createQuestionDialogue(
+                        Game1.parseText(
+                            Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
+                        answerChoices, "wheelBet");
                 }
-            } // 进行弹弓小游戏
-            else if (e.Cursor.GrabTile is { X: 72, Y: 75 })
-            {
-                if (CheckMoneyAndCharge(50))
+            });
+    }
+
+    private static void HandleTargetGame()
+    {
+        if (CheckMoneyAndCharge(50))
+        {
+            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_TargetGameQuestion),
+                new Response[]
                 {
-                    Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_TargetGameQuestion),
-                        new Response[]
-                        {
-                            new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                            new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
-                        },
-                        (f, answer) =>
-                        {
-                            if (answer == "Positive")
-                            {
-                                Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_TargetGame.startMe), 0.01f);
-                            }
-                        });
-                }
-            } // 进行轮盘赌小游戏
-            else if (e.Cursor.GrabTile is { X: 67, Y: 75 } or { X: 68, Y: 75 })
-            {
-                Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_WheelBetChargeQuestion),
-                    new Response[]
+                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                },
+                (f, answer) =>
+                {
+                    if (answer == "Positive")
                     {
-                        new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                        new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
-                    },
-                    (f, answer) =>
+                        Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_TargetGame.startMe), 0.01f);
+                    }
+                });
+        }
+    }
+
+    private static void HandleFishingGame()
+    {
+        if (CheckMoneyAndCharge(50))
+        {
+            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_FishingGameQuestion),
+                new Response[]
+                {
+                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                },
+                (f, answer) =>
+                {
+                    if (answer == "Positive")
                     {
-                        if (answer == "Positive" && CheckMoneyAndCharge(50))
-                        {
-                            Response[] answerChoices = new Response[3]
-                            {
-                                new Response("Orange", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_WhiteResponse)),
-                                new Response("Green", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_RedResponse)),
-                                new Response("I",
-                                    Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_GiveUpResponse))
-                            };
-                            Game1.currentLocation.createQuestionDialogue(
-                                Game1.parseText(
-                                    Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1652")),
-                                answerChoices, "wheelBet");
-                        }
-                    });
-            } // 打开兑奖机菜单
-            else if (e.Cursor.GrabTile is { X: 40, Y: 62 })
-            {
-                Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu();
-            } // 购买背包
-            else if (e.Cursor.GrabTile is { X: 26, Y: 77 })
-            {
-                BuyBackpack();
-            }
+                        Game1.globalFadeToBlack(new Game1.afterFadeFunction(RPB_FishingGame.startMe), 0.01f);
+                    }
+                });
         }
     }
 
