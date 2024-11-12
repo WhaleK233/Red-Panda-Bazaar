@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Red_Panda_Bazaar_Code.Festivals.MiniGames;
-using Red_Panda_Bazaar_Code.Menus.Custom_Menus;
+using Red_Panda_Bazaar_Code.Menus;
+using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
