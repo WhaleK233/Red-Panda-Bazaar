@@ -4,13 +4,13 @@ using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Buffs;
 
-public static class BuffEffects
+public static class BuffController
 {
     public static Dictionary<string, Buff> buffDict = new Dictionary<string, Buff>();
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义Buff</summary>
-    public static void Enable()
+    public static void Init()
     {
         // 如果未启用
         if (!Enabled)
