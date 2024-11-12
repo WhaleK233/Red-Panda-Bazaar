@@ -6,7 +6,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 
-namespace Red_Panda_Bazaar_Code.Menus.Custom_Menus;
+namespace Red_Panda_Bazaar_Code.Menus;
 
 public class RPB_PrizeTicketMenu : IClickableMenu
 {

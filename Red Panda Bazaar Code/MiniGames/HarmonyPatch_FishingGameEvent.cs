@@ -3,7 +3,7 @@ using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
+namespace Red_Panda_Bazaar_Code.MiniGames;
 
 public static class HarmonyPatch_FishingGameEvent
 {
