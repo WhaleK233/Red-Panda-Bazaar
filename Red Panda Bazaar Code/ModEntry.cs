@@ -15,15 +15,9 @@ namespace Red_Panda_Bazaar_Code;
 
 public class ModEntry : Mod
 {
-    private ModConfig Config { get; set; } = null;
-
-    private IModHelper Helper2 { get; set; } = null;
-
     public override void Entry(IModHelper helper)
     {
-        Config = helper.ReadConfig<ModConfig>();
-
-        Tools.Init(helper, Config, Monitor);
+        Tools.Init(helper, helper.ReadConfig<ModConfig>(), Monitor);
 
         Tools.Log($"Red Panda Bazaar Code Initializing...");
 
@@ -64,23 +58,23 @@ public class ModEntry : Mod
         // 注册模组
         configMenu.Register(
             mod: this.ModManifest,
-            reset: () => Config = new ModConfig(),
-            save: () => this.Helper2.WriteConfig(Config)
+            reset: () => Tools.ModConfig = new ModConfig(),
+            save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
         );
 
         // 添加选项
         configMenu.AddBoolOption(
             mod: this.ModManifest,
             name: () => Tools.I18n.Get(I18nKeys.Config_Enable),
-            getValue: () => Config.Enabled,
-            setValue: value => Config.Enabled = value
+            getValue: () => Tools.ModConfig.Enabled,
+            setValue: value => Tools.ModConfig.Enabled = value
         );
 
         configMenu.AddNumberOption(
             mod: this.ModManifest,
             name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfFirefly),
-            getValue: () => Config.NumberOfFireFly,
-            setValue: value => Config.NumberOfFireFly = value,
+            getValue: () => Tools.ModConfig.NumberOfFireFly,
+            setValue: value => Tools.ModConfig.NumberOfFireFly = value,
             min: 0,
             max: 2048
         );
