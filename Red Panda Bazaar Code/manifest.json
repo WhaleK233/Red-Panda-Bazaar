@@ -15,13 +15,16 @@
       "IsRequired": false
     },
     {
-      "UniqueID": "Lilaoliu.RedPandaBazaar"
+      "UniqueID": "Lilaoliu.RedPandaBazaar",
+      "IsRequired": true
     },
     {
-      "UniqueID": "RPB.NPCs"
+      "UniqueID": "RPB.NPCs",
+      "IsRequired": true
     },
     {
-      "UniqueID": "Lilaoliu.RedPandaBazaarFTM"
+      "UniqueID": "Lilaoliu.RedPandaBazaarFTM",
+      "IsRequired": true
     }
   ]
 }
