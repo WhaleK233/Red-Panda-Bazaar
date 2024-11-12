@@ -17,11 +17,11 @@ public static class RPBData
         Tools.Helper.Events.GameLoop.Saving += OnSaving;
     }
 
-
     private static void OnSaving(object? sender, SavingEventArgs e)
     {
         Tools.Helper.Data.WriteSaveData(Keys.PrizeRandomIntPerWeekKey, PrizeRandomIntPerWeek.ToString());
         Tools.Log($"Saving Prize Random Number");
+
         Tools.Helper.Data.WriteSaveData(Keys.PrizeTicketRewardKey, PrizeTicketReward.ToString());
         Tools.Log($"Saving Prize Ticket Reward");
     }
@@ -31,8 +31,8 @@ public static class RPBData
         PrizeRandomIntPerWeek = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeRandomIntPerWeekKey) ??
                                           $"{Game1.random.Next()}");
         Tools.Log($"Loaded Prize Random Number");
-        PrizeRandomIntPerWeek = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeTicketRewardKey) ??
-                                          "0");
+
+        PrizeRandomIntPerWeek = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeTicketRewardKey) ?? "0");
         Tools.Log($"Loaded Prize Ticket Reward");
     }
 
