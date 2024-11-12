@@ -33,17 +33,17 @@ public class ModEntry : Mod
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         InitializeGenericModConfigMenu();
-        EnableEffects();
+        RPBData.Init();
+        ControllerInit();
         PatchHarmony();
     }
 
-    private static void EnableEffects()
+    private static void ControllerInit()
     {
-        RPBData.Init();
-        FireFlyEffects.Enable();
-        SpringFairEffects.Enable();
-        BuffEffects.Enable();
-        MenuEffects.Enable();
+        FireFlyController.Init();
+        SpringFairController.Init();
+        BuffController.Init();
+        MenuController.Init();
     }
 
     private void PatchHarmony()

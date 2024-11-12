@@ -5,13 +5,13 @@ using StardewValley.Menus;
 
 namespace Red_Panda_Bazaar_Code.Menus;
 
-public static class MenuEffects
+public static class MenuController
 {
     public static List<Tuple<string, int>> PrizeList;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义菜单</summary>
-    public static void Enable()
+    public static void Init()
     {
         // 如果未启用
         if (!Enabled)
