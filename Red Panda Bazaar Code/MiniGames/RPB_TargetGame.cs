@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
@@ -12,7 +10,7 @@ using xTile.Dimensions;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace Red_Panda_Bazaar_Code.Festivals.MiniGames;
+namespace Red_Panda_Bazaar_Code.MiniGames;
 
 public class RPB_TargetGame : IMinigame
 {
