@@ -74,7 +74,7 @@ public static class SpringFairEffects
                 break;
             case (67, 75):
             case (68, 75):
-                HandleWheetBetGame(); // 进行轮盘赌小游戏
+                HandleWheelBetGame(); // 进行轮盘赌小游戏
                 break;
             case (40, 62):
                 Game1.activeClickableMenu = new RPB_PrizeTicketMenu(); // 打开兑奖机界面
@@ -85,7 +85,7 @@ public static class SpringFairEffects
         }
     }
 
-    private static void HandleWheetBetGame()
+    private static void HandleWheelBetGame()
     {
         Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_WheelBetChargeQuestion),
             new Response[]
