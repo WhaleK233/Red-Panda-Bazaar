@@ -12,13 +12,13 @@ using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Festivals;
 
-public static class SpringFairEffects
+public static class SpringFairController
 {
     private static bool added = false;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用春8的一些效果</summary>
-    public static void Enable()
+    public static void Init()
     {
         // 如果未启用
         if (!Enabled)
@@ -271,7 +271,7 @@ public static class SpringFairEffects
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
         {
-            FireFlyEffects.spawnFireFly(Game1.currentLocation);
+            FireFlyController.spawnFireFly(Game1.currentLocation);
         }
     }
 }

@@ -6,7 +6,7 @@ using StardewValley.BellsAndWhistles;
 
 namespace Red_Panda_Bazaar_Code.VisualEffects;
 
-public static class FireFlyEffects
+public static class FireFlyController
 {
     /// <summary>判断前一tick是否在事件中</summary>
     private static bool wasEvent = false;
@@ -15,7 +15,7 @@ public static class FireFlyEffects
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用萤火虫效果</summary>
-    public static void Enable()
+    public static void Init()
     {
         // 如果未启用
         if (!Enabled)
