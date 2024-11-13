@@ -2,7 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
+using StardewValley.Extensions;
+using StardewValley.GameData.SpecialOrders;
 using StardewValley.Menus;
+using StardewValley.SpecialOrders;
 
 namespace Red_Panda_Bazaar_Code.Menus;
 
@@ -17,6 +20,58 @@ public class RPB_SpecialOrderBoard : SpecialOrdersBoard
     public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
     {
         base.gameWindowSizeChanged(oldBounds, newBounds);
-        Game1.activeClickableMenu = (IClickableMenu) new RPB_SpecialOrderBoard(this.boardType);
+        Game1.activeClickableMenu = (IClickableMenu)new RPB_SpecialOrderBoard(this.boardType);
+    }
+
+    public static void UpdateAvailableSpecialOrders(bool forceRefresh)
+    {
+        string orderType = "RPB";
+        if (Game1.player.team.availableSpecialOrders is not null)
+        {
+            foreach (SpecialOrder order in Game1.player.team.availableSpecialOrders)
+            {
+                if ((order.questDuration.Value == QuestDuration.TwoDays ||
+                     order.questDuration.Value == QuestDuration.ThreeDays) &&
+                    !Game1.player.team.acceptedSpecialOrderTypes.Contains(order.orderType.Value))
+                {
+                    order.SetDuration(order.questDuration.Value);
+                }
+            }
+        }
+
+        if (!forceRefresh)
+        {
+            foreach (SpecialOrder availableSpecialOrder in Game1.player.team.availableSpecialOrders)
+            {
+                if (availableSpecialOrder.orderType.Value == orderType)
+                    return;
+            }
+        }
+
+        SpecialOrder.RemoveAllSpecialOrders(orderType);
+        List<string> stringList = new List<string>();
+        foreach (KeyValuePair<string, SpecialOrderData> specialOrder in DataLoader.SpecialOrders(Game1.content))
+        {
+            if (specialOrder.Value.OrderType == orderType &&
+                SpecialOrder.CanStartOrderNow(specialOrder.Key, specialOrder.Value))
+                stringList.Add(specialOrder.Key);
+        }
+
+        List<string> collection = new List<string>((IEnumerable<string>)stringList);
+        Random random = Utility.CreateRandom((double)Game1.uniqueIDForThisGame, (double)Game1.stats.DaysPlayed * 1.3);
+        for (int index = 0; index < 2; ++index)
+        {
+            if (stringList.Count == 0)
+            {
+                if (collection.Count == 0)
+                    break;
+                stringList = new List<string>((IEnumerable<string>)collection);
+            }
+
+            string key = random.ChooseFrom<string>((IList<string>)stringList);
+            Game1.player.team.availableSpecialOrders.Add(SpecialOrder.GetSpecialOrder(key, new int?(random.Next())));
+            stringList.Remove(key);
+            collection.Remove(key);
+        }
     }
 }
