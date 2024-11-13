@@ -60,7 +60,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
     public static Item getPrizeItem()
     {
         var chance = Game1.random.NextDouble();
-        int i = Game1.random.Next() % MenuController.PrizeList.Count;
+        var random = Game1.random.Next();
         switch (chance)
         {
             case < 0.03: // 3%
@@ -68,13 +68,16 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             case < 0.13: // 10%
                 return ItemRegistry.Create("(O)StardropTea"); // 星之果茶
             case < 0.33: // 20%
-                return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1"); // 1号兑换券
+                int c = random % MenuController.CouponPrizeList.Count;
+                string cId = MenuController.CouponPrizeList[c].Item1;
+                int cAmount = MenuController.CouponPrizeList[c].Item2;
+                return ItemRegistry.Create(cId, cAmount); // 1号兑换券
+            default: // 70% 其他物品
+                int i = random % MenuController.CommonPrizeList.Count;
+                string itemId = MenuController.CommonPrizeList[i].Item1;
+                int amount = MenuController.CommonPrizeList[i].Item2;
+                return ItemRegistry.Create(itemId, amount);
         }
-
-        // 70% 其他物品
-        string itemId = MenuController.PrizeList[i].Item1;
-        int amount = MenuController.PrizeList[i].Item2;
-        return ItemRegistry.Create(itemId, amount);
     }
 
     public override bool readyToClose() => !this.gettingReward && base.readyToClose();
@@ -195,7 +198,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             0.87f);
         if (this.gettingReward)
         {
-            Vector2 vector2 = new Vector2(50f, 21f) * 4f;
+            Vector2 vector2 = new Vector2(52f, 21f) * 4f;
             vector2.Y -= this.getRewardTimer / 13f;
             vector2.Y = Math.Max(vector2.Y, 0.0f);
             vector2.X += this.getRewardTimer / 1000f * (float)Game1.random.Next(-1, 2);
