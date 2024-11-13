@@ -14,7 +14,7 @@ public static class HarmonyPatch_FishingGameEvent
         if (!Applied)
         {
             Tools.Log(
-                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.caughtFish()\".",
+                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": prefixing SDV method \"Event.caughtFish()\".",
                 LogLevel.Trace);
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), "caughtFish"),
@@ -22,7 +22,7 @@ public static class HarmonyPatch_FishingGameEvent
             );
 
             Tools.Log(
-                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": postfixing SDV method \"Event.perfectFishing()\".",
+                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": prefixing SDV method \"Event.perfectFishing()\".",
                 LogLevel.Trace);
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), "perfectFishing"),
