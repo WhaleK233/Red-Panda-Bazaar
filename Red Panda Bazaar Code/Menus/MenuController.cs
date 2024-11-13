@@ -47,7 +47,7 @@ public static class MenuController
         CouponPrizeList = new List<Tuple<string, int>>();
         for (int i = 1; i <= 17; i++)
         {
-            CouponPrizeList.Add(new("(O)RedPandaBazaar_Redemption_Coupon_" + i, 1));
+            CouponPrizeList.Add(new($"(O)RedPandaBazaar_Redemption_Coupon_{i}", 1));
         }
 
         CommonPrizeList = new List<Tuple<string, int>>()
