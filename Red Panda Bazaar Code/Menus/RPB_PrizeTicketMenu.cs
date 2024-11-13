@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -34,10 +33,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
-        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek));
-        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 1));
-        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 2));
-        this.currentPrizeTrack.Add(getPrizeItem(RPBData.PrizeRandomIntPerWeek + 3));
+        this.currentPrizeTrack.Add(getPrizeItem());
+        this.currentPrizeTrack.Add(getPrizeItem());
+        this.currentPrizeTrack.Add(getPrizeItem());
+        this.currentPrizeTrack.Add(getPrizeItem());
         this.currentlySnappedComponent = (ClickableComponent)this.mainButton;
         this.snapCursorToCurrentSnappedComponent();
     }
@@ -58,17 +57,17 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         base.performHoverAction(x, y);
     }
 
-    public static Item getPrizeItem(int prizeLevel)
+    public static Item getPrizeItem()
     {
         var chance = Game1.random.NextDouble();
         if (chance < 0.1)
         {
-            return ItemRegistry.Create("(O)StardropTea", 1);
+            return ItemRegistry.Create("(O)StardropTea");
         }
 
         if (chance < 0.3)
         {
-            return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1", 1);
+            return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1");
         }
 
         int i = Game1.random.Next() % MenuController.PrizeList.Count;
@@ -127,7 +126,6 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                     Game1.player.Items.ReduceId(GenericTicketItemId, 1);
                 }
 
-                int num = RPBData.PrizeRandomIntIncrement();
                 this.currentPrizeTrack.RemoveAt(0);
                 this.moveRewardTrackPreTimer = 500f;
                 this.gettingReward = false;
@@ -150,7 +148,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 {
                     this.movingRewardTrack = false;
                     this.currentPrizeTrack.Add(
-                        getPrizeItem(RPBData.PrizeRandomIntPerWeek + 3));
+                        getPrizeItem());
                 }
             }
         }
@@ -158,7 +156,6 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         base.update(time);
     }
 
-    /// <inheritdoc />
     public override void draw(SpriteBatch b)
     {
         if (!Game1.options.showClearBackgrounds)
@@ -207,7 +204,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         }
 
         string s = (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId))
-            .ToString() ?? "";
+            .ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
             this.yPositionOnScreen + 315);
         this.mainButton.draw(b);
