@@ -63,11 +63,11 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         var random = Game1.random.Next();
         switch (chance)
         {
-            case < 0.03: // 3%
+            case < 0.01: // 1%
                 return ItemRegistry.Create("(O)114"); // 古代种子
-            case < 0.13: // 10%
+            case < 0.11: // 10%
                 return ItemRegistry.Create("(O)StardropTea"); // 星之果茶
-            case < 0.33: // 20%
+            case < 0.31: // 20%
                 int c = random % MenuController.CouponPrizeList.Count;
                 string cId = MenuController.CouponPrizeList[c].Item1;
                 int cAmount = MenuController.CouponPrizeList[c].Item2;
