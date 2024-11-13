@@ -10,7 +10,8 @@ namespace Red_Panda_Bazaar_Code.Menus;
 
 public class RPB_PrizeTicketMenu : IClickableMenu
 {
-    public const string TicketItemId = "RedPandaBazaar_Prize_Ticket_1";
+    public const string SpecialTicketItemId = "RedPandaBazaar_Prize_Ticket_1";
+    public const string GenericTicketItemId = "PrizeTicket";
 
     public const int WIDTH = 116;
     public const int HEIGHT = 94;
@@ -59,7 +60,18 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public static Item getPrizeItem(int prizeLevel)
     {
-        int i = prizeLevel % MenuController.PrizeList.Count;
+        var chance = Game1.random.NextDouble();
+        if (chance < 0.1)
+        {
+            return ItemRegistry.Create("(O)StardropTea", 1);
+        }
+
+        if (chance < 0.3)
+        {
+            return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1", 1);
+        }
+
+        int i = Game1.random.Next() % MenuController.PrizeList.Count;
         string itemId = MenuController.PrizeList[i].Item1;
         int amount = MenuController.PrizeList[i].Item2;
         return ItemRegistry.Create(itemId, amount);
@@ -76,7 +88,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         {
             Game1.playSound("button_press");
             this.pressedButtonTimer = 200f;
-            if (Game1.player.Items.CountId(TicketItemId) > 0)
+            if (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId) > 0)
             {
                 this.gettingReward = true;
                 this.getRewardTimer = 0.0f;
@@ -106,7 +118,15 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 if (!Game1.player.addItemToInventoryBool(this.currentPrizeTrack[0]))
                     Game1.createItemDebris(this.currentPrizeTrack[0], Game1.player.getStandingPosition(), 1,
                         Game1.player.currentLocation);
-                Game1.player.Items.ReduceId(TicketItemId, 1);
+                if (Game1.player.Items.CountId(SpecialTicketItemId) > 0)
+                {
+                    Game1.player.Items.ReduceId(SpecialTicketItemId, 1);
+                }
+                else
+                {
+                    Game1.player.Items.ReduceId(GenericTicketItemId, 1);
+                }
+
                 int num = RPBData.PrizeRandomIntIncrement();
                 this.currentPrizeTrack.RemoveAt(0);
                 this.moveRewardTrackPreTimer = 500f;
@@ -147,9 +167,9 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Vector2((float)this.xPositionOnScreen, (float)this.yPositionOnScreen) + new Vector2(25f, 18f) * 4f,
             new Rectangle?(new Rectangle(0, 106, 76, 22)), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None,
             0.6f);
-        for (int index = 0; index < this.currentPrizeTrack.Count; ++index)
+        for (int index = 0; index < this.currentPrizeTrack.Count - 1; ++index)
         {
-            Vector2 vector2 = new Vector2((float)(28 + 22 * index), 21f) * 4f;
+            Vector2 vector2 = new Vector2((float)(50 + 22 * index), 21f) * 4f;
             if (this.movingRewardTrack)
             {
                 float num = (float)(88.0 - (double)this.moveRewardTrackTimer / 18.0);
@@ -177,7 +197,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             0.87f);
         if (this.gettingReward)
         {
-            Vector2 vector2 = new Vector2(28f, 21f) * 4f;
+            Vector2 vector2 = new Vector2(50f, 21f) * 4f;
             vector2.Y -= this.getRewardTimer / 13f;
             vector2.Y = Math.Max(vector2.Y, 0.0f);
             vector2.X += this.getRewardTimer / 1000f * (float)Game1.random.Next(-1, 2);
@@ -186,7 +206,8 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 Color.White, false);
         }
 
-        string s = Game1.player.Items.CountId(TicketItemId).ToString() ?? "";
+        string s = (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId))
+            .ToString() ?? "";
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
             this.yPositionOnScreen + 315);
         this.mainButton.draw(b);
