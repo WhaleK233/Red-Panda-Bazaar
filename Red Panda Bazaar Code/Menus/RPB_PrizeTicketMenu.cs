@@ -60,17 +60,18 @@ public class RPB_PrizeTicketMenu : IClickableMenu
     public static Item getPrizeItem()
     {
         var chance = Game1.random.NextDouble();
-        if (chance < 0.1)
-        {
-            return ItemRegistry.Create("(O)StardropTea");
-        }
-
-        if (chance < 0.3)
-        {
-            return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1");
-        }
-
         int i = Game1.random.Next() % MenuController.PrizeList.Count;
+        switch (chance)
+        {
+            case < 0.03: // 3%
+                return ItemRegistry.Create("(O)114"); // 古代种子
+            case < 0.13: // 10%
+                return ItemRegistry.Create("(O)StardropTea"); // 星之果茶
+            case < 0.33: // 20%
+                return ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_1"); // 1号兑换券
+        }
+
+        // 70% 其他物品
         string itemId = MenuController.PrizeList[i].Item1;
         int amount = MenuController.PrizeList[i].Item2;
         return ItemRegistry.Create(itemId, amount);
