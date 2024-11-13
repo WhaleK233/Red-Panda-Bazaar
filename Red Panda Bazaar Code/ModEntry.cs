@@ -6,6 +6,7 @@ using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.Festivals;
 using Red_Panda_Bazaar_Code.Menus;
 using Red_Panda_Bazaar_Code.MiniGames;
+using Red_Panda_Bazaar_Code.Quests;
 using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
@@ -38,6 +39,7 @@ public class ModEntry : Mod
         SpringFairController.Init();
         BuffController.Init();
         MenuController.Init();
+        QuestsController.Init();
     }
 
     private void PatchHarmony()
@@ -45,6 +47,7 @@ public class ModEntry : Mod
         var harmony = new Harmony(this.ModManifest.UniqueID);
         HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
         HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
+        HarmonyPatch_CustomSpecialOrder.ApplyPatch(harmony);
     }
 
     #region Generic Mod Config Menu
