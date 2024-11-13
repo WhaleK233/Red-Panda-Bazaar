@@ -6,7 +6,8 @@ namespace Red_Panda_Bazaar_Code.Menus;
 
 public static class MenuController
 {
-    public static List<Tuple<string, int>> PrizeList;
+    public static List<Tuple<string, int>> CommonPrizeList;
+    public static List<Tuple<string, int>> CouponPrizeList;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义菜单</summary>
@@ -43,7 +44,13 @@ public static class MenuController
     {
         Random uniqueRandom =
             Utility.CreateRandom((double)Game1.uniqueIDForThisGame, (double)Game1.player.UniqueMultiplayerID);
-        PrizeList = new List<Tuple<string, int>>()
+        CouponPrizeList = new List<Tuple<string, int>>();
+        for (int i = 1; i <= 17; i++)
+        {
+            CouponPrizeList.Add(new("(O)RedPandaBazaar_Redemption_Coupon_" + i, 1));
+        }
+
+        CommonPrizeList = new List<Tuple<string, int>>()
         {
             // 避雷针
             new("(BC)9", 2),
@@ -73,7 +80,6 @@ public static class MenuController
             new("(O)286", 20),
             new("(O)287", 12),
             new("(O)288", 6),
-            new("(H)SportsCap", 1),
             new("(BC)Dehydrator", 1),
             new("(O)275", 4),
             new("(O)872", 2),
