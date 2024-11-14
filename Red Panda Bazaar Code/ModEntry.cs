@@ -65,14 +65,7 @@ public class ModEntry : Mod
             save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
         );
 
-        // 添加选项
-        configMenu.AddBoolOption(
-            mod: this.ModManifest,
-            name: () => Tools.I18n.Get(I18nKeys.Config_Enable),
-            getValue: () => Tools.ModConfig.Enabled,
-            setValue: value => Tools.ModConfig.Enabled = value
-        );
-
+        // 萤火虫数量
         configMenu.AddNumberOption(
             mod: this.ModManifest,
             name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfFirefly),
