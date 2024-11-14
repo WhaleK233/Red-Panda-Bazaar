@@ -8,10 +8,6 @@ namespace Red_Panda_Bazaar_Code.VisualEffects;
 
 public static class FireFlyController
 {
-    /// <summary>判断前一tick是否在事件中</summary>
-    private static bool wasEvent = false;
-
-    private static int ticksUntilSpawn = -1;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用萤火虫效果</summary>
@@ -21,29 +17,10 @@ public static class FireFlyController
         if (!Enabled)
         {
             Tools.Helper.Events.Player.Warped += OnPlayerWarped;
-            Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
             Enabled = true;
             Tools.Log("FireFlyEffects Enabled");
         }
-    }
-
-    private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
-    {
-        // 事件结束后10tick生成萤火虫
-        if (ticksUntilSpawn == 0)
-        {
-            spawnFireFly(Game1.player.currentLocation);
-            ticksUntilSpawn = -1;
-        }
-        else if (wasEvent == true && Game1.CurrentEvent == null)
-        {
-            ticksUntilSpawn = 10;
-        }
-
-        wasEvent = Game1.CurrentEvent != null;
-
-        if (ticksUntilSpawn > 0) ticksUntilSpawn--;
     }
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
@@ -54,8 +31,7 @@ public static class FireFlyController
     /// <summary>根据位置生成萤火虫</summary>
     public static void spawnFireFly(GameLocation location)
     {
-        if (Tools.ModConfig.Enabled != true || location == null ||
-            Game1.timeOfDay < Game1.getStartingToGetDarkTime(location) ||
+        if (location == null || Game1.timeOfDay < Game1.getStartingToGetDarkTime(location) ||
             Game1.season is Season.Winter or Season.Fall || Game1.isRaining || Game1.isLightning ||
             Game1.isSnowing) return;
 
