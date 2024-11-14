@@ -42,8 +42,6 @@ public static class MenuController
 
     private static void InitPrizeList()
     {
-        Random uniqueRandom =
-            Utility.CreateRandom((double)Game1.uniqueIDForThisGame, (double)Game1.player.UniqueMultiplayerID);
         CouponPrizeList = new List<Tuple<string, int>>();
         for (int i = 1; i <= 17; i++)
         {
@@ -60,16 +58,19 @@ public static class MenuController
             new("(BC)231", 1),
             // 蘑菇树桩
             new("(BC)MushroomLog", 4),
-            // 混合花卉种子
-            new("(O)MixedFlowerSeeds", 15),
+            // 烘干机
+            new("(BC)Dehydrator", 1),
             // 熏鱼机
             new("(BC)FishSmoker", 1),
             // 兔子的脚
             new("(O)446", 1),
             // 软木塞浮标
             new("(O)695", 1),
-            // 其他
+            // 交友导论
             new("(O)Book_Friendship", 1),
+            // 混合花卉种子
+            new("(O)MixedFlowerSeeds", 15),
+            // 其他
             new("(O)631", 1),
             new("(O)630", 1),
             new("(O)770", 10),
@@ -80,38 +81,28 @@ public static class MenuController
             new("(O)286", 20),
             new("(O)287", 12),
             new("(O)288", 6),
-            new("(BC)Dehydrator", 1),
             new("(O)275", 4),
             new("(O)872", 2),
-            new("(F)FancyHousePlant1", 1),
-            new("(F)FancyHousePlant2", 1),
-            new("(F)FancyHousePlant3", 1),
-            new("(O)SkillBook_" + uniqueRandom.Next(5), 1),
-            new("(F)CowDecal", 1),
             new("(O)749", 8),
             new("(BC)10", 4),
             new("(BC)12", 4),
             new("(O)72", 5),
             new("(O)337", 5),
-            new("(O)226", 5),
             new("(O)253", 5),
             new("(O)732", 5),
             new("(O)279", 1),
             new("(O)872", 1),
-            new("(F)FancyHousePlant1", 1),
-            new("(F)FancyHousePlant2", 1),
-            new("(F)FancyHousePlant3", 1),
             new("(O)275", 5),
             new("(O)166", 1),
             new("(O)645", 1),
-            new("(F)FancyTree1", 1),
-            new("(F)FancyTree2", 1),
-            new("(F)FancyTree3", 1),
-            new("(F)PigPainting", 1),
             new("(O)287", 15),
             new("(O)872", 3),
             new("(O)288", 8),
-            new(Game1.player.HouseUpgradeLevel > 0 ? "(F)BluePinstripeDoubleBed" : "(F)BluePinstripeBed", 1),
+            new("(O)SkillBook_1", 1),
+            new("(O)SkillBook_2", 1),
+            new("(O)SkillBook_3", 1),
+            new("(O)SkillBook_4", 1),
+            new("(O)SkillBook_5", 1)
         };
     }
 }

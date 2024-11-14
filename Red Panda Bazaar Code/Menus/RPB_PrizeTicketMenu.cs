@@ -61,28 +61,37 @@ public class RPB_PrizeTicketMenu : IClickableMenu
     {
         var chance = Game1.random.NextDouble();
         var random = Game1.random.Next();
+        int i;
+        string itemId;
+        int amount;
+        Item prize;
         switch (chance)
         {
-            case < 0.01: // 1%
-                return ItemRegistry.Create("(O)114"); // 古代种子
-            case < 0.11: // 10%
-                return ItemRegistry.Create("(O)StardropTea"); // 星之果茶
-            case < 0.31: // 20%
-                int c = random % MenuController.CouponPrizeList.Count;
-                string cId = MenuController.CouponPrizeList[c].Item1;
-                int cAmount = MenuController.CouponPrizeList[c].Item2;
-                return ItemRegistry.Create(cId, cAmount); // 1号兑换券
-            default: // 70% 其他物品
-                int i = random % MenuController.CommonPrizeList.Count;
-                string itemId = MenuController.CommonPrizeList[i].Item1;
-                int amount = MenuController.CommonPrizeList[i].Item2;
-                return ItemRegistry.Create(itemId, amount);
+            case < 0.01: // 1% 古代种子
+                prize = ItemRegistry.Create("(O)114");
+                break;
+            case < 0.11: // 10% 星之果茶
+                prize = ItemRegistry.Create("(O)StardropTea");
+                break;
+            case < 0.31: // 20% 17种兑换券
+                i = random % MenuController.CouponPrizeList.Count;
+                itemId = MenuController.CouponPrizeList[i].Item1;
+                amount = MenuController.CouponPrizeList[i].Item2;
+                prize = ItemRegistry.Create(itemId, amount);
+                break;
+            default: // 69% 其他物品
+                i = random % MenuController.CommonPrizeList.Count;
+                itemId = MenuController.CommonPrizeList[i].Item1;
+                amount = MenuController.CommonPrizeList[i].Item2;
+                prize = ItemRegistry.Create(itemId, amount);
+                break;
         }
+
+        return prize;
     }
 
     public override bool readyToClose() => !this.gettingReward && base.readyToClose();
 
-    /// <inheritdoc />
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
         if (this.gettingReward)
@@ -102,7 +111,6 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         base.receiveLeftClick(x, y, playSound);
     }
 
-    /// <inheritdoc />
     public override void update(GameTime time)
     {
         if ((double)this.pressedButtonTimer > 0.0)
@@ -118,9 +126,11 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             {
                 this.getRewardTimer = 2000f;
                 Game1.playSound("coin");
-                if (!Game1.player.addItemToInventoryBool(this.currentPrizeTrack[0]))
-                    Game1.createItemDebris(this.currentPrizeTrack[0], Game1.player.getStandingPosition(), 1,
+                var prizeItem = this.currentPrizeTrack[0];
+                if (!Game1.player.addItemToInventoryBool(prizeItem))
+                    Game1.createItemDebris(prizeItem, Game1.player.getStandingPosition(), 1,
                         Game1.player.currentLocation);
+                Tools.Log($"Get Prize: {prizeItem.Name}");
                 if (Game1.player.Items.CountId(SpecialTicketItemId) > 0)
                 {
                     Game1.player.Items.ReduceId(SpecialTicketItemId, 1);
