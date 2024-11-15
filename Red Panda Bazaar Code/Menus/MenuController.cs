@@ -98,11 +98,11 @@ public static class MenuController
             new("(O)287", 15),
             new("(O)872", 3),
             new("(O)288", 8),
+            new("(O)SkillBook_0", 1),
             new("(O)SkillBook_1", 1),
             new("(O)SkillBook_2", 1),
             new("(O)SkillBook_3", 1),
-            new("(O)SkillBook_4", 1),
-            new("(O)SkillBook_5", 1)
+            new("(O)SkillBook_4", 1)
         };
     }
 }
