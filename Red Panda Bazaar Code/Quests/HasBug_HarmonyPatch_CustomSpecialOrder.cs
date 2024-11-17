@@ -6,7 +6,7 @@ using StardewValley.SpecialOrders;
 
 namespace Red_Panda_Bazaar_Code.Quests;
 
-public class HarmonyPatch_CustomSpecialOrder
+public class HasBug_HarmonyPatch_CustomSpecialOrder
 {
     private static bool Applied { get; set; } = false;
 
@@ -15,10 +15,10 @@ public class HarmonyPatch_CustomSpecialOrder
         if (!Applied)
         {
             Tools.Log(
-                $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrder)}\": postfixing SDV method \"SpecialOrder.Update()\".");
+                $"Applying Harmony patch \"{nameof(HasBug_HarmonyPatch_CustomSpecialOrder)}\": postfixing SDV method \"SpecialOrder.Update()\".");
             harmony.Patch(
                 original: AccessTools.Method(typeof(SpecialOrder), "Update"),
-                prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrder), nameof(Prefix_SpecialOrder_Update))
+                prefix: new HarmonyMethod(typeof(HasBug_HarmonyPatch_CustomSpecialOrder), nameof(Prefix_SpecialOrder_Update))
             );
 
             Applied = true;
