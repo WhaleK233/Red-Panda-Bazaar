@@ -1,4 +1,5 @@
 ﻿using Red_Panda_Bazaar_Code.Utils;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
 namespace Red_Panda_Bazaar_Code.Data;
@@ -21,6 +22,8 @@ public static class RPBData
 
     private static void OnSaving(object? sender, SavingEventArgs e)
     {
+        if (!Context.IsMainPlayer) return;
+
         Tools.Helper.Data.WriteSaveData(Keys.PrizeTicketRewardKey, PrizeTicketReward.ToString());
         Tools.Log($"Saved Prize Ticket Reward");
     }
