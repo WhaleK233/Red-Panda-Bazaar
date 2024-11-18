@@ -47,7 +47,6 @@ public class ModEntry : Mod
         var harmony = new Harmony(this.ModManifest.UniqueID);
         HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
         HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
-        //HarmonyPatch_CustomSpecialOrder.ApplyPatch(harmony);
     }
 
     #region Generic Mod Config Menu
