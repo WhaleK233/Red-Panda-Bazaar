@@ -57,6 +57,7 @@ public static class BuffController
                 Speed = { 2 },
                 Defense = { 4 },
                 Attack = { 10 },
+                LuckLevel = { 3 },
                 CriticalChanceMultiplier = { 4 },
                 FishingLevel = { 6 },
                 ForagingLevel = { 4 },
