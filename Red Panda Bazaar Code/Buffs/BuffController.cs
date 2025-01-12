@@ -31,7 +31,7 @@ public static class BuffController
     {
         if (Context.IsWorldReady && Context.IsGameLaunched)
         {
-            if (Game1.player.hat?.Get()?.Name == Hat.GamblerHat)
+            if (Game1.player.hat?.Get()?.Name == Constants.NameKeys.Hat.GamblerHat)
             {
                 Game1.player.applyBuff(new Buff(
                     id: "speed",
@@ -47,10 +47,13 @@ public static class BuffController
 
     private static void InitCustomBuffs()
     {
-        buffDict[Food.Golden_Delight] = new Buff(
+        int index = 0;
+        buffDict[Constants.NameKeys.Food.Golden_Delight] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
-            iconSheetIndex: 0,
+            iconSheetIndex: index++,
             duration: Buff.ENDLESS,
             effects: new BuffEffects()
             {
@@ -64,15 +67,97 @@ public static class BuffController
                 FarmingLevel = { 4 }
             }
         );
-    }
 
-    public static class Food
-    {
-        public const string Golden_Delight = "RedPandaBazaar_Golden_Delight";
-    }
-
-    public static class Hat
-    {
-        public const string GamblerHat = "RedPandaBazaar_GamblerHat";
+        buffDict[Constants.NameKeys.Food.Golden_Cupcake] = new Buff(
+            id: "RedPandaBazaar_Golden_Cupcake",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 1600000,
+            effects: new BuffEffects()
+            {
+                Speed = { 1 },
+                LuckLevel = { 6 },
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Golden_Flavor_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Golden_Flavor_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 1600000,
+            effects: new BuffEffects()
+            {
+                LuckLevel = { 5 },
+                ForagingLevel = { 5 },
+                MagneticRadius = { 50 },
+                Speed = { 1 },
+                Attack = { 3 }
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Coffee_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Coffee_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 300000,
+            effects: new BuffEffects()
+            {
+                Speed = { 1 }
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Fern_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Fern_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 300000,
+            effects: new BuffEffects()
+            {
+                FarmingLevel = { 2 },
+                ForagingLevel = { 5 }
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Mango_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Mango_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 300000,
+            effects: new BuffEffects()
+            {
+                ForagingLevel = { 2 }
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Peach_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Peach_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 300000,
+            effects: new BuffEffects()
+            {
+                MiningLevel = { 1 },
+                Defense = { 1 }
+            }
+        );
+        buffDict[Constants.NameKeys.Food.Pumpkin_Popsicle] = new Buff(
+            id: "RedPandaBazaar_Pumpkin_Popsicle",
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName),
+            iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
+            iconSheetIndex: index++,
+            duration: 300000,
+            effects: new BuffEffects()
+            {
+                FishingLevel = { 2 }
+            }
+        );
     }
 }
