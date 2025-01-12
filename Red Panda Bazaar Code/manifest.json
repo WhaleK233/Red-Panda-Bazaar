@@ -1,7 +1,7 @@
 {
   "Name": "Red Panda Bazaar Code",
   "Author": "WhaleK233",
-  "Version": "1.0.0-alpha.16",
+  "Version": "1.0.0-alpha.17",
   "Description": "The C# code part of Red Panda Bazaar mod, all assets come from LiLaoliu",
   "UniqueID": "WhaleK233.RedPandaBazaarCode",
   "EntryDll": "Red Panda Bazaar Code.dll",
@@ -16,14 +16,6 @@
     },
     {
       "UniqueID": "Lilaoliu.RedPandaBazaar",
-      "IsRequired": true
-    },
-    {
-      "UniqueID": "RPB.NPCs",
-      "IsRequired": true
-    },
-    {
-      "UniqueID": "Lilaoliu.RedPandaBazaarFTM",
       "IsRequired": true
     }
   ]

@@ -28,10 +28,10 @@ public class HarmonyPatch_CustomBuffEffects
 
     private static void initBuffDisplay(Dictionary<string, Buff> buffDict)
     {
-        buffDict[BuffController.Food.Golden_Delight].displayName =
+        /*buffDict[Constants.NameKeys.Food.Golden_Delight].displayName =
             Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName);
-        buffDict[BuffController.Food.Golden_Delight].displaySource =
-            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource);
+        buffDict[Constants.NameKeys.Food.Golden_Delight].displaySource =
+            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource);*/
     }
 
     private static bool Prefix_Farmer_doneEating(Farmer __instance)
