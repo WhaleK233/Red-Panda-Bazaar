@@ -23,6 +23,13 @@ public class ModEntry : Mod
         Tools.Log($"Red Panda Bazaar Code Initializing...");
 
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+    }
+
+    // 包含i18n的初始化
+    private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        BuffController.Init();
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -37,7 +44,6 @@ public class ModEntry : Mod
     {
         FireFlyController.Init();
         SpringFairController.Init();
-        BuffController.Init();
         MenuController.Init();
         QuestsController.Init();
     }
