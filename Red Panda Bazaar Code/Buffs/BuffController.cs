@@ -74,7 +74,7 @@ public static class BuffController
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
-            duration: 1600000,
+            duration: 240000,
             effects: new BuffEffects()
             {
                 LuckLevel = { 6 },
@@ -86,7 +86,7 @@ public static class BuffController
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
-            duration: 1600000,
+            duration: 300000,
             effects: new BuffEffects()
             {
                 LuckLevel = { 5 },
