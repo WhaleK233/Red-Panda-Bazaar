@@ -11,9 +11,6 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 {
     public const string SpecialTicketItemId = "RedPandaBazaar_Prize_Ticket_1";
     public const string GenericTicketItemId = "PrizeTicket";
-
-    public const int WIDTH = 116;
-    public const int HEIGHT = 94;
     public List<Item> currentPrizeTrack = new List<Item>();
     public float getRewardTimer;
     public bool gettingReward;
@@ -33,15 +30,15 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
-        this.currentPrizeTrack.Add(getPrizeItem());
-        this.currentPrizeTrack.Add(getPrizeItem());
-        this.currentPrizeTrack.Add(getPrizeItem());
-        this.currentPrizeTrack.Add(getPrizeItem());
+        for (int i = 0; i < 4; i++)
+        {
+            this.currentPrizeTrack.Add(getPrizeItem());
+        }
+
         this.currentlySnappedComponent = (ClickableComponent)this.mainButton;
         this.snapCursorToCurrentSnappedComponent();
     }
 
-    /// <inheritdoc />
     public override void performHoverAction(int x, int y)
     {
         if (this.mainButton.containsPoint(x, y) && (double)this.pressedButtonTimer <= 0.0 && !this.gettingReward &&
@@ -61,9 +58,8 @@ public class RPB_PrizeTicketMenu : IClickableMenu
     {
         var chance = Game1.random.NextDouble();
         var random = Game1.random.Next();
-        int i;
+        int i, amount;
         string itemId;
-        int amount;
         Item prize;
         switch (chance)
         {
