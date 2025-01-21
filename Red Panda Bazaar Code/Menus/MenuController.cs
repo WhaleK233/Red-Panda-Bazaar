@@ -88,7 +88,7 @@ public static class MenuController
             new("(BC)15", 4) // 小桶
         };
         CouponPrizeList = new List<Tuple<string, int>>();
-        for (int i = 1; i <= 17; i++)
+        for (int i = 1; i <= 18; i++)
         {
             CouponPrizeList.Add(new($"(O)RedPandaBazaar_Redemption_Coupon_{i}", 1));
         }
