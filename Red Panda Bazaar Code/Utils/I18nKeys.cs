@@ -14,6 +14,8 @@ public static class I18nKeys
 
     public const string Config_NumberOfFirefly = "Config.NumberOfFirefly";
 
+    public const string Config_AnimeSpeed_PrizeMenu = "Config.AnimationSpeed.PrizeMenu";
+
     #endregion
 
     #region Dialogue
