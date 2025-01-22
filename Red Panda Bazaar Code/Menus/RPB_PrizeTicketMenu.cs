@@ -105,7 +105,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             {
                 this.gettingReward = true; // 设置正在获奖
                 this.getRewardTimer = 0.0f; // 重置获奖计时器
-                DelayedAction.playSoundAfterDelay("discoverMineral", 750); // 延时播放音效发现矿物音效
+                DelayedAction.playSoundAfterDelay("newArtifact", 750); // 延时播放音效发现矿物音效
             }
         }
 
@@ -174,17 +174,12 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             // 绘制获取的奖励的位置
             prize.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
-        // else if (isJoja) // 如果没抽奖, 则快速随机展示奖池内容
-        // {
-        //     Vector2 vector2 = new Vector2(52f, 21f) * 4f;
-        //     newPrizeItem().drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
-        // }
 
         // 绘制抽奖券数量
         string s = (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId))
             .ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
-            this.yPositionOnScreen + 315);
+            this.yPositionOnScreen + 315, color: new Color(159, 144, 118, 0));
         this.mainButton.draw(b);
         base.draw(b);
         this.drawMouse(b);
