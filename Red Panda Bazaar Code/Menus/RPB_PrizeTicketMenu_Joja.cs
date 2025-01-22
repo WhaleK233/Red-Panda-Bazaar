@@ -7,10 +7,9 @@ using StardewValley.Menus;
 
 namespace Red_Panda_Bazaar_Code.Menus;
 
-public class RPB_PrizeTicketMenu : IClickableMenu
+public class RPB_PrizeTicketMenu_Joja : IClickableMenu
 {
-    public const string SpecialTicketItemId = "RedPandaBazaar_Prize_Ticket_1";
-    public const string GenericTicketItemId = "PrizeTicket";
+    public const string SpecialTicketItemId = "RedPandaBazaar_Prize_Ticket_4";
     public float getRewardTimer; // 获奖计时器
     public bool gettingReward; // 正在获奖
     public float GettingRewardOffset;
@@ -22,11 +21,11 @@ public class RPB_PrizeTicketMenu : IClickableMenu
     public Item prize;
     public Texture2D texture; // 贴图
 
-    public RPB_PrizeTicketMenu()
+    public RPB_PrizeTicketMenu_Joja()
         : base((int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).X,
             (int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).Y, 464, 376, true)
     {
-        this.texture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_1.png");
+        this.texture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_2.png");
         //this.texture = Game1.content.Load<Texture2D>("LooseSprites\\PrizeTicketMenu");
         this.mainButton = new ClickableTextureComponent(
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
@@ -58,8 +57,8 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public static Item newPrizeItem()
     {
-        var commonList = MenuController.CommonPrizeList;
-        var couponList = MenuController.CouponPrizeList;
+        var commonList = MenuController.JojaCommonPrizeList;
+        var couponList = MenuController.JojaCouponPrizeList;
         var chance = Game1.random.NextDouble();
         var random = Game1.random.Next();
         int i, amount;
@@ -67,13 +66,13 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         Item prize;
         switch (chance)
         {
-            case < 0.01: // 1% 古代种子
-                prize = ItemRegistry.Create("(O)114");
+            case < 0.01: // 1% 自动抚摸机
+                prize = ItemRegistry.Create("(BC)272");
                 break;
             case < 0.11: // 10% 星之果茶
                 prize = ItemRegistry.Create("(O)StardropTea");
                 break;
-            case < 0.31: // 20% 17种兑换券
+            case < 0.31: // 20% 18种兑换券 2张
                 i = random % couponList.Count;
                 itemId = couponList[i].Item1;
                 amount = couponList[i].Item2;
@@ -100,8 +99,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         {
             Game1.playSound("button_press"); // 则播放按钮按下音效
             this.pressedButtonTimer = 200f; // 重置按下按钮计时器
-            if (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId) >
-                0) // 检测是否拥有抽奖券
+            if (Game1.player.Items.CountId(SpecialTicketItemId) > 0) // 检测是否拥有抽奖券
             {
                 this.gettingReward = true; // 设置正在获奖
                 this.getRewardTimer = 0.0f; // 重置获奖计时器
@@ -132,14 +130,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                         Game1.player.currentLocation);
                 Tools.Log($"Get Prize: {prize.Name}"); // 打印日志
                 // 扣除费用
-                if (Game1.player.Items.CountId(SpecialTicketItemId) > 0)
-                {
-                    Game1.player.Items.ReduceId(SpecialTicketItemId, 1);
-                }
-                else
-                {
-                    Game1.player.Items.ReduceId(GenericTicketItemId, 1);
-                }
+                Game1.player.Items.ReduceId(SpecialTicketItemId, 1);
 
                 prize = newPrizeItem();
                 this.gettingReward = false; // 重置获奖状态为未获奖
@@ -174,17 +165,18 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             // 绘制获取的奖励的位置
             prize.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
-        // else if (isJoja) // 如果没抽奖, 则快速随机展示奖池内容
-        // {
-        //     Vector2 vector2 = new Vector2(52f, 21f) * 4f;
-        //     newPrizeItem().drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
-        // }
+        else // 如果没抽奖, 则快速随机展示奖池内容
+        {
+            Vector2 vector2 = new Vector2(52f, 21f) * 4f;
+            var item = newPrizeItem();
+            item.Stack = 1;
+            item.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
+        }
 
         // 绘制抽奖券数量
-        string s = (Game1.player.Items.CountId(SpecialTicketItemId) + Game1.player.Items.CountId(GenericTicketItemId))
-            .ToString();
+        string s = Game1.player.Items.CountId(SpecialTicketItemId).ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
-            this.yPositionOnScreen + 315);
+            this.yPositionOnScreen + 315, color: new Color(11, 241, 239, 0));
         this.mainButton.draw(b);
         base.draw(b);
         this.drawMouse(b);

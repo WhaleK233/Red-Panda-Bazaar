@@ -6,8 +6,11 @@ namespace Red_Panda_Bazaar_Code.Menus;
 
 public static class MenuController
 {
+    private const int couponCount = 18;
     public static List<Tuple<string, int>> CommonPrizeList;
     public static List<Tuple<string, int>> CouponPrizeList;
+    public static List<Tuple<string, int>> JojaCommonPrizeList;
+    public static List<Tuple<string, int>> JojaCouponPrizeList;
     private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义菜单</summary>
@@ -29,6 +32,12 @@ public static class MenuController
         GameLocation.RegisterTileAction("RedPandaBazaar_PrizeMachine_1", (location, strings, arg3, arg4) =>
             {
                 Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu();
+                return false;
+            }
+        );
+        GameLocation.RegisterTileAction("RedPandaBazaar_PrizeMachine_2", (location, strings, arg3, arg4) =>
+            {
+                Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu_Joja();
                 return false;
             }
         );
@@ -88,9 +97,43 @@ public static class MenuController
             new("(BC)15", 4) // 小桶
         };
         CouponPrizeList = new List<Tuple<string, int>>();
-        for (int i = 1; i <= 18; i++)
+        for (int i = 1; i <= couponCount; i++)
         {
             CouponPrizeList.Add(new($"(O)RedPandaBazaar_Redemption_Coupon_{i}", 1));
+        }
+
+        JojaCommonPrizeList = new List<Tuple<string, int>>()
+        {
+            new("(O)Book_Friendship", 1), // 交友导论
+            new("(O)MixedFlowerSeeds", 25), // 混合花卉种子
+            new("(O)72", 5), // 钻石
+            new("(O)74", 1), // 五彩碎片
+            new("(O)166", 1), // 宝藏箱
+            new("(O)253", 5), // 浓缩咖啡
+            new("(O)279", 1), // 魔法糖冰棍
+            new("(O)288", 8), // 超级炸弹
+            new("(O)337", 5), // 铱锭
+            new("(O)630", 2), // 橘子树种
+            new("(O)631", 2), // 桃子树种
+            new("(O)632", 2), // 石榴树种
+            new("(O)633", 2), // 苹果树种
+            new("(O)645", 1), // 铱制洒水器
+            new("(O)749", 8), // 万象晶球
+            new("(O)770", 10), // 混合种子
+            new("(O)872", 3), // 仙尘
+            new("(O)167", 5), // Joja可乐
+            new("(O)390", 50), // 石头
+            new("(O)388", 50), // 木头
+            new("(O)SkillBook_0", 1),
+            new("(O)SkillBook_1", 1),
+            new("(O)SkillBook_2", 1),
+            new("(O)SkillBook_3", 1),
+            new("(O)SkillBook_4", 1)
+        };
+        JojaCouponPrizeList = new List<Tuple<string, int>>();
+        for (int i = 1; i <= couponCount; i++)
+        {
+            JojaCouponPrizeList.Add(new($"(O)RedPandaBazaar_Redemption_Coupon_{i}", 2));
         }
     }
 }
