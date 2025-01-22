@@ -40,6 +40,8 @@ public static class I18nKeys
 
     public const string Dialogue_WheelBet_GiveUpResponse = "Dialogue.WheelBet_GiveUpResponse";
 
+    public const string Dialogue_EntranceQuestion = "Dialogue.EntranceQuestion";
+
     #endregion Dialogue
 
     #region Display
