@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.MiniGames;
+namespace Red_Panda_Bazaar_Code.HarmonyPatch;
 
 public static class HarmonyPatch_FishingGameEvent
 {

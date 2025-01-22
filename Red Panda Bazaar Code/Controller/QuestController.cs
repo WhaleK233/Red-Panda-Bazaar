@@ -4,9 +4,9 @@ using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Quests;
+namespace Red_Panda_Bazaar_Code.Controller;
 
-public class QuestsController
+public static class QuestController
 {
     private static bool Enabled { get; set; } = false;
 

@@ -3,16 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Menus;
 using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
-using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Objects;
 
-namespace Red_Panda_Bazaar_Code.Festivals;
+namespace Red_Panda_Bazaar_Code.Controller;
 
-public static class SpringFairController
+public static class FestivalController
 {
     private static bool added = false;
     private static bool Enabled { get; set; } = false;

@@ -5,7 +5,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buffs;
 
-namespace Red_Panda_Bazaar_Code.Buffs;
+namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class BuffController
 {
