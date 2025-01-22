@@ -216,7 +216,7 @@ public static class SpringFairController
         Tools.Helper.Input.Suppress(SButton.MouseRight);
     }
 
-    private static bool CheckMoneyAndCharge(int cost)
+    public static bool CheckMoneyAndCharge(int cost)
     {
         if (Game1.player.Money >= cost)
         {

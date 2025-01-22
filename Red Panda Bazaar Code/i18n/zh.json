@@ -19,6 +19,7 @@
   "Dialogue.WheelBet_RedResponse": "红色",
   "Dialogue.WheelBet_WhiteResponse": "白色",
   "Dialogue.WheelBet_GiveUpResponse": "我放弃 (不退款)",
+  "Dialogue.EntranceQuestion": "你确定花费500金前往小熊猫集市吗？",
   /*********
     ** Display
     *********/

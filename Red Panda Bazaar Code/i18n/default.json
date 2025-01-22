@@ -19,6 +19,7 @@
   "Dialogue.WheelBet_RedResponse": "Red",
   "Dialogue.WheelBet_WhiteResponse": "White",
   "Dialogue.WheelBet_GiveUpResponse": "Give up (No refund)",
+  "Dialogue.EntranceQuestion": "Do you want to spend 500 gold to go to the Red Panda Bazaar?",
   /*********
     ** Display
     *********/
