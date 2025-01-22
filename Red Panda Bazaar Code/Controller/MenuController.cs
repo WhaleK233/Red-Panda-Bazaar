@@ -1,8 +1,9 @@
-﻿using Red_Panda_Bazaar_Code.Utils;
+﻿using Red_Panda_Bazaar_Code.Menus;
+using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace Red_Panda_Bazaar_Code.Menus;
+namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class MenuController
 {

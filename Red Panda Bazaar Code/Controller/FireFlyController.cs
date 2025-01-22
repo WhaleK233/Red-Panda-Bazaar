@@ -4,7 +4,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 
-namespace Red_Panda_Bazaar_Code.VisualEffects;
+namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class FireFlyController
 {
