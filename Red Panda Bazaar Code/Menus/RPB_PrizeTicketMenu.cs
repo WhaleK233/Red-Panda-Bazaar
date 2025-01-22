@@ -26,7 +26,7 @@ public class RPB_PrizeTicketMenu : IClickableMenu
         : base((int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).X,
             (int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).Y, 464, 376, true)
     {
-        this.texture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu.png");
+        this.texture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_1.png");
         //this.texture = Game1.content.Load<Texture2D>("LooseSprites\\PrizeTicketMenu");
         this.mainButton = new ClickableTextureComponent(
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
@@ -58,6 +58,8 @@ public class RPB_PrizeTicketMenu : IClickableMenu
 
     public static Item newPrizeItem()
     {
+        var commonList = MenuController.CommonPrizeList;
+        var couponList = MenuController.CouponPrizeList;
         var chance = Game1.random.NextDouble();
         var random = Game1.random.Next();
         int i, amount;
@@ -72,15 +74,15 @@ public class RPB_PrizeTicketMenu : IClickableMenu
                 prize = ItemRegistry.Create("(O)StardropTea");
                 break;
             case < 0.31: // 20% 17种兑换券
-                i = random % MenuController.CouponPrizeList.Count;
-                itemId = MenuController.CouponPrizeList[i].Item1;
-                amount = MenuController.CouponPrizeList[i].Item2;
+                i = random % couponList.Count;
+                itemId = couponList[i].Item1;
+                amount = couponList[i].Item2;
                 prize = ItemRegistry.Create(itemId, amount);
                 break;
             default: // 69% 其他物品
-                i = random % MenuController.CommonPrizeList.Count;
-                itemId = MenuController.CommonPrizeList[i].Item1;
-                amount = MenuController.CommonPrizeList[i].Item2;
+                i = random % commonList.Count;
+                itemId = commonList[i].Item1;
+                amount = commonList[i].Item2;
                 prize = ItemRegistry.Create(itemId, amount);
                 break;
         }
@@ -172,10 +174,10 @@ public class RPB_PrizeTicketMenu : IClickableMenu
             // 绘制获取的奖励的位置
             prize.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
-        // else // 如果没抽奖, 则快速随机展示奖池内容
+        // else if (isJoja) // 如果没抽奖, 则快速随机展示奖池内容
         // {
         //     Vector2 vector2 = new Vector2(52f, 21f) * 4f;
-        //     getPrizeItem().drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
+        //     newPrizeItem().drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         // }
 
         // 绘制抽奖券数量
