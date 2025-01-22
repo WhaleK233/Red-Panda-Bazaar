@@ -1,7 +1,7 @@
 {
   "Name": "Red Panda Bazaar Code",
   "Author": "WhaleK233",
-  "Version": "1.0.1-alpha.21",
+  "Version": "1.0.2-alpha.22",
   "Description": "The C# code part of Red Panda Bazaar mod, all assets come from LiLaoliu",
   "UniqueID": "WhaleK233.RedPandaBazaarCode",
   "EntryDll": "Red Panda Bazaar Code.dll",

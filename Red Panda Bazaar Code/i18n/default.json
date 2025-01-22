@@ -4,6 +4,7 @@
     *********/
   "Config.Enable": "Enable",
   "Config.NumberOfFirefly": "Number of fireflies at night",
+  "Config.AnimationSpeed.PrizeMenu": "Prize animation speed",
   /*********
     ** Dialogue
     *********/

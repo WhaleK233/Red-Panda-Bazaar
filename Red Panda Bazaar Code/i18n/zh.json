@@ -4,6 +4,7 @@
     *********/
   "Config.Enable": "启用",
   "Config.NumberOfFirefly": "夜晚萤火虫数量",
+  "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
   /*********
     ** Dialogue
     *********/
