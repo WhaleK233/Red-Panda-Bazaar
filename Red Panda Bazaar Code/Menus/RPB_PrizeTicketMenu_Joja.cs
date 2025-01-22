@@ -10,6 +10,9 @@ namespace Red_Panda_Bazaar_Code.Menus;
 public class RPB_PrizeTicketMenu_Joja : IClickableMenu
 {
     public const string SpecialTicketItemId = "RedPandaBazaar_Prize_Ticket_4";
+    public Item flashingItem;
+
+    public float flashTimer;
     public float getRewardTimer; // 获奖计时器
     public bool gettingReward; // 正在获奖
     public float GettingRewardOffset;
@@ -103,7 +106,7 @@ public class RPB_PrizeTicketMenu_Joja : IClickableMenu
             {
                 this.gettingReward = true; // 设置正在获奖
                 this.getRewardTimer = 0.0f; // 重置获奖计时器
-                DelayedAction.playSoundAfterDelay("discoverMineral", 750); // 延时播放音效发现矿物音效
+                DelayedAction.playSoundAfterDelay("newArtifact", 750); // 延时播放音效发现矿物音效
             }
         }
 
@@ -137,6 +140,11 @@ public class RPB_PrizeTicketMenu_Joja : IClickableMenu
             }
         }
 
+        if (flashTimer > 0.0)
+        {
+            flashTimer -= (float)(int)time.ElapsedGameTime.TotalMilliseconds;
+        }
+
         base.update(time);
     }
 
@@ -165,12 +173,16 @@ public class RPB_PrizeTicketMenu_Joja : IClickableMenu
             // 绘制获取的奖励的位置
             prize.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
-        else // 如果没抽奖, 则快速随机展示奖池内容
+        else
         {
-            Vector2 vector2 = new Vector2(52f, 21f) * 4f;
-            var item = newPrizeItem();
-            item.Stack = 1;
-            item.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
+            if (flashTimer <= 0.0f) // 如果没抽奖, 则快速随机展示奖池内容
+            {
+                flashingItem = newPrizeItem();
+                flashTimer = 150f;
+            }
+
+            Vector2 v2 = new Vector2(52f, 21f) * 4f;
+            flashingItem.drawInMenu(b, this.Position + v2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
 
         // 绘制抽奖券数量
