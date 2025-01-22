@@ -11,6 +11,7 @@ using Red_Panda_Bazaar_Code.Utils;
 using Red_Panda_Bazaar_Code.VisualEffects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 
 namespace Red_Panda_Bazaar_Code;
 
@@ -26,6 +27,34 @@ public class ModEntry : Mod
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
     }
 
+    private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        if (!Context.IsWorldReady || !e.Button.IsActionButton())
+            return;
+
+        Tools.Helper.Input.Suppress(e.Button);
+        var tile = e.Cursor.GrabTile;
+        if (Game1.currentLocation.Name.Contains("BusStop") && tile.X == 19 && tile.Y == 11)
+        {
+            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
+                new Response[]
+                {
+                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                },
+                (f, answer) =>
+                {
+                    if (answer == "Positive" && SpringFairController.CheckMoneyAndCharge(500))
+                    {
+                        Game1.player.Halt();
+                        Game1.player.freezePause = 700;
+                        Game1.warpFarmer("Custom_MapleBridge", 27, 40, 2);
+                    }
+                }
+            );
+        }
+    }
+
     // 包含i18n的初始化
     private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
@@ -37,7 +66,32 @@ public class ModEntry : Mod
         InitializeGenericModConfigMenu();
         RPBData.Init();
         ControllerInit();
+        EntranceInit();
         PatchHarmony();
+    }
+
+    private void EntranceInit()
+    {
+        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        GameLocation.RegisterTouchAction("RedPandaBazaarBus", (location, strings, arg3, arg4) =>
+            Game1.currentLocation.createQuestionDialogue(
+                Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
+                new Response[]
+                {
+                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                },
+                (f, answer) =>
+                {
+                    if (answer == "Positive")
+                    {
+                        Game1.player.Halt();
+                        Game1.player.freezePause = 700;
+                        Game1.warpFarmer("BusStop", 22, 10, 2);
+                    }
+                }
+            )
+        );
     }
 
     private static void ControllerInit()
