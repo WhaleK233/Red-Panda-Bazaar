@@ -37,7 +37,8 @@ public static class EntranceController
             return;
 
         var tile = e.Cursor.GrabTile;
-        if (Game1.currentLocation.Name.Contains("BusStop") && tile.X == 19 && tile.Y == 11)
+        if (Game1.currentLocation.Name.Contains("BusStop") && tile.X == 19 &&
+            (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
         {
             Tools.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
@@ -48,7 +49,7 @@ public static class EntranceController
                 },
                 (f, answer) =>
                 {
-                    if (answer == "Positive" && FestivalController.CheckMoneyAndCharge(500))
+                    if (answer == "Positive" && FestivalController.CheckMoneyAndCharge(300))
                     {
                         Game1.player.Halt();
                         Game1.player.freezePause = 700;

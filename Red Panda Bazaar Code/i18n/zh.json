@@ -1,10 +1,12 @@
 ﻿{
+  /****** Version 1.1.0 Added ******/
+  "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
+  "Dialogue.EntranceQuestion": "是否确定花费300金购买前往小熊猫集市的专车车票？",
   /*********
     ** Config
     *********/
   "Config.Enable": "启用",
   "Config.NumberOfFirefly": "夜晚萤火虫数量",
-  "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
   /*********
     ** Dialogue
     *********/
@@ -19,7 +21,6 @@
   "Dialogue.WheelBet_RedResponse": "红色",
   "Dialogue.WheelBet_WhiteResponse": "白色",
   "Dialogue.WheelBet_GiveUpResponse": "我放弃 (不退款)",
-  "Dialogue.EntranceQuestion": "你确定花费500金前往小熊猫集市吗？",
   /*********
     ** Display
     *********/

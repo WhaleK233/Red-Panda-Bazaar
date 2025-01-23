@@ -1,10 +1,12 @@
 ﻿{
+  /****** Version 1.1.0 Added ******/
+  "Config.AnimationSpeed.PrizeMenu": "Prize animation speed",
+  "Dialogue.EntranceQuestion": "Do you want to spend 300 gold to buy a special bus ticket to the Red Panda Bazaar?",
   /*********
     ** Config
     *********/
   "Config.Enable": "Enable",
   "Config.NumberOfFirefly": "Number of fireflies at night",
-  "Config.AnimationSpeed.PrizeMenu": "Prize animation speed",
   /*********
     ** Dialogue
     *********/
@@ -19,7 +21,6 @@
   "Dialogue.WheelBet_RedResponse": "Red",
   "Dialogue.WheelBet_WhiteResponse": "White",
   "Dialogue.WheelBet_GiveUpResponse": "Give up (No refund)",
-  "Dialogue.EntranceQuestion": "Do you want to spend 500 gold to go to the Red Panda Bazaar?",
   /*********
     ** Display
     *********/
