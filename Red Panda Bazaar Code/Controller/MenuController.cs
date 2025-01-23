@@ -62,7 +62,6 @@ public static class MenuController
             new("(BC)FishSmoker", 1), // 熏鱼机
             new("(O)446", 1), // 兔子的脚
             new("(O)695", 1), // 软木塞浮标
-            new("(O)Book_Friendship", 1), // 交友导论
             new("(O)MixedFlowerSeeds", 15), // 混合花卉种子
             new("(O)72", 5), // 钻石
             new("(O)166", 1), // 宝藏箱
@@ -88,11 +87,6 @@ public static class MenuController
             new("(O)872", 1), // 仙尘
             new("(O)872", 2), // 仙尘
             new("(O)872", 3), // 仙尘
-            new("(O)SkillBook_0", 1),
-            new("(O)SkillBook_1", 1),
-            new("(O)SkillBook_2", 1),
-            new("(O)SkillBook_3", 1),
-            new("(O)SkillBook_4", 1),
             new("(BC)10", 4), // 避雷针
             new("(BC)12", 4), // 蜂箱
             new("(BC)15", 4) // 小桶
@@ -105,7 +99,6 @@ public static class MenuController
 
         JojaCommonPrizeList = new List<Tuple<string, int>>()
         {
-            new("(O)Book_Friendship", 1), // 交友导论
             new("(O)MixedFlowerSeeds", 25), // 混合花卉种子
             new("(O)72", 5), // 钻石
             new("(O)74", 1), // 五彩碎片
@@ -122,14 +115,9 @@ public static class MenuController
             new("(O)749", 8), // 万象晶球
             new("(O)770", 10), // 混合种子
             new("(O)872", 3), // 仙尘
-            new("(O)167", 5), // Joja可乐
+            new("(O)167", 10), // Joja可乐
             new("(O)390", 50), // 石头
             new("(O)388", 50), // 木头
-            new("(O)SkillBook_0", 1),
-            new("(O)SkillBook_1", 1),
-            new("(O)SkillBook_2", 1),
-            new("(O)SkillBook_3", 1),
-            new("(O)SkillBook_4", 1)
         };
         JojaCouponPrizeList = new List<Tuple<string, int>>();
         for (int i = 1; i <= couponCount; i++)

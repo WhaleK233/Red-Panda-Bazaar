@@ -176,7 +176,7 @@ public class RPB_PrizeTicketMenu_Joja : IClickableMenu
         }
         else
         {
-            if (flashTimer <= 0.0f) // 如果没抽奖, 则快速随机展示奖池内容
+            if (flashTimer <= 0.0f) // 如果没抽奖, 则闪烁奖池内容
             {
                 flashingItem = newPrizeItem();
                 flashTimer = 150f;
