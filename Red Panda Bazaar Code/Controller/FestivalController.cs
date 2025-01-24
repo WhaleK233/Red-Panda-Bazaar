@@ -94,7 +94,7 @@ public static class FestivalController
             },
             (f, answer) =>
             {
-                if (answer == "Positive" && CheckMoneyAndCharge(50))
+                if (answer == "Positive" && Tools.Charge(50))
                 {
                     Response[] answerChoices = new Response[3]
                     {
@@ -113,7 +113,7 @@ public static class FestivalController
 
     private static void HandleTargetGame()
     {
-        if (CheckMoneyAndCharge(50))
+        if (Tools.Charge(50))
         {
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_TargetGameQuestion),
                 new Response[]
@@ -133,7 +133,7 @@ public static class FestivalController
 
     private static void HandleFishingGame()
     {
-        if (CheckMoneyAndCharge(50))
+        if (Tools.Charge(50))
         {
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_FishingGameQuestion),
                 new Response[]
@@ -168,7 +168,7 @@ public static class FestivalController
                     response3
                 }, (who, answer) =>
                 {
-                    if (answer == "Purchase" && CheckMoneyAndCharge(1999))
+                    if (answer == "Purchase" && Tools.Charge(1999))
                     {
                         Game1.player.increaseBackpackSize(12);
                         Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
@@ -188,7 +188,7 @@ public static class FestivalController
                     response3
                 }, (who, answer) =>
                 {
-                    if (answer == "Purchase" && CheckMoneyAndCharge(9999))
+                    if (answer == "Purchase" && Tools.Charge(9999))
                     {
                         Game1.player.maxItems.Value += 12;
                         Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
@@ -213,20 +213,6 @@ public static class FestivalController
         Tools.Helper.Input.Suppress(Game1.options.useToolButton[0].ToSButton());
         Tools.Helper.Input.Suppress(SButton.MouseLeft);
         Tools.Helper.Input.Suppress(SButton.MouseRight);
-    }
-
-    public static bool CheckMoneyAndCharge(int cost)
-    {
-        if (Game1.player.Money >= cost)
-        {
-            Game1.player.Money -= cost;
-            return true;
-        }
-        else
-        {
-            Game1.drawObjectDialogue(Tools.I18n.Get(I18nKeys.Dialogue_MoneyNotEnough));
-            return false;
-        }
     }
 
     [EventPriority(EventPriority.High)]

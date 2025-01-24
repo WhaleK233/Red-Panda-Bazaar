@@ -8,7 +8,6 @@ namespace Red_Panda_Bazaar_Code.HarmonyPatch;
 
 public class HarmonyPatch_CustomBuffEffects
 {
-    private static bool initBuff = false;
     private static bool Applied { get; set; } = false;
 
     public static void ApplyPatch(Harmony harmony)
@@ -27,24 +26,11 @@ public class HarmonyPatch_CustomBuffEffects
         }
     }
 
-    private static void initBuffDisplay(Dictionary<string, Buff> buffDict)
-    {
-        /*buffDict[Constants.NameKeys.Food.Golden_Delight].displayName =
-            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName);
-        buffDict[Constants.NameKeys.Food.Golden_Delight].displaySource =
-            Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource);*/
-    }
-
     private static bool Prefix_Farmer_doneEating(Farmer __instance)
     {
         try
         {
             var buffDict = BuffController.buffDict;
-            if (!initBuff)
-            {
-                initBuffDisplay(buffDict);
-                initBuff = true;
-            }
 
             if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
             {
