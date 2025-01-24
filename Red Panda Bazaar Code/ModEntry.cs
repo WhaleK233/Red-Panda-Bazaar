@@ -22,7 +22,6 @@ public class ModEntry : Mod
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
     }
 
-
     // 包含i18n的初始化
     private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
@@ -34,7 +33,7 @@ public class ModEntry : Mod
         InitializeGenericModConfigMenu();
         RPBData.Init();
         ControllerInit();
-        PatchHarmony();
+        HarmonyPatch();
     }
 
     private static void ControllerInit()
@@ -46,7 +45,7 @@ public class ModEntry : Mod
         QuestController.Init();
     }
 
-    private void PatchHarmony()
+    private void HarmonyPatch()
     {
         var harmony = new Harmony(this.ModManifest.UniqueID);
         HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
@@ -86,7 +85,7 @@ public class ModEntry : Mod
             setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu = (float)Math.Round(value, 1),
             min: 0.5f,
             max: 5.0f,
-            formatValue: value => Math.Round(value, 1) + "x"
+            formatValue: value => Math.Round(value, 1) + "×"
         );
     }
 
