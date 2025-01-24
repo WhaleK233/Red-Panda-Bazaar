@@ -1,5 +1,6 @@
 ﻿using Red_Panda_Bazaar_Code.Config;
 using StardewModdingAPI;
+using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Utils;
 
@@ -18,8 +19,22 @@ public static class Tools
         I18n = Helper.Translation;
     }
 
-    public static void Log(string message, LogLevel level = LogLevel.Trace) => Tools.Monitor.Log(message, level);
+    public static void Log(string message, LogLevel level = LogLevel.Trace) => Monitor.Log(message, level);
 
     public static void LogOnce(string message, LogLevel level = LogLevel.Trace) =>
-        Tools.Monitor.LogOnce(message, level);
+        Monitor.LogOnce(message, level);
+
+    public static bool Charge(int cost)
+    {
+        if (Game1.player.Money >= cost)
+        {
+            Game1.player.Money -= cost;
+            return true;
+        }
+        else
+        {
+            Game1.drawObjectDialogue(I18n.Get(I18nKeys.Dialogue_MoneyNotEnough));
+            return false;
+        }
+    }
 }

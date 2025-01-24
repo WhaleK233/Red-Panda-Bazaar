@@ -49,7 +49,7 @@ public static class EntranceController
                 },
                 (f, answer) =>
                 {
-                    if (answer == "Positive" && FestivalController.CheckMoneyAndCharge(300))
+                    if (answer == "Positive" && Tools.Charge(300))
                     {
                         Game1.player.Halt();
                         Game1.player.freezePause = 700;
