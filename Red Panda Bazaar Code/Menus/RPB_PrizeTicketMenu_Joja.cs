@@ -73,8 +73,8 @@ public class RPB_PrizeTicketMenu_Joja : IClickableMenu
             case < 0.01: // 1% 自动抚摸机
                 prize = ItemRegistry.Create("(BC)272");
                 break;
-            case < 0.11: // 10% 星之果茶
-                prize = ItemRegistry.Create("(O)StardropTea");
+            case < 0.11: // 10% JOJA兑换券
+                prize = ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_19");
                 break;
             case < 0.31: // 20% 18种兑换券 2张
                 i = random % couponList.Count;
