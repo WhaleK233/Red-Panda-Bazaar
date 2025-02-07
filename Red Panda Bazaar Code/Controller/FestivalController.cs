@@ -54,10 +54,7 @@ public static class FestivalController
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
         if (Game1.CurrentEvent == null || Game1.CurrentEvent.FestivalName != "SpringFair" ||
-            Game1.activeClickableMenu != null || !Context.CanPlayerMove)
-        {
-            return;
-        }
+            Game1.activeClickableMenu != null || !Context.CanPlayerMove) return;
 
         if (!e.Button.IsActionButton()) return;
 
