@@ -33,12 +33,15 @@ public static class EntranceController
 
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Context.IsWorldReady || !e.Button.IsActionButton())
+        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value)
+            return;
+
+        if (StardewModdingAPI.Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
             return;
 
         var tile = e.Cursor.GrabTile;
         if (Game1.currentLocation.Name.Contains("BusStop") && tile.X == 19 &&
-            (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
+            (tile.Y == 10 || tile.Y == 11 || tile.Y == 12) && Game1.player.canMove)
         {
             Tools.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
