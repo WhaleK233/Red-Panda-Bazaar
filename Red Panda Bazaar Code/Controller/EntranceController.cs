@@ -1,4 +1,5 @@
-﻿using Red_Panda_Bazaar_Code.Utils;
+﻿using Red_Panda_Bazaar_Code.MiniGames;
+using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -36,12 +37,19 @@ public static class EntranceController
         if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value)
             return;
 
+        if (!Game1.currentLocation.Name.Contains("BusStop"))
+            return;
+
         if (StardewModdingAPI.Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
             return;
 
         var tile = e.Cursor.GrabTile;
-        if (Game1.currentLocation.Name.Contains("BusStop") && tile.X == 19 &&
-            (tile.Y == 10 || tile.Y == 11 || tile.Y == 12) && Game1.player.canMove)
+        if (Game1.player.canMove && tile.X == 20 && (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
+        {
+            Game1.currentMinigame = new RPB_TetrisGame();
+        }
+
+        if (Game1.player.canMove && tile.X == 19 && (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
         {
             Tools.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
