@@ -16,6 +16,8 @@ public static class RPBData
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        if (!Context.IsMainPlayer) return;
+
         PrizeTicketReward = int.Parse(Tools.Helper.Data.ReadSaveData<string>(Keys.PrizeTicketRewardKey) ?? "0");
         Tools.Log($"Loaded Prize Ticket Reward");
     }
