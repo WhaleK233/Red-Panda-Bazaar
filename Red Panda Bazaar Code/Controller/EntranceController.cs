@@ -23,8 +23,8 @@ public static class EntranceController
                 {
                     if (answer == "Positive")
                     {
-                        Game1.player.Halt();
-                        Game1.player.freezePause = 700;
+                        Game1.pauseThenMessage(1500, null);
+                        Game1.currentLocation.localSound("busDriveOff");
                         Game1.warpFarmer("BusStop", 22, 10, 2);
                     }
                 }
@@ -62,8 +62,8 @@ public static class EntranceController
                 {
                     if (answer == "Positive" && Tools.Charge(300))
                     {
-                        Game1.player.Halt();
-                        Game1.player.freezePause = 700;
+                        Game1.pauseThenMessage(1500, null);
+                        Game1.currentLocation.localSound("busDriveOff");
                         Game1.warpFarmer("Custom_MapleBridge", 27, 40, 2);
                     }
                 }
