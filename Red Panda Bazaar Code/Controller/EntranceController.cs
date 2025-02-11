@@ -52,7 +52,7 @@ public static class EntranceController
         GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (location, strings, arg3, arg4) =>
             {
                 Game1.currentLocation.createQuestionDialogue(
-                    Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
+                    Tools.I18n.Get(I18nKeys.Dialogue_WhereToGo),
                     responses,
                     (f, answer) =>
                     {
