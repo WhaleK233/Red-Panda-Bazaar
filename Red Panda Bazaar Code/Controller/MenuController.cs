@@ -100,7 +100,7 @@ public static class MenuController
         JojaCommonPrizeList = new List<Tuple<string, int>>()
         {
             new("(O)MixedFlowerSeeds", 25), // 混合花卉种子
-            new("(O)72", 5), // 钻石
+            new("(O)72", 5), // 钻石s
             new("(O)166", 1), // 宝藏箱
             new("(O)253", 5), // 浓缩咖啡
             new("(O)279", 1), // 魔法糖冰棍

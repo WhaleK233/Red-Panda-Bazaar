@@ -4,7 +4,11 @@ public static class I18nKeys
 {
     #region Text
 
-    public const string Text_50Coins = "Text.50Gold";
+    public const string Text_RedPandaBazaar = "Text.RedPandaBazaar";
+    public const string Text_CalicoDesert = "Text.CalicoDesert";
+    public const string Text_PelicanTown = "Text.PelicanTown";
+    public const string Text_CentralStation = "Text.CentralStation";
+    public const string Text_Gold = "Text.Gold";
 
     #endregion
 
