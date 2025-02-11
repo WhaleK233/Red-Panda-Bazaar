@@ -1,5 +1,12 @@
 ﻿{
-  /****** Version 1.1.0 Added ******/
+  /****** Version 1.0.3 Added ******/
+  /****** Delete "Text.50Glod" ******/
+  "Text.RedPandaBazaar": "小熊猫集市",
+  "Text.CalicoDesert": "卡利科沙漠",
+  "Text.PelicanTown": "星露谷-公交站",
+  "Text.CentralStation": "中央车站",
+  "Text.Gold": "金",
+  /****** Version 1.0.2 Added ******/
   "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
   "Dialogue.EntranceQuestion": "是否确定花费300金购买前往小熊猫集市的专车车票？",
   /*********
@@ -39,9 +46,5 @@
   "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplaySource": "小桃子冰棍",
   "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplayName": "美妙的味道, 爱来自小桃子冰棍",
   "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplaySource": "南瓜冰棍",
-  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "美妙的味道, 爱来自南瓜冰棍",
-  /*********
-    ** Text
-    *********/
-  "Text.50Gold": "50金"
+  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "美妙的味道, 爱来自南瓜冰棍"
 }

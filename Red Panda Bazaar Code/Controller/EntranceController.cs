@@ -1,4 +1,6 @@
-﻿using Red_Panda_Bazaar_Code.MiniGames;
+﻿using Microsoft.Xna.Framework;
+using Red_Panda_Bazaar_Code.Compatibility;
+using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -8,9 +10,17 @@ namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class EntranceController
 {
+    private static bool HasCentralStation = false;
+
     public static void Init()
     {
+        AddCentralStationDestination();
         Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        RegisterActions();
+    }
+
+    private static void RegisterActions()
+    {
         GameLocation.RegisterTouchAction("RedPandaBazaarBus", (location, strings, arg3, arg4) =>
             Game1.currentLocation.createQuestionDialogue(
                 Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
@@ -30,6 +40,56 @@ public static class EntranceController
                 }
             )
         );
+
+        Station[] stations;
+        Response[] responses;
+        SetStations(out stations, out responses);
+        GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (location, strings, arg3, arg4) =>
+            {
+                Game1.currentLocation.createQuestionDialogue(
+                    Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
+                    responses,
+                    (f, answer) =>
+                    {
+                        if (answer != "Cancel")
+                        {
+                            foreach (var station in stations)
+                            {
+                                if (answer == station.mapName && Tools.Charge(station.price))
+                                {
+                                    Game1.pauseThenMessage(1500, null);
+                                    Game1.currentLocation.localSound("busDriveOff");
+                                    Game1.warpFarmer(station.mapName, station.tile.X, station.tile.Y,
+                                        station.facingDirection);
+                                }
+                            }
+                        }
+                    }
+                );
+                return false;
+            }
+        );
+    }
+
+    private static void SetStations(out Station[] stations, out Response[] responses)
+    {
+        List<Station> StationList = new List<Station>();
+        List<Response> ResponseList = new List<Response>();
+        StationList.Add(new Station("Desert", new Point(18, 28), 2, 500));
+        ResponseList.Add(new Response("Desert",
+            Tools.I18n.Get(I18nKeys.Text_CalicoDesert) + " (500" + Tools.I18n.Get(I18nKeys.Text_Gold) + ")"));
+        StationList.Add(new Station("BusStop", new Point(22, 9), 2, 0));
+        ResponseList.Add(new Response("BusStop", Tools.I18n.Get(I18nKeys.Text_PelicanTown)));
+        if (HasCentralStation)
+        {
+            StationList.Add(new Station("Pathoschild.CentralStation_CentralStation", new Point(60, 13), 2, 0));
+            ResponseList.Add(new Response("Pathoschild.CentralStation_CentralStation",
+                Tools.I18n.Get(I18nKeys.Text_CentralStation)));
+        }
+
+        ResponseList.Add(new Response("Cancel", "Cancel"));
+        stations = StationList.ToArray();
+        responses = ResponseList.ToArray();
     }
 
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
@@ -68,6 +128,42 @@ public static class EntranceController
                     }
                 }
             );
+        }
+    }
+
+    private static void AddCentralStationDestination()
+    {
+        var centralStation = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>("Pathoschild.CentralStation");
+        if (centralStation != null)
+        {
+            HasCentralStation = true;
+        }
+
+        centralStation?.RegisterStop(
+            id: "RedPandaBazaarStation",
+            displayName: () => "Red Panda Bazaar",
+            toLocation: "Custom_MapleBridge",
+            toTile: new Point(27, 40),
+            toFacingDirection: Game1.down,
+            cost: 300,
+            network: "Bus",
+            condition: null
+        );
+    }
+
+    private class Station
+    {
+        public int facingDirection;
+        public string mapName;
+        public int price;
+        public Point tile;
+
+        public Station(string mapName, Point tile, int facingDirection, int price)
+        {
+            this.mapName = mapName;
+            this.tile = tile;
+            this.facingDirection = facingDirection;
+            this.price = price;
         }
     }
 }
