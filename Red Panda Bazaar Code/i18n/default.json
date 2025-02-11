@@ -1,5 +1,12 @@
 ﻿{
-  /****** Version 1.1.0 Added ******/
+  /****** Version 1.0.3 Added ******/
+  /****** Delete "Text.50Glod" ******/
+  "Text.RedPandaBazaar": "Red Panda Bazaar",
+  "Text.CalicoDesert": "Calico Desert",
+  "Text.PelicanTown": "Stardew Valley - Bus Stop",
+  "Text.CentralStation": "Central Station",
+  "Text.Gold": "g",
+  /****** Version 1.0.2 Added ******/
   "Config.AnimationSpeed.PrizeMenu": "Prize animation speed",
   "Dialogue.EntranceQuestion": "Do you want to spend 300 gold to buy a special bus ticket to the Red Panda Bazaar?",
   /*********
@@ -40,8 +47,4 @@
   "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplayName": "Wonderful taste, love from Peach Popsicle",
   "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplaySource": "Pumpkin Popsicle",
   "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "Wonderful taste, love from Pumpkin Popsicle",
-  /*********
-    ** Text
-    *********/
-  "Text.50Gold": "50 Gold"
 }
