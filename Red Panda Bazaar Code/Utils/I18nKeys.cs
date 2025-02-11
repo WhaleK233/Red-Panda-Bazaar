@@ -46,6 +46,8 @@ public static class I18nKeys
 
     public const string Dialogue_EntranceQuestion = "Dialogue.EntranceQuestion";
 
+    public const string Dialogue_WhereToGo = "Dialogue.WhereToGo";
+
     #endregion Dialogue
 
     #region Display

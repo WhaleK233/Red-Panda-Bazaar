@@ -6,6 +6,7 @@
   "Text.PelicanTown": "星露谷-公交站",
   "Text.CentralStation": "中央车站",
   "Text.Gold": "金",
+  "Dialogue.WhereToGo": "你想去哪？",
   /****** Version 1.0.2 Added ******/
   "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
   "Dialogue.EntranceQuestion": "是否确定花费300金购买前往小熊猫集市的专车车票？",
