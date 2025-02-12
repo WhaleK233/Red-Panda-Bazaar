@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility;
-using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -129,10 +128,6 @@ public static class EntranceController
             return;
 
         var tile = e.Cursor.GrabTile;
-        if (Game1.player.canMove && tile.X == 20 && (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
-        {
-            Game1.currentMinigame = new RPB_TetrisGame();
-        }
 
         if (Game1.player.canMove && tile.X == 19 && (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
         {
