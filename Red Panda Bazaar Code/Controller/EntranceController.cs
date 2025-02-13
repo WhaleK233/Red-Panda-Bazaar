@@ -23,15 +23,15 @@ public static class EntranceController
 
     private static void RegisterActions()
     {
-        GameLocation.RegisterTouchAction("RedPandaBazaarBus", (location, strings, arg3, arg4) =>
+        GameLocation.RegisterTouchAction("RedPandaBazaarBus", (_, _, _, _) =>
             Game1.currentLocation.createQuestionDialogue(
                 Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
                 new Response[]
                 {
-                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
                 },
-                (f, answer) =>
+                (_, answer) =>
                 {
                     if (answer == "Positive")
                     {
@@ -44,12 +44,12 @@ public static class EntranceController
         );
 
         SetStations(out var stations, out var responses);
-        GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (location, strings, arg3, arg4) =>
+        GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (_, _, _, _) =>
             {
                 Game1.currentLocation.createQuestionDialogue(
                     Tools.I18n.Get(I18nKeys.Dialogue_WhereToGo),
                     responses,
-                    (f, answer) =>
+                    (_, answer) =>
                     {
                         if (answer != "Cancel")
                         {
@@ -125,16 +125,16 @@ public static class EntranceController
 
         var tile = e.Cursor.GrabTile;
 
-        if (Game1.player.canMove && tile.X == 19 && (tile.Y == 10 || tile.Y == 11 || tile.Y == 12))
+        if (Game1.player.canMove && tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
         {
             Tools.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
                 new Response[]
                 {
-                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
                 },
-                (f, answer) =>
+                (_, answer) =>
                 {
                     if (answer == "Positive" && Tools.Charge(300))
                     {

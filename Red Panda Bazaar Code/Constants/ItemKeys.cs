@@ -1,6 +1,6 @@
 ﻿namespace Red_Panda_Bazaar_Code.Constants;
 
-public static class NameKeys
+public static class ItemKeys
 {
     public static class Food
     {
@@ -14,7 +14,19 @@ public static class NameKeys
         public const string Pumpkin_Popsicle = "RedPandaBazaar_Pumpkin_Popsicle";
     }
 
-    public static class Hat
+    public static class Tickets
+    {
+        public const string ClassicTicket = "RedPandaBazaar_Prize_Ticket_1";
+        public const string GenericTicket = "PrizeTicket";
+        public const string JojaTicket = "RedPandaBazaar_Prize_Ticket_4";
+    }
+
+    public static class Furniture
+    {
+        public const string FireFlyFurniture = "RedPandaBazaar_StatuePlants1";
+    }
+
+    public static class Hats
     {
         public const string GamblerHat = "RedPandaBazaar_GamblerHat";
     }

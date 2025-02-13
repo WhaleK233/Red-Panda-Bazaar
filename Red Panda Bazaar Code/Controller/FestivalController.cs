@@ -13,21 +13,16 @@ namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class FestivalController
 {
-    private static bool added = false;
-    private static bool Enabled { get; set; } = false;
+    private static bool added;
 
     /// <summary>启用春8的一些效果</summary>
     public static void Init()
     {
-        // 如果未启用
-        if (!Enabled)
-        {
-            Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
-            added = false;
-            Enabled = true;
-            Tools.Log("Festival Initialized.");
-        }
+        added = false;
+
+        Tools.Log("Festival Initialized.");
     }
 
     /// <summary>渲染星星币数量</summary>
@@ -73,7 +68,7 @@ public static class FestivalController
                 HandleWheelBetGame(); // 进行轮盘赌小游戏
                 break;
             case (40, 62):
-                Game1.activeClickableMenu = new RPB_PrizeTicketMenu(); // 打开兑奖机界面
+                Game1.activeClickableMenu = new RPB_ClassicMachineMenu(); // 打开兑奖机界面
                 break;
             case (26, 77):
                 BuyBackpack(); // 购买背包
