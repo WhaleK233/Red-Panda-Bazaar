@@ -33,8 +33,8 @@ public class RPB_ClassicMachineMenu : IClickableMenu
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
 
-        GettingRewardTime = 2000f / Tools.ModConfig.AnimationSpeed_PrizeMenu;
-        GettingRewardOffset = 1000f / Tools.ModConfig.AnimationSpeed_PrizeMenu;
+        GettingRewardTime = 2000f / Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
+        GettingRewardOffset = 1000f / Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
 
         prize = newPrizeItem();
 
@@ -166,7 +166,7 @@ public class RPB_ClassicMachineMenu : IClickableMenu
         if (this.gettingReward) // 如果正在获奖
         {
             Vector2 vector2 = new Vector2(52f, 21f) * 4f; // 获取位置
-            vector2.Y -= (this.getRewardTimer * Tools.ModConfig.AnimationSpeed_PrizeMenu / 13f);
+            vector2.Y -= (this.getRewardTimer * Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier / 13f);
             vector2.Y = Math.Max(vector2.Y, 0.0f);
             // 添加抖动效果
             vector2.X += this.getRewardTimer / GettingRewardOffset * (float)Game1.random.Next(-1, 2);

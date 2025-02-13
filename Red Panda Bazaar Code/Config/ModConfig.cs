@@ -2,7 +2,7 @@
 
 public class ModConfig
 {
-    public int NumberOfFireFly { get; set; } = 300;
+    public float CritterMultiplier { get; set; } = 1.0f;
 
-    public float AnimationSpeed_PrizeMenu { get; set; } = 1.0f;
+    public float AnimationSpeed_PrizeMenu_Multiplier { get; set; } = 1.0f;
 }

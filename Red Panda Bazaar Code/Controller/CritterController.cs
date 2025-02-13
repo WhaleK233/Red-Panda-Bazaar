@@ -39,7 +39,7 @@ public static class CritterController
         if (!IsRightLoc) return;
         counter++;
         var loc = Game1.currentLocation;
-        if (IsDuskTime(loc) && counter >= 60 && loc.critters.Count > 0)
+        if (IsDuskTime(loc) && counter >= 30 && loc.critters.Count > 0)
         {
             loc.critters.RemoveAt(loc.critters.Count - 1);
             Tools.Log("Remove one critter");
@@ -47,7 +47,7 @@ public static class CritterController
         }
 
         if (Game1.timeOfDay > Game1.getTrulyDarkTime(loc) - 100 &&
-            loc.critters.Count <= GetNumber(loc, CType.Firefly) && counter >= 20)
+            loc.critters.Count <= GetNumber(loc, CType.Firefly) && counter >= 30)
         {
             var tile = loc.getRandomTile();
             loc.critters.Add(GetNewCritter(loc, tile, CType.Firefly));
@@ -60,7 +60,7 @@ public static class CritterController
     {
         if (Game1.season is Season.Winter or Season.Fall) return;
         var loc = e.NewLocation;
-        if (IsGoodWeather())
+        if (IsGoodWeather() && !IsDuskTime(loc))
         {
             List<Furniture> furnitureList = new List<Furniture>(loc.furniture);
             foreach (var furniture in furnitureList)
@@ -159,11 +159,11 @@ public static class CritterController
 
     private static float GetPercentage(int type)
     {
-        var b = Tools.ModConfig.NumberOfFireFly;
+        var b = Tools.ModConfig.CritterMultiplier;
         return type switch
         {
-            0 => 0.03f,
-            1 => 0.02f,
+            0 => 0.03f * b,
+            1 => 0.02f * b,
             _ => 0.0f
         };
     }
