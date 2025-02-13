@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Constants;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -18,20 +19,24 @@ public static class BuffController
         // 如果未启用
         if (!Enabled)
         {
-            InitCustomBuffs();
-
+            Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
             Enabled = true;
-            Tools.Log("Custom Buffs Enabled");
+            Tools.Log("Buffs Initialized.");
         }
+    }
+
+    private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+    {
+        InitCustomBuffs();
     }
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
         if (Context.IsWorldReady && Context.IsGameLaunched)
         {
-            if (Game1.player.hat?.Get()?.Name == Constants.NameKeys.Hat.GamblerHat)
+            if (Game1.player.hat?.Get()?.Name == NameKeys.Hat.GamblerHat)
             {
                 Game1.player.applyBuff(new Buff(
                     id: "speed",
@@ -48,7 +53,7 @@ public static class BuffController
     private static void InitCustomBuffs()
     {
         int index = 0;
-        buffDict[Constants.NameKeys.Food.Golden_Delight] = new Buff(
+        buffDict[NameKeys.Food.Golden_Delight] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName),
@@ -68,7 +73,7 @@ public static class BuffController
             }
         );
 
-        buffDict[Constants.NameKeys.Food.Golden_Cupcake] = new Buff(
+        buffDict[NameKeys.Food.Golden_Cupcake] = new Buff(
             id: "RedPandaBazaar_Golden_Cupcake",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplaySource).ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName).ToString(),
@@ -80,10 +85,12 @@ public static class BuffController
                 LuckLevel = { 6 },
             }
         );
-        buffDict[Constants.NameKeys.Food.Golden_Flavor_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Golden_Flavor_Popsicle] = new Buff(
             id: "RedPandaBazaar_Golden_Flavor_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName).ToString(),
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource)
+                .ToString(),
+            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName)
+                .ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
@@ -95,7 +102,7 @@ public static class BuffController
                 Attack = { 3 }
             }
         );
-        buffDict[Constants.NameKeys.Food.Coffee_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Coffee_Popsicle] = new Buff(
             id: "RedPandaBazaar_Coffee_Popsicle",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplayName).ToString(),
@@ -107,7 +114,7 @@ public static class BuffController
                 Speed = { 1 }
             }
         );
-        buffDict[Constants.NameKeys.Food.Fern_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Fern_Popsicle] = new Buff(
             id: "RedPandaBazaar_Fern_Popsicle",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplayName).ToString(),
@@ -120,7 +127,7 @@ public static class BuffController
                 ForagingLevel = { 5 }
             }
         );
-        buffDict[Constants.NameKeys.Food.Mango_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Mango_Popsicle] = new Buff(
             id: "RedPandaBazaar_Mango_Popsicle",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplayName).ToString(),
@@ -132,7 +139,7 @@ public static class BuffController
                 ForagingLevel = { 2 }
             }
         );
-        buffDict[Constants.NameKeys.Food.Peach_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Peach_Popsicle] = new Buff(
             id: "RedPandaBazaar_Peach_Popsicle",
             displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName).ToString(),
@@ -145,9 +152,10 @@ public static class BuffController
                 Defense = { 1 }
             }
         );
-        buffDict[Constants.NameKeys.Food.Pumpkin_Popsicle] = new Buff(
+        buffDict[NameKeys.Food.Pumpkin_Popsicle] = new Buff(
             id: "RedPandaBazaar_Pumpkin_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource).ToString(),
+            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource)
+                .ToString(),
             displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,

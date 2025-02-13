@@ -6,16 +6,19 @@ namespace Red_Panda_Bazaar_Code.Utils;
 
 public static class Tools
 {
-    public static IModHelper Helper { get; set; } = null;
-    public static ModConfig ModConfig { get; set; } = null;
-    public static IMonitor Monitor { get; set; } = null;
-    public static ITranslationHelper I18n { get; set; } = null;
+    public static IModHelper Helper { get; set; }
+    public static ModConfig ModConfig { get; set; }
+    public static IMonitor Monitor { get; set; }
+    public static ITranslationHelper I18n { get; set; }
 
-    public static void Init(IModHelper helper, ModConfig modConfig, IMonitor monitor)
+    public static IManifest ModManifest { get; set; }
+
+    public static void Init(IModHelper helper, ModConfig modConfig, IMonitor monitor, IManifest manifest)
     {
         Helper = helper;
         ModConfig = modConfig;
         Monitor = monitor;
+        ModManifest = manifest;
         I18n = Helper.Translation;
     }
 

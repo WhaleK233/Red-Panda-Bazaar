@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Compatibility
+namespace Red_Panda_Bazaar_Code.Compatibility.ModApi
 {
     /// <summary>The API which lets other mods add a config UI through Generic Mod Config Menu.</summary>
     public interface IGenericModConfigMenuApi

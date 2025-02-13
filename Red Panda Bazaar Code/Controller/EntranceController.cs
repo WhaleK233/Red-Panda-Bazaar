@@ -9,13 +9,11 @@ namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class EntranceController
 {
-    private static bool HasCentralStation = false;
-
     public static void Init()
     {
-        AddCentralStationDestination();
         Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        Tools.Log("Entrance Initialized.");
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
@@ -45,9 +43,7 @@ public static class EntranceController
             )
         );
 
-        Station[] stations;
-        Response[] responses;
-        SetStations(out stations, out responses);
+        SetStations(out var stations, out var responses);
         GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (location, strings, arg3, arg4) =>
             {
                 Game1.currentLocation.createQuestionDialogue(
@@ -101,7 +97,7 @@ public static class EntranceController
         StationList.Add(new Station("BusStop", new Point(22, 9), 2, 0));
         ResponseList.Add(new Response("BusStop", Tools.I18n.Get(I18nKeys.Text_PelicanTown)));
 
-        if (HasCentralStation)
+        if (ModCompat.Mods.CentralStation)
         {
             StationList.Add(new Station("Pathoschild.CentralStation_CentralStation", new Point(60, 13), 2, 0));
             ResponseList.Add(new Response("Pathoschild.CentralStation_CentralStation",
@@ -151,32 +147,12 @@ public static class EntranceController
         }
     }
 
-    private static void AddCentralStationDestination()
-    {
-        var centralStation = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>("Pathoschild.CentralStation");
-        if (centralStation != null)
-        {
-            HasCentralStation = true;
-        }
-
-        centralStation?.RegisterStop(
-            id: "RedPandaBazaarStation",
-            displayName: () => "Red Panda Bazaar",
-            toLocation: "Custom_MapleBridge",
-            toTile: new Point(27, 40),
-            toFacingDirection: Game1.down,
-            cost: 300,
-            network: "Bus",
-            condition: null
-        );
-    }
-
     private class Station
     {
-        public int facingDirection;
-        public string mapName;
-        public int price;
-        public Point tile;
+        public readonly int facingDirection;
+        public readonly string mapName;
+        public readonly int price;
+        public readonly Point tile;
 
         public Station(string mapName, Point tile, int facingDirection, int price)
         {

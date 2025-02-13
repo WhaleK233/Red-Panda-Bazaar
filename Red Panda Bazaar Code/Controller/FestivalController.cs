@@ -26,7 +26,7 @@ public static class FestivalController
 
             added = false;
             Enabled = true;
-            Tools.Log("SpringFairFunctions Enabled");
+            Tools.Log("Festival Initialized.");
         }
     }
 

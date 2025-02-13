@@ -24,7 +24,7 @@ public static class MenuController
             InitPrizeList();
 
             Enabled = true;
-            Tools.Log("Custom Menus Enabled");
+            Tools.Log("Menus Initialized.");
         }
     }
 
