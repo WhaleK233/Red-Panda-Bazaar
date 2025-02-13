@@ -32,7 +32,7 @@ public class ModEntry : Mod
     private static void ControllerInit()
     {
         EntranceController.Init();
-        FireFlyController.Init();
+        CritterController.Init();
         FestivalController.Init();
         MenuController.Init();
         QuestController.Init();
