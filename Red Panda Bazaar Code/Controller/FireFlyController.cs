@@ -1,31 +1,48 @@
 ﻿using Microsoft.Xna.Framework;
+using Red_Panda_Bazaar_Code.Constants;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Locations;
+using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class FireFlyController
 {
-    private static bool Enabled { get; set; } = false;
-
     /// <summary>启用萤火虫效果</summary>
     public static void Init()
     {
-        // 如果未启用
-        if (!Enabled)
-        {
-            Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
 
-            Enabled = true;
-            Tools.Log("FireFlyEffects Initialized.");
-        }
+        Tools.Log("FireFlyEffects Initialized.");
     }
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        spawnFireFly(e.NewLocation);
+        var location = e.NewLocation;
+        if (Game1.timeOfDay > Game1.getTrulyDarkTime(location)
+            && location.IsOutdoors && !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing)
+        {
+            List<Furniture> furnitureList = new List<Furniture>();
+            if (location is Farm or DecoratableLocation)
+            {
+                furnitureList = new List<Furniture>(location.furniture);
+            }
+
+            foreach (var furniture in furnitureList)
+            {
+                if (furniture.name == ItemKeys.Furniture.FireFlyFurniture)
+                {
+                    var area = location.Map.GetLayer("Back").LayerSize.Area;
+                    spawns(location, (int)(area * 0.05));
+                    return;
+                }
+            }
+        }
+
+        spawnFireFly(location);
     }
 
     /// <summary>根据位置生成萤火虫</summary>
@@ -34,18 +51,20 @@ public static class FireFlyController
         if (location == null || Game1.timeOfDay < Game1.getStartingToGetDarkTime(location) ||
             Game1.season is Season.Winter or Season.Fall || Game1.isRaining || Game1.isLightning ||
             Game1.isSnowing) return;
+        var targetNumber = GetNumberOfFireFly(location);
 
-        var locationName = location.Name ?? "";
+        spawns(location, targetNumber);
+    }
 
+    private static void spawns(GameLocation location, int targetNumber)
+    {
         location.instantiateCrittersList();
-
-        var targetNumber = GetNumberOfFireFly(locationName);
-
         while (targetNumber > 0)
         {
             // 生成一个萤火虫
             var tile = location.getRandomTile();
-            location.critters.Add(SpawnNewFireFly(locationName, tile));
+
+            location.critters.Add(SpawnNewFireFly(tile));
             targetNumber--;
 
             var chance = Game1.random.NextDouble();
@@ -54,7 +73,7 @@ public static class FireFlyController
             {
                 var nearTile = GetNearTile(location, tile);
 
-                location.critters.Add(SpawnNewFireFly(locationName, nearTile));
+                location.critters.Add(SpawnNewFireFly(nearTile));
                 targetNumber--;
             }
 
@@ -63,9 +82,9 @@ public static class FireFlyController
             if (chance < 0.1 && targetNumber >= 2)
             {
                 var nearTile = GetNearTile(location, tile);
-                location.critters.Add(SpawnNewFireFly(locationName, nearTile));
+                location.critters.Add(SpawnNewFireFly(nearTile));
                 nearTile = GetNearTile(location, tile);
-                location.critters.Add(SpawnNewFireFly(locationName, nearTile));
+                location.critters.Add(SpawnNewFireFly(nearTile));
                 targetNumber -= 2;
             }
         }
@@ -85,13 +104,13 @@ public static class FireFlyController
     }
 
     /// <summary>生成萤火虫</summary>
-    private static Critter SpawnNewFireFly(string locationName, Vector2 tile)
+    private static Critter SpawnNewFireFly(Vector2 tile)
     {
         return new Firefly(tile);
     }
 
     /// <summary>根据玩家当前位置获取要生成的萤火虫的数量</summary>
-    private static int GetNumberOfFireFly(string locationName)
+    private static int GetNumberOfFireFly(GameLocation location)
     {
         var fireFlyDict = new Dictionary<string, double>
         {
@@ -104,12 +123,12 @@ public static class FireFlyController
             { "Custom_BazaarWest", 0.2 }
         };
 
-        if (fireFlyDict.TryGetValue(locationName, out double multiplier))
+        if (fireFlyDict.TryGetValue(location.Name, out double multiplier))
         {
             return (int)(Tools.ModConfig.NumberOfFireFly * multiplier);
         }
 
-        if (locationName == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
+        if (location.Name == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
         {
             return (int)(Tools.ModConfig.NumberOfFireFly * 0.6);
         }
