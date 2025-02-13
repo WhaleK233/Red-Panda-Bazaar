@@ -248,7 +248,7 @@ public static class FestivalController
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
         {
-            FireFlyController.spawnFireFly(Game1.currentLocation);
+            CritterController.spawns(Game1.currentLocation, CritterController.CType.Firefly);
         }
     }
 }
