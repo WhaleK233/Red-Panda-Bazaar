@@ -16,7 +16,7 @@ public static class I18nKeys
 
     public const string Config_Enable = "Config.Enable";
 
-    public const string Config_NumberOfFirefly = "Config.NumberOfFirefly";
+    public const string Config_NumberOfCritterMultiplier = "Config.NumberOfCritterMultiplier";
 
     public const string Config_AnimeSpeed_PrizeMenu = "Config.AnimationSpeed.PrizeMenu";
 
