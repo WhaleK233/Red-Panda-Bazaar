@@ -43,7 +43,8 @@ public static class CritterController
             counter = 0;
         }
 
-        if (IsNightTime(loc) && loc.critters.Count <= GetNumber(loc, CType.Firefly) && counter >= 20)
+        if (Game1.timeOfDay > Game1.getTrulyDarkTime(loc) - 100 &&
+            loc.critters.Count <= GetNumber(loc, CType.Firefly) && counter >= 20)
         {
             var tile = loc.getRandomTile();
             loc.critters.Add(GetNewCritter(loc, tile, CType.Firefly));
