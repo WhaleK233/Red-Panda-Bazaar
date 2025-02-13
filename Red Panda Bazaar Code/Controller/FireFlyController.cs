@@ -19,7 +19,7 @@ public static class FireFlyController
             Tools.Helper.Events.Player.Warped += OnPlayerWarped;
 
             Enabled = true;
-            Tools.Log("FireFlyEffects Enabled");
+            Tools.Log("FireFlyEffects Initialized.");
         }
     }
 

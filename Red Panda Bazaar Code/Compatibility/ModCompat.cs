@@ -1,6 +1,85 @@
-﻿namespace Red_Panda_Bazaar_Code.Compatibility;
+﻿using Microsoft.Xna.Framework;
+using Red_Panda_Bazaar_Code.Compatibility.ModApi;
+using Red_Panda_Bazaar_Code.Config;
+using Red_Panda_Bazaar_Code.Utils;
+using StardewValley;
+
+namespace Red_Panda_Bazaar_Code.Compatibility;
 
 public static class ModCompat
 {
-    public const string GenericModConfigMenu = "spacechase0.GenericModConfigMenu";
+    public static void Init()
+    {
+        InitializeGenericModConfigMenu();
+        AddCentralStationDestination();
+    }
+
+
+    private static void AddCentralStationDestination()
+    {
+        var centralStationApi = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);
+        if (centralStationApi == null) return;
+
+        Mods.CentralStation = true;
+
+        centralStationApi?.RegisterStop(
+            id: "RedPandaBazaarStation",
+            displayName: () => "Red Panda Bazaar",
+            toLocation: "Custom_MapleBridge",
+            toTile: new Point(27, 40),
+            toFacingDirection: Game1.down,
+            cost: 300,
+            network: "Bus",
+            condition: null
+        );
+    }
+
+    private static void InitializeGenericModConfigMenu()
+    {
+        // 获取通用模组配置菜单的API
+        var configMenuApi = Tools.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ID.GenericModConfigMenu);
+        if (configMenuApi == null) return;
+
+        Mods.GenericModConfigMenu = true;
+
+        // 注册模组
+        configMenuApi.Register(
+            mod: Tools.ModManifest,
+            reset: () => Tools.ModConfig = new ModConfig(),
+            save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
+        );
+
+        // 萤火虫数量
+        configMenuApi.AddNumberOption(
+            mod: Tools.ModManifest,
+            name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfFirefly),
+            getValue: () => Tools.ModConfig.NumberOfFireFly,
+            setValue: value => Tools.ModConfig.NumberOfFireFly = value,
+            min: 0,
+            max: 2048
+        );
+
+        //动画速度
+        configMenuApi.AddNumberOption(
+            mod: Tools.ModManifest,
+            name: () => Tools.I18n.Get(I18nKeys.Config_AnimeSpeed_PrizeMenu),
+            getValue: () => Tools.ModConfig.AnimationSpeed_PrizeMenu,
+            setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu = (float)Math.Round(value, 1),
+            min: 0.5f,
+            max: 5.0f,
+            formatValue: value => Math.Round(value, 1) + "×"
+        );
+    }
+
+    public static class Mods
+    {
+        public static bool GenericModConfigMenu { get; set; } = false;
+        public static bool CentralStation { get; set; } = false;
+    }
+
+    private static class ID
+    {
+        public const string GenericModConfigMenu = "spacechase0.GenericModConfigMenu";
+        public const string CentralStation = "Pathoschild.CentralStation";
+    }
 }
