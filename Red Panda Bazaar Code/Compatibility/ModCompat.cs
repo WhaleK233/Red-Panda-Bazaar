@@ -52,19 +52,20 @@ public static class ModCompat
         // 萤火虫数量
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
-            name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfFirefly),
-            getValue: () => Tools.ModConfig.NumberOfFireFly,
-            setValue: value => Tools.ModConfig.NumberOfFireFly = value,
-            min: 0,
-            max: 2048
+            name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfCritterMultiplier),
+            getValue: () => Tools.ModConfig.CritterMultiplier,
+            setValue: value => Tools.ModConfig.CritterMultiplier = (float)Math.Round(value, 1),
+            min: 0.5f,
+            max: 2.0f,
+            formatValue: value => Math.Round(value, 1) + "×"
         );
 
         //动画速度
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
             name: () => Tools.I18n.Get(I18nKeys.Config_AnimeSpeed_PrizeMenu),
-            getValue: () => Tools.ModConfig.AnimationSpeed_PrizeMenu,
-            setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu = (float)Math.Round(value, 1),
+            getValue: () => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier,
+            setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier = (float)Math.Round(value, 1),
             min: 0.5f,
             max: 5.0f,
             formatValue: value => Math.Round(value, 1) + "×"
