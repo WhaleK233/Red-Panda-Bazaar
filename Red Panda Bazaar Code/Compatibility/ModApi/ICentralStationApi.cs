@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Compatibility;
+namespace Red_Panda_Bazaar_Code.Compatibility.ModApi;
 
 /// <summary>The public API for the Central Station mod.</summary>
 public interface ICentralStationApi

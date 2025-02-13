@@ -12,6 +12,8 @@ public static class RPBData
     {
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         Tools.Helper.Events.GameLoop.Saving += OnSaving;
+
+        Tools.Log("Data Initialized.");
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

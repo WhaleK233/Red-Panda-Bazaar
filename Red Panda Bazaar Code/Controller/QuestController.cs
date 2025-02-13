@@ -18,36 +18,41 @@ public static class QuestController
         {
             Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
-            GameLocation.RegisterTileAction("RedPandaBazaar_PrizeTicketReward",
-                (location, strings, arg3, arg4) =>
+            RegisterActions();
+
+            Enabled = true;
+            Tools.Log("Quests Initialized.");
+        }
+    }
+
+    private static void RegisterActions()
+    {
+        GameLocation.RegisterTileAction("RedPandaBazaar_PrizeTicketReward",
+            (location, strings, arg3, arg4) =>
+            {
+                if (RPBData.PrizeTicketReward > 0U)
                 {
-                    if (RPBData.PrizeTicketReward > 0U)
+                    if (Game1.player.couldInventoryAcceptThisItem(
+                            ItemRegistry.Create("(O)RedPandaBazaar_Prize_Ticket_1")))
                     {
-                        if (Game1.player.couldInventoryAcceptThisItem(
-                                ItemRegistry.Create("(O)RedPandaBazaar_Prize_Ticket_1")))
-                        {
-                            Game1.player.addItemToInventoryBool(
-                                ItemRegistry.Create("(O)RedPandaBazaar_Prize_Ticket_1"));
-                            RPBData.PrizeTicketRewardDecrement();
-                            Game1.playSound("coin");
-                        }
-                        else
-                        {
-                            Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Crop.cs.588"));
-                        }
+                        Game1.player.addItemToInventoryBool(
+                            ItemRegistry.Create("(O)RedPandaBazaar_Prize_Ticket_1"));
+                        RPBData.PrizeTicketRewardDecrement();
+                        Game1.playSound("coin");
                     }
                     else
                     {
-                        Game1.drawObjectDialogue("这里什么都没有，要不去给陈小茗供点货？");
+                        Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Crop.cs.588"));
                     }
-
-                    return true;
                 }
-            );
+                else
+                {
+                    Game1.drawObjectDialogue("这里什么都没有，要不去给陈小茗供点货？");
+                }
 
-            Enabled = true;
-            Tools.Log("Custom Quests Enabled");
-        }
+                return true;
+            }
+        );
     }
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
