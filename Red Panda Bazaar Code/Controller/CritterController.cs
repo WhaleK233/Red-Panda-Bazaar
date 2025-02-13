@@ -23,6 +23,8 @@ public static class CritterController
 
     public static int counter = 0;
 
+    public static bool IsRightLoc = false;
+
     /// <summary>启用萤火虫效果</summary>
     public static void Init()
     {
@@ -34,6 +36,7 @@ public static class CritterController
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
+        if (!IsRightLoc) return;
         counter++;
         var loc = Game1.currentLocation;
         if (IsDuskTime(loc) && counter >= 60 && loc.critters.Count > 0)
@@ -55,6 +58,7 @@ public static class CritterController
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
+        if (Game1.season is Season.Winter or Season.Fall) return;
         var loc = e.NewLocation;
         if (IsGoodWeather())
         {
@@ -66,21 +70,26 @@ public static class CritterController
                     if (IsDayTime(loc))
                     {
                         spawns(loc, CType.Butterfly);
-                        Tools.Log("spawns butterfly");
+                        IsRightLoc = true;
                     }
                     else if (IsNightTime(loc))
                     {
                         spawns(loc, CType.Firefly);
-                        Tools.Log("spawns firefly");
+                        IsRightLoc = true;
                     }
                 }
             }
         }
-        else if ((!IsDayTime(loc) && Game1.season is not (Season.Winter or Season.Fall) && IsGoodWeather() &&
+        else if ((!IsDayTime(loc) && IsGoodWeather() &&
                   Maps.Contains(loc.Name)) ||
                  loc.Name == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
         {
             spawns(loc, CType.Firefly);
+            IsRightLoc = true;
+        }
+        else
+        {
+            IsRightLoc = false;
         }
     }
 
