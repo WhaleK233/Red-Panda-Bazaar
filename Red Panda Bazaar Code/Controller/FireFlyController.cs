@@ -23,7 +23,7 @@ public static class FireFlyController
     {
         var location = e.NewLocation;
         if (Game1.timeOfDay > Game1.getTrulyDarkTime(location)
-            && location.IsOutdoors && !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing)
+            /*&& location.IsOutdoors*/ && !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing)
         {
             List<Furniture> furnitureList = new List<Furniture>();
             if (location is Farm or DecoratableLocation)
