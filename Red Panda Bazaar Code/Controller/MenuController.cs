@@ -12,33 +12,27 @@ public static class MenuController
     public static List<Tuple<string, int>> CouponPrizeList;
     public static List<Tuple<string, int>> JojaCommonPrizeList;
     public static List<Tuple<string, int>> JojaCouponPrizeList;
-    private static bool Enabled { get; set; } = false;
 
     /// <summary>启用自定义菜单</summary>
     public static void Init()
     {
-        // 如果未启用
-        if (!Enabled)
-        {
-            InitCustomMenus();
-            InitPrizeList();
+        InitCustomMenus();
+        InitPrizeList();
 
-            Enabled = true;
-            Tools.Log("Menus Initialized.");
-        }
+        Tools.Log("Menus Initialized.");
     }
 
     private static void InitCustomMenus()
     {
         GameLocation.RegisterTileAction("RedPandaBazaar_PrizeMachine_1", (location, strings, arg3, arg4) =>
             {
-                Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu();
+                Game1.activeClickableMenu = (IClickableMenu)new RPB_ClassicMachineMenu();
                 return false;
             }
         );
         GameLocation.RegisterTileAction("RedPandaBazaar_PrizeMachine_2", (location, strings, arg3, arg4) =>
             {
-                Game1.activeClickableMenu = (IClickableMenu)new RPB_PrizeTicketMenu_Joja();
+                Game1.activeClickableMenu = (IClickableMenu)new RPB_JojaMachineMenu();
                 return false;
             }
         );

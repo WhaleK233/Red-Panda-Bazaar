@@ -8,27 +8,20 @@ namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class QuestController
 {
-    private static bool Enabled { get; set; } = false;
-
     /// <summary>启用自定义任务</summary>
     public static void Init()
     {
-        // 如果未启用
-        if (!Enabled)
-        {
-            Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
-            RegisterActions();
-
-            Enabled = true;
-            Tools.Log("Quests Initialized.");
-        }
+        RegisterActions();
+        
+        Tools.Log("Quests Initialized.");
     }
 
     private static void RegisterActions()
     {
         GameLocation.RegisterTileAction("RedPandaBazaar_PrizeTicketReward",
-            (location, strings, arg3, arg4) =>
+            (_, _, _, _) =>
             {
                 if (RPBData.PrizeTicketReward > 0U)
                 {
