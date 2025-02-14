@@ -2,7 +2,6 @@
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Controller;
-using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.HarmonyPatch;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -23,14 +22,14 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        ModCompat.Init();
-        RPBData.Init();
         ControllerInit();
         HarmonyPatch();
+        ModCompat.Init();
     }
 
     private static void ControllerInit()
     {
+        DataController.Init();
         EntranceController.Init();
         CritterController.Init();
         FestivalController.Init();
