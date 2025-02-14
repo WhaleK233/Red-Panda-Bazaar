@@ -1,4 +1,5 @@
 ﻿using Red_Panda_Bazaar_Code.Config;
+using Red_Panda_Bazaar_Code.Constant;
 using StardewModdingAPI;
 using StardewValley;
 
