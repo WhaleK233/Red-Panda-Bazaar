@@ -28,8 +28,8 @@ public static class EntranceController
                 Game1.content.LoadString("Strings\\Locations:Desert_Return_Question"),
                 new Response[]
                 {
-                    new("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (_, answer) =>
                 {
@@ -47,7 +47,7 @@ public static class EntranceController
         GameLocation.RegisterTileAction("RedPandaBazaar_TicketStation", (_, _, _, _) =>
             {
                 Game1.currentLocation.createQuestionDialogue(
-                    Tools.I18n.Get(I18nKeys.Dialogue_WhereToGo),
+                    Tools.GetI18n(I18nKeys.Dialogue_WhereToGo),
                     responses,
                     (_, answer) =>
                     {
@@ -95,17 +95,17 @@ public static class EntranceController
         List<Response> ResponseList = new List<Response>();
 
         StationList.Add(new Station("BusStop", new Point(22, 9), 2, 0));
-        ResponseList.Add(new Response("BusStop", Tools.I18n.Get(I18nKeys.Text_PelicanTown)));
+        ResponseList.Add(new Response("BusStop", Tools.GetI18n(I18nKeys.Text_PelicanTown)));
 
         if (ModCompat.Mods.CentralStation)
         {
             StationList.Add(new Station("Pathoschild.CentralStation_CentralStation", new Point(60, 13), 2, 0));
             ResponseList.Add(new Response("Pathoschild.CentralStation_CentralStation",
-                Tools.I18n.Get(I18nKeys.Text_CentralStation)));
+                Tools.GetI18n(I18nKeys.Text_CentralStation)));
         }
 
         ResponseList.Add(new Response("Desert",
-            Tools.I18n.Get(I18nKeys.Text_CalicoDesert) + " (500" + Tools.I18n.Get(I18nKeys.Text_Gold) + ")"));
+            Tools.GetI18n(I18nKeys.Text_CalicoDesert) + " (500" + Tools.GetI18n(I18nKeys.Text_Gold) + ")"));
         ResponseList.Add(new Response("Cancel", "Cancel"));
 
         stations = StationList.ToArray();
@@ -128,11 +128,11 @@ public static class EntranceController
         if (Game1.player.canMove && tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
         {
             Tools.Helper.Input.Suppress(e.Button);
-            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_EntranceQuestion),
+            Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_EntranceQuestion),
                 new Response[]
                 {
-                    new("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (_, answer) =>
                 {

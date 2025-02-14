@@ -49,8 +49,8 @@ public static class BuffController
         int index = 0;
         buffDict[ItemKeys.Food.Golden_Delight] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: Buff.ENDLESS,
@@ -69,8 +69,8 @@ public static class BuffController
 
         buffDict[ItemKeys.Food.Golden_Cupcake] = new Buff(
             id: "RedPandaBazaar_Golden_Cupcake",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName).ToString(),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplaySource).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 240000,
@@ -81,9 +81,9 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Golden_Flavor_Popsicle] = new Buff(
             id: "RedPandaBazaar_Golden_Flavor_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource)
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource)
                 .ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName)
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplayName)
                 .ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
@@ -98,8 +98,8 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Coffee_Popsicle] = new Buff(
             id: "RedPandaBazaar_Coffee_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplayName).ToString(),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplaySource).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
@@ -110,8 +110,8 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Fern_Popsicle] = new Buff(
             id: "RedPandaBazaar_Fern_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplayName).ToString(),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplaySource).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
@@ -123,8 +123,8 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Mango_Popsicle] = new Buff(
             id: "RedPandaBazaar_Mango_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplayName).ToString(),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplaySource).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
@@ -135,8 +135,8 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Peach_Popsicle] = new Buff(
             id: "RedPandaBazaar_Peach_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplaySource).ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName).ToString(),
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplaySource).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
@@ -148,9 +148,9 @@ public static class BuffController
         );
         buffDict[ItemKeys.Food.Pumpkin_Popsicle] = new Buff(
             id: "RedPandaBazaar_Pumpkin_Popsicle",
-            displaySource: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource)
+            displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource)
                 .ToString(),
-            displayName: Tools.I18n.Get(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplayName).ToString(),
+            displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplayName).ToString(),
             iconTexture: Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png"),
             iconSheetIndex: index++,
             duration: 300000,
