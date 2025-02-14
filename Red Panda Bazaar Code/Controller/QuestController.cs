@@ -1,5 +1,4 @@
-﻿using Red_Panda_Bazaar_Code.Data;
-using Red_Panda_Bazaar_Code.Menus;
+﻿using Red_Panda_Bazaar_Code.Menus;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -20,7 +19,7 @@ public static class QuestController
 
     private static void RegisterActions()
     {
-        GameLocation.RegisterTileAction("RedPandaBazaar_PrizeTicketReward",
+        /*GameLocation.RegisterTileAction("RedPandaBazaar_PrizeTicketReward",
             (_, _, _, _) =>
             {
                 if (RPBData.PrizeTicketReward > 0U)
@@ -45,7 +44,7 @@ public static class QuestController
 
                 return true;
             }
-        );
+        );*/
     }
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
