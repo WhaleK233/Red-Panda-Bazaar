@@ -1,7 +1,7 @@
 {
   "Name": "Red Panda Bazaar Code",
   "Author": "WhaleK233",
-  "Version": "1.0.5-alpha.39",
+  "Version": "1.0.5-alpha.40",
   "Description": "The C# code part of Red Panda Bazaar mod, all assets come from LiLaoliu",
   "UniqueID": "WhaleK233.RedPandaBazaarCode",
   "EntryDll": "Red Panda Bazaar Code.dll",
@@ -12,6 +12,10 @@
   "Dependencies": [
     {
       "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "Pathoschild.CentralStation",
       "IsRequired": false
     },
     {
