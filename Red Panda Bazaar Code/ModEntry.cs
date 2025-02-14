@@ -40,7 +40,7 @@ public class ModEntry : Mod
 
     private void HarmonyPatch()
     {
-        var harmony = new Harmony(this.ModManifest.UniqueID);
+        var harmony = new Harmony(Tools.ModManifest.UniqueID);
         HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
         HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
     }
