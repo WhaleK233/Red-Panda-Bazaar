@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -114,18 +115,19 @@ public static class EntranceController
 
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value)
+        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value ||
+            !Game1.player.canMove)
+            return;
+
+        if (Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
             return;
 
         if (!Game1.currentLocation.Name.Contains("BusStop"))
             return;
 
-        if (StardewModdingAPI.Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
-            return;
-
         var tile = e.Cursor.GrabTile;
 
-        if (Game1.player.canMove && tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
+        if (tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
         {
             Tools.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_EntranceQuestion),

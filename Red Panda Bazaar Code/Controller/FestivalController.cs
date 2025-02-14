@@ -1,28 +1,69 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Menus;
 using Red_Panda_Bazaar_Code.MiniGames;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Network;
 using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class FestivalController
 {
-    private static bool added;
+    private static bool IsFestivalDay;
 
     /// <summary>启用春8的一些效果</summary>
     public static void Init()
     {
         Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
-        added = false;
+        IsFestivalDay = false;
 
         Tools.Log("Festival Initialized.");
+    }
+
+    [EventPriority(EventPriority.High)]
+    private static void OnDayStarted(object? sender, DayStartedEventArgs e)
+    {
+        // 如果今天是春7, 调整第二天天气为微风
+        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 7)
+        {
+            Game1.weatherForTomorrow = Game1.weather_debris;
+        }
+
+        // 如果今天是春8, 添加小游戏触发条件, 覆盖今天天气为微风
+        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 8)
+        {
+            if (!IsFestivalDay)
+            {
+                Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+                Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+                Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+                IsFestivalDay = true;
+            }
+
+            Game1.netWorldState.Value.GetWeatherForLocation("Default").isDebrisWeather.Value = true;
+            Game1.ApplyWeatherForNewDay();
+        }
+        // 如果今天不是春8且小游戏触发条件未移除, 则移除小游戏触发条件, 防止重复判定影响性能
+        else if (IsFestivalDay)
+        {
+            Tools.Helper.Events.Input.ButtonPressed -= OnButtonPressed;
+            Tools.Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
+            Tools.Helper.Events.Player.Warped -= OnPlayerWarped;
+            IsFestivalDay = false;
+        }
+    }
+
+    private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
+    {
+        if (Game1.CurrentEvent?.FestivalName == "SpringFair")
+        {
+            CritterController.spawns(Game1.currentLocation, CritterController.CType.Firefly);
+        }
     }
 
     /// <summary>渲染星星币数量</summary>
@@ -48,10 +89,15 @@ public static class FestivalController
     /// <summary>检测是否为节日交互图块</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (Game1.CurrentEvent == null || Game1.CurrentEvent.FestivalName != "SpringFair" ||
-            Game1.activeClickableMenu != null || !Context.CanPlayerMove) return;
+        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value ||
+            !Game1.player.canMove)
+            return;
 
-        if (!e.Button.IsActionButton()) return;
+        if (Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
+            return;
+
+        if (Game1.CurrentEvent.FestivalName != "SpringFair")
+            return;
 
         var tile = e.Cursor.GrabTile;
 
@@ -110,8 +156,8 @@ public static class FestivalController
             Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_TargetGameQuestion),
                 new Response[]
                 {
-                    new Response("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (f, answer) =>
                 {
@@ -130,8 +176,8 @@ public static class FestivalController
             Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_FishingGameQuestion),
                 new Response[]
                 {
-                    new Response("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
+                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (f, answer) =>
                 {
@@ -196,59 +242,6 @@ public static class FestivalController
                     }
                 }
             );
-        }
-    }
-
-    private static void SuppressClick()
-    {
-        Tools.Helper.Input.Suppress(Game1.options.actionButton[0].ToSButton());
-        Tools.Helper.Input.Suppress(Game1.options.useToolButton[0].ToSButton());
-        Tools.Helper.Input.Suppress(SButton.MouseLeft);
-        Tools.Helper.Input.Suppress(SButton.MouseRight);
-    }
-
-    [EventPriority(EventPriority.High)]
-    private static void OnDayStarted(object? sender, DayStartedEventArgs e)
-    {
-        // 如果今天是春7, 调整第二天天气为微风
-        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 7)
-        {
-            Game1.weatherForTomorrow = Game1.weather_debris;
-        }
-
-        // 如果今天是春8, 添加小游戏触发条件, 覆盖今天天气为微风
-        if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 8)
-        {
-            if (!added)
-            {
-                Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-                Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
-                Tools.Helper.Events.Player.Warped += OnPlayerWarped;
-                added = true;
-            }
-
-            LocationWeather weatherForLocation = Game1.netWorldState.Value.GetWeatherForLocation("Default");
-            weatherForLocation.isDebrisWeather.Value = true;
-            Game1.ApplyWeatherForNewDay();
-        }
-        // 如果今天不是春8且小游戏触发条件未移除, 则移除小游戏触发条件, 防止重复判定影响性能
-        else
-        {
-            if (added)
-            {
-                Tools.Helper.Events.Input.ButtonPressed -= OnButtonPressed;
-                Tools.Helper.Events.Display.RenderedWorld -= OnRenderedWorld;
-                Tools.Helper.Events.Player.Warped -= OnPlayerWarped;
-                added = false;
-            }
-        }
-    }
-
-    private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
-    {
-        if (Game1.CurrentEvent?.FestivalName == "SpringFair")
-        {
-            CritterController.spawns(Game1.currentLocation, CritterController.CType.Firefly);
         }
     }
 }
