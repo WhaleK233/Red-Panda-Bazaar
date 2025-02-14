@@ -22,6 +22,8 @@ public static class Tools
         I18n = Helper.Translation;
     }
 
+    public static Translation GetI18n(string key) => I18n.Get(key);
+
     public static void Log(string message, LogLevel level = LogLevel.Trace) => Monitor.Log(message, level);
 
     public static void LogOnce(string message, LogLevel level = LogLevel.Trace) =>
@@ -36,7 +38,7 @@ public static class Tools
         }
         else
         {
-            Game1.drawObjectDialogue(I18n.Get(I18nKeys.Dialogue_MoneyNotEnough));
+            Game1.drawObjectDialogue(GetI18n(I18nKeys.Dialogue_MoneyNotEnough));
             return false;
         }
     }

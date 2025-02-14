@@ -52,7 +52,7 @@ public static class ModCompat
         // 萤火虫数量
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
-            name: () => Tools.I18n.Get(I18nKeys.Config_NumberOfCritterMultiplier),
+            name: () => Tools.GetI18n(I18nKeys.Config_NumberOfCritterMultiplier),
             getValue: () => Tools.ModConfig.CritterMultiplier,
             setValue: value => Tools.ModConfig.CritterMultiplier = (float)Math.Round(value, 1),
             min: 0.5f,
@@ -63,7 +63,7 @@ public static class ModCompat
         //动画速度
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
-            name: () => Tools.I18n.Get(I18nKeys.Config_AnimeSpeed_PrizeMenu),
+            name: () => Tools.GetI18n(I18nKeys.Config_AnimeSpeed_PrizeMenu),
             getValue: () => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier,
             setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier = (float)Math.Round(value, 1),
             min: 0.5f,

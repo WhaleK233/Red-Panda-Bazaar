@@ -78,11 +78,11 @@ public static class FestivalController
 
     private static void HandleWheelBetGame()
     {
-        Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_WheelBetChargeQuestion),
+        Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_WheelBetChargeQuestion),
             new Response[]
             {
-                new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                new Response("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                new Response("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
             },
             (f, answer) =>
             {
@@ -90,10 +90,10 @@ public static class FestivalController
                 {
                     Response[] answerChoices = new Response[3]
                     {
-                        new Response("Orange", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_WhiteResponse)),
-                        new Response("Green", Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_RedResponse)),
+                        new Response("Orange", Tools.GetI18n(I18nKeys.Dialogue_WheelBet_WhiteResponse)),
+                        new Response("Green", Tools.GetI18n(I18nKeys.Dialogue_WheelBet_RedResponse)),
                         new Response("I",
-                            Tools.I18n.Get(I18nKeys.Dialogue_WheelBet_GiveUpResponse))
+                            Tools.GetI18n(I18nKeys.Dialogue_WheelBet_GiveUpResponse))
                     };
                     Game1.currentLocation.createQuestionDialogue(
                         Game1.parseText(
@@ -107,11 +107,11 @@ public static class FestivalController
     {
         if (Tools.Charge(50))
         {
-            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_TargetGameQuestion),
+            Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_TargetGameQuestion),
                 new Response[]
                 {
-                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new Response("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (f, answer) =>
                 {
@@ -127,11 +127,11 @@ public static class FestivalController
     {
         if (Tools.Charge(50))
         {
-            Game1.currentLocation.createQuestionDialogue(Tools.I18n.Get(I18nKeys.Dialogue_FishingGameQuestion),
+            Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_FishingGameQuestion),
                 new Response[]
                 {
-                    new Response("Positive", Tools.I18n.Get(I18nKeys.Dialogue_PositiveResponse)),
-                    new Response("Negative", Tools.I18n.Get(I18nKeys.Dialogue_NegativeResponse))
+                    new Response("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                    new Response("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
                 },
                 (f, answer) =>
                 {
@@ -146,9 +146,9 @@ public static class FestivalController
     private static void BuyBackpack()
     {
         Response response1 = new Response("Purchase",
-            Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
+            Tools.GetI18n(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
         Response response2 = new Response("Purchase",
-            Tools.I18n.Get(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
+            Tools.GetI18n(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
         Response response3 = new Response("Not",
             Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
         if (Game1.player.maxItems.Value == 12)
