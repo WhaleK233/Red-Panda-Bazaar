@@ -1,4 +1,5 @@
-﻿using Red_Panda_Bazaar_Code.Data;
+﻿using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.Data;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -22,7 +23,7 @@ public static class DataHandler
         if (!Context.IsMainPlayer) return;
 
         RPBData.PrizeTicketReward =
-            int.Parse(Tools.Helper.Data.ReadSaveData<string>(RPBData.Keys.PrizeTicketRewardKey) ?? "0");
+            int.Parse(Tools.Helper.Data.ReadSaveData<string>(DataKeys.PrizeTicketRewardKey) ?? "0");
         Tools.Log($"Loaded Prize Ticket Reward");
     }
 
@@ -30,7 +31,7 @@ public static class DataHandler
     {
         if (!Context.IsMainPlayer) return;
 
-        Tools.Helper.Data.WriteSaveData(RPBData.Keys.PrizeTicketRewardKey, RPBData.PrizeTicketReward.ToString());
+        Tools.Helper.Data.WriteSaveData(DataKeys.PrizeTicketRewardKey, RPBData.PrizeTicketReward.ToString());
         Tools.Log($"Saved Prize Ticket Reward");
     }
 }
