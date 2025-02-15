@@ -10,7 +10,7 @@ using xTile.Dimensions;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace Red_Panda_Bazaar_Code.MiniGames;
+namespace Red_Panda_Bazaar_Code.Custom;
 
 public class RPB_TargetGame : IMinigame
 {

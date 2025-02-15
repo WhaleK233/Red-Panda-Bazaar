@@ -7,7 +7,7 @@ using StardewValley.GameData.SpecialOrders;
 using StardewValley.Menus;
 using StardewValley.SpecialOrders;
 
-namespace Red_Panda_Bazaar_Code.Menus;
+namespace Red_Panda_Bazaar_Code.Custom;
 
 public class RPB_SpecialOrderBoard : SpecialOrdersBoard
 {

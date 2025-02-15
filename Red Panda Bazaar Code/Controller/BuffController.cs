@@ -10,7 +10,7 @@ namespace Red_Panda_Bazaar_Code.Controller;
 
 public static class BuffController
 {
-    public static Dictionary<string, Buff> buffDict = new();
+    public static readonly Dictionary<string, Buff> BuffDict = new();
 
     /// <summary>启用自定义Buff</summary>
     public static void Init()
@@ -28,26 +28,25 @@ public static class BuffController
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (Context.IsWorldReady && Context.IsGameLaunched)
+        if (!Context.IsWorldReady || !Context.IsGameLaunched) return;
+
+        if (Game1.player.hat?.Get()?.Name == ItemKeys.Hats.GamblerHat)
         {
-            if (Game1.player.hat?.Get()?.Name == ItemKeys.Hats.GamblerHat)
-            {
-                Game1.player.applyBuff(new Buff(
-                    id: "speed",
-                    duration: 100,
-                    effects: new BuffEffects()
-                    {
-                        Speed = { 1 }
-                    }
-                ));
-            }
+            Game1.player.applyBuff(new Buff(
+                id: "speed",
+                duration: 100,
+                effects: new BuffEffects()
+                {
+                    Speed = { 1 }
+                }
+            ));
         }
     }
 
     private static void InitCustomBuffs()
     {
-        int index = 0;
-        buffDict[ItemKeys.Food.Golden_Delight] = new Buff(
+        var index = 0;
+        BuffDict[ItemKeys.Food.Golden_Delight] = new Buff(
             id: "RedPandaBazaar_ExquisitelyStuffed",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplaySource),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Delight_BuffDisplayName),
@@ -67,7 +66,7 @@ public static class BuffController
             }
         );
 
-        buffDict[ItemKeys.Food.Golden_Cupcake] = new Buff(
+        BuffDict[ItemKeys.Food.Golden_Cupcake] = new Buff(
             id: "RedPandaBazaar_Golden_Cupcake",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplaySource).ToString(),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Cupcake_BuffDisplayName).ToString(),
@@ -79,7 +78,7 @@ public static class BuffController
                 LuckLevel = { 6 },
             }
         );
-        buffDict[ItemKeys.Food.Golden_Flavor_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Golden_Flavor_Popsicle] = new Buff(
             id: "RedPandaBazaar_Golden_Flavor_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Golden_Flavor_Popsicle_BuffDisplaySource)
                 .ToString(),
@@ -96,7 +95,7 @@ public static class BuffController
                 Attack = { 3 }
             }
         );
-        buffDict[ItemKeys.Food.Coffee_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Coffee_Popsicle] = new Buff(
             id: "RedPandaBazaar_Coffee_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Coffee_Popsicle_BuffDisplayName).ToString(),
@@ -108,7 +107,7 @@ public static class BuffController
                 Speed = { 1 }
             }
         );
-        buffDict[ItemKeys.Food.Fern_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Fern_Popsicle] = new Buff(
             id: "RedPandaBazaar_Fern_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Fern_Popsicle_BuffDisplayName).ToString(),
@@ -121,7 +120,7 @@ public static class BuffController
                 ForagingLevel = { 5 }
             }
         );
-        buffDict[ItemKeys.Food.Mango_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Mango_Popsicle] = new Buff(
             id: "RedPandaBazaar_Mango_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Mango_Popsicle_BuffDisplayName).ToString(),
@@ -133,7 +132,7 @@ public static class BuffController
                 ForagingLevel = { 2 }
             }
         );
-        buffDict[ItemKeys.Food.Peach_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Peach_Popsicle] = new Buff(
             id: "RedPandaBazaar_Peach_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplaySource).ToString(),
             displayName: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Peach_Popsicle_BuffDisplayName).ToString(),
@@ -146,7 +145,7 @@ public static class BuffController
                 Defense = { 1 }
             }
         );
-        buffDict[ItemKeys.Food.Pumpkin_Popsicle] = new Buff(
+        BuffDict[ItemKeys.Food.Pumpkin_Popsicle] = new Buff(
             id: "RedPandaBazaar_Pumpkin_Popsicle",
             displaySource: Tools.GetI18n(I18nKeys.Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplaySource)
                 .ToString(),
