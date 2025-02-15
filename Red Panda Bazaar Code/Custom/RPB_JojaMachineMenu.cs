@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.Controller;
+using Red_Panda_Bazaar_Code.Handlers;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -61,8 +61,8 @@ public class RPB_JojaMachineMenu : IClickableMenu
 
     public static Item newPrizeItem()
     {
-        var commonList = MenuController.JojaCommonPrizeList;
-        var couponList = MenuController.JojaCouponPrizeList;
+        var commonList = MenuHandler.JojaCommonPrizeList;
+        var couponList = MenuHandler.JojaCouponPrizeList;
         var chance = Game1.random.NextDouble();
         var random = Game1.random.Next();
         int i, amount;
