@@ -43,4 +43,24 @@ public static class Tools
             return false;
         }
     }
+
+    public static bool IsGoodWeather()
+    {
+        return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
+    }
+
+    public static bool IsDayTime(GameLocation loc)
+    {
+        return Game1.timeOfDay < Game1.getStartingToGetDarkTime(loc);
+    }
+
+    public static bool IsDuskTime(GameLocation loc)
+    {
+        return !IsDayTime(loc) && !IsNightTime(loc);
+    }
+
+    public static bool IsNightTime(GameLocation loc)
+    {
+        return Game1.timeOfDay > Game1.getTrulyDarkTime(loc);
+    }
 }

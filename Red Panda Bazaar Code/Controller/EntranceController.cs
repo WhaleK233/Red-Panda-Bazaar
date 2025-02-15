@@ -12,7 +12,11 @@ public static class EntranceController
 {
     public static void Init()
     {
-        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        if (!Integrations.Installed.CentralStation)
+        {
+            Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        }
+
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         Tools.Log("Entrance Initialized.");
     }
@@ -92,13 +96,13 @@ public static class EntranceController
 
     private static void SetStations(out Station[] stations, out Response[] responses)
     {
-        List<Station> StationList = new List<Station>();
-        List<Response> ResponseList = new List<Response>();
+        var StationList = new List<Station>();
+        var ResponseList = new List<Response>();
 
         StationList.Add(new Station("BusStop", new Point(22, 9), 2, 0));
         ResponseList.Add(new Response("BusStop", Tools.GetI18n(I18nKeys.Text_PelicanTown)));
 
-        if (ModCompat.Mods.CentralStation)
+        if (Integrations.Installed.CentralStation)
         {
             StationList.Add(new Station("Pathoschild.CentralStation_CentralStation", new Point(60, 13), 2, 0));
             ResponseList.Add(new Response("Pathoschild.CentralStation_CentralStation",

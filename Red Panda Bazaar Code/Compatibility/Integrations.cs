@@ -7,7 +7,7 @@ using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Compatibility;
 
-public static class ModCompat
+public static class Integrations
 {
     public static void Init()
     {
@@ -21,7 +21,7 @@ public static class ModCompat
         var centralStationApi = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);
         if (centralStationApi == null) return;
 
-        Mods.CentralStation = true;
+        Installed.CentralStation = true;
 
         centralStationApi?.RegisterStop(
             id: "RedPandaBazaarStation",
@@ -41,7 +41,7 @@ public static class ModCompat
         var configMenuApi = Tools.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ID.GenericModConfigMenu);
         if (configMenuApi == null) return;
 
-        Mods.GenericModConfigMenu = true;
+        Installed.GenericModConfigMenu = true;
 
         // 注册模组
         configMenuApi.Register(
@@ -73,7 +73,7 @@ public static class ModCompat
         );
     }
 
-    public static class Mods
+    public static class Installed
     {
         public static bool GenericModConfigMenu { get; set; } = false;
         public static bool CentralStation { get; set; } = false;

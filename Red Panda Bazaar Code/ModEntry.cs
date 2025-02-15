@@ -22,9 +22,9 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
+        Integrations.Init();
         ControllerInit();
         HarmonyPatch();
-        ModCompat.Init();
     }
 
     private static void ControllerInit()
@@ -41,7 +41,7 @@ public class ModEntry : Mod
     private void HarmonyPatch()
     {
         var harmony = new Harmony(Tools.ModManifest.UniqueID);
-        HarmonyPatch_FishingGameEvent.ApplyPatch(harmony);
-        HarmonyPatch_CustomBuffEffects.ApplyPatch(harmony);
+        HarmonyPatch_CustomFishingGame.ApplyPatch(harmony);
+        HarmonyPatch_CustomBuffs.ApplyPatch(harmony);
     }
 }

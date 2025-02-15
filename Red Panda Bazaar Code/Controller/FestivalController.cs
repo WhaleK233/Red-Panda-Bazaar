@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.Menus;
-using Red_Panda_Bazaar_Code.MiniGames;
+using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -62,7 +61,7 @@ public static class FestivalController
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
         {
-            CritterController.spawns(Game1.currentLocation, CritterController.CType.Firefly);
+            Critters.spawns(Game1.currentLocation, Critters.Firefly);
         }
     }
 
@@ -191,57 +190,58 @@ public static class FestivalController
 
     private static void BuyBackpack()
     {
-        Response response1 = new Response("Purchase",
+        var response1 = new Response("Purchase",
             Tools.GetI18n(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo24Slots));
-        Response response2 = new Response("Purchase",
+        var response2 = new Response("Purchase",
             Tools.GetI18n(I18nKeys.Dialogue_BuyBackpack_PositiveResponseTo36Slots));
-        Response response3 = new Response("Not",
+        var response3 = new Response("Not",
             Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_ResponseNo"));
-        if (Game1.player.maxItems.Value == 12)
+        switch (Game1.player.maxItems.Value)
         {
-            Game1.currentLocation.createQuestionDialogue(
-                Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question24"), new Response[2]
-                {
-                    response1,
-                    response3
-                }, (who, answer) =>
-                {
-                    if (answer == "Purchase" && Tools.Charge(1999))
+            case 12:
+                Game1.currentLocation.createQuestionDialogue(
+                    Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question24"), new Response[2]
                     {
-                        Game1.player.increaseBackpackSize(12);
-                        Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
-                            Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
-                        Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
-                            .globalChatInfoMessage("BackpackLarge", Game1.player.Name);
-                    }
-                }
-            );
-        }
-        else if (Game1.player.maxItems.Value < 36)
-        {
-            Game1.currentLocation.createQuestionDialogue(
-                Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question36"), new Response[2]
-                {
-                    response2,
-                    response3
-                }, (who, answer) =>
-                {
-                    if (answer == "Purchase" && Tools.Charge(9999))
+                        response1,
+                        response3
+                    }, (who, answer) =>
                     {
-                        Game1.player.maxItems.Value += 12;
-                        Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
-                            Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8709")));
-                        for (int index = 0; index < Game1.player.maxItems.Value; ++index)
+                        if (answer == "Purchase" && Tools.Charge(1999))
                         {
-                            if (Game1.player.Items.Count <= index)
-                                Game1.player.Items.Add((Item)null);
+                            Game1.player.increaseBackpackSize(12);
+                            Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                                Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
+                            Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                                .globalChatInfoMessage("BackpackLarge", Game1.player.Name);
                         }
-
-                        Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
-                            .globalChatInfoMessage("BackpackDeluxe", Game1.player.Name);
                     }
-                }
-            );
+                );
+                break;
+            case < 36:
+                Game1.currentLocation.createQuestionDialogue(
+                    Game1.content.LoadString("Strings\\Locations:SeedShop_BuyBackpack_Question36"), new Response[2]
+                    {
+                        response2,
+                        response3
+                    }, (who, answer) =>
+                    {
+                        if (answer == "Purchase" && Tools.Charge(9999))
+                        {
+                            Game1.player.maxItems.Value += 12;
+                            Game1.player.holdUpItemThenMessage((Item)new SpecialItem(99,
+                                Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8709")));
+                            for (int index = 0; index < Game1.player.maxItems.Value; ++index)
+                            {
+                                if (Game1.player.Items.Count <= index)
+                                    Game1.player.Items.Add((Item)null);
+                            }
+
+                            Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                                .globalChatInfoMessage("BackpackDeluxe", Game1.player.Name);
+                        }
+                    }
+                );
+                break;
         }
     }
 }
