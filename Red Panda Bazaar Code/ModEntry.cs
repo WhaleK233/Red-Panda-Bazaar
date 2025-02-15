@@ -20,7 +20,7 @@ public class ModEntry : Mod
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
-    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         Integrations.Init();
         ControllerInit();
