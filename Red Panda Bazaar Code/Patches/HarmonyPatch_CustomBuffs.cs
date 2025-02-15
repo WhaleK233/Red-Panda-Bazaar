@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
-using Red_Panda_Bazaar_Code.Controller;
+using Red_Panda_Bazaar_Code.Handlers;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.HarmonyPatch;
+namespace Red_Panda_Bazaar_Code.Patches;
 
 public static class HarmonyPatch_CustomBuffs
 {
@@ -22,7 +22,7 @@ public static class HarmonyPatch_CustomBuffs
     {
         try
         {
-            var buffDict = BuffController.BuffDict;
+            var buffDict = BuffHandler.BuffDict;
 
             if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
             {

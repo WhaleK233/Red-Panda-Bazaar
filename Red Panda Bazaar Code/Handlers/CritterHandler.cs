@@ -1,13 +1,14 @@
 ﻿using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Objects;
 
-namespace Red_Panda_Bazaar_Code.Controller;
+namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class CritterController
+public static class CritterHandler
 {
     private static readonly List<string> Maps = new()
     {
@@ -20,25 +21,39 @@ public static class CritterController
         "Custom_BazaarWest"
     };
 
-    private static int Counter = 0;
+    private static int Counter;
 
-    private static bool IsRightLoc = false;
+    private static bool IsRightLoc;
 
-    /// <summary>启用萤火虫效果</summary>
+    private static int ButterflyCount;
+
+    private static int FireflyCount;
+
+    /// <summary>启用粒子效果</summary>
     public static void Init()
     {
+        Tools.Log("CritterEffects Initializing.", LogLevel.Info);
+
         Tools.Helper.Events.Player.Warped += OnPlayerWarped;
         Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
-        Tools.Log("CritterEffects Initialized.");
+        Tools.Log("CritterEffects Initialized.", LogLevel.Info);
     }
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!IsRightLoc) return;
+        if (!IsRightLoc || Counter < 30) return;
         Counter++;
         var loc = Game1.currentLocation;
-        if (Tools.IsDuskTime(loc) && Counter >= 30 && loc.critters.Count > 0)
+        if (Tools.IsDayTime(loc) && loc.critters.Count < ButterflyCount)
+        {
+            var tile = loc.getRandomTile();
+            loc.critters.Add(Critters.GetNewCritter(loc, tile, Critters.Butterfly));
+            Tools.Log("Spawn one critter");
+            Counter = 0;
+        }
+
+        if (Tools.IsDuskTime(loc) && loc.critters.Count > 0)
         {
             loc.critters.RemoveAt(loc.critters.Count - 1);
             Tools.Log("Remove one critter");
@@ -46,7 +61,7 @@ public static class CritterController
         }
 
         if (Game1.timeOfDay > Game1.getTrulyDarkTime(loc) - 100 &&
-            loc.critters.Count <= Critters.GetNumber(loc, Critters.Firefly) && Counter >= 30)
+            loc.critters.Count <= FireflyCount)
         {
             var tile = loc.getRandomTile();
             loc.critters.Add(Critters.GetNewCritter(loc, tile, Critters.Firefly));
@@ -57,8 +72,11 @@ public static class CritterController
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        if (Game1.season is Season.Winter or Season.Fall) return;
         var loc = e.NewLocation;
+        ButterflyCount = Critters.GetNumber(loc, Critters.Butterfly);
+        FireflyCount = Critters.GetNumber(loc, Critters.Firefly);
+
+        if (Game1.season is Season.Winter or Season.Fall) return;
         if (Tools.IsGoodWeather() && !Tools.IsDuskTime(loc))
         {
             var furnitureList = new List<Furniture>(loc.furniture);

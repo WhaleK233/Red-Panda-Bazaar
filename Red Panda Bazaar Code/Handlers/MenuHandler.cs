@@ -1,11 +1,12 @@
 ﻿using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace Red_Panda_Bazaar_Code.Controller;
+namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class MenuController
+public static class MenuHandler
 {
     private const int couponCount = 18;
     public static List<Tuple<string, int>> CommonPrizeList;
@@ -16,10 +17,12 @@ public static class MenuController
     /// <summary>启用自定义菜单</summary>
     public static void Init()
     {
+        Tools.Log("Menus Initializing.", LogLevel.Info);
+
         InitCustomMenus();
         InitPrizeList();
 
-        Tools.Log("Menus Initialized.");
+        Tools.Log("Menus Initialized.", LogLevel.Info);
     }
 
     private static void InitCustomMenus()

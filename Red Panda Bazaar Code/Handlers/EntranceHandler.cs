@@ -6,19 +6,22 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Controller;
+namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class EntranceController
+public static class EntranceHandler
 {
     public static void Init()
     {
+        Tools.Log("Entrance Initializing.", LogLevel.Info);
+
         if (!Integrations.Installed.CentralStation)
         {
             Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         }
 
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        Tools.Log("Entrance Initialized.");
+
+        Tools.Log("Entrance Initialized.", LogLevel.Info);
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
