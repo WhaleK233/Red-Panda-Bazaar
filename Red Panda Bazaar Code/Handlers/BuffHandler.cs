@@ -6,19 +6,21 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buffs;
 
-namespace Red_Panda_Bazaar_Code.Controller;
+namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class BuffController
+public static class BuffHandler
 {
     public static readonly Dictionary<string, Buff> BuffDict = new();
 
     /// <summary>启用自定义Buff</summary>
     public static void Init()
     {
+        Tools.Log("Buffs Initializing.", LogLevel.Info);
+        
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
-        Tools.Log("Buffs Initialized.");
+        Tools.Log("Buffs Initialized.", LogLevel.Info);
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

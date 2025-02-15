@@ -4,7 +4,7 @@ using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.HarmonyPatch;
+namespace Red_Panda_Bazaar_Code.Patches;
 
 public static class HarmonyPatch_CustomFishingGame
 {

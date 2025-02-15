@@ -1,20 +1,23 @@
 ﻿using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Controller;
+namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class QuestController
+public static class QuestHandler
 {
     /// <summary>启用自定义任务</summary>
     public static void Init()
     {
+        Tools.Log("Quests Initializing.", LogLevel.Info);
+
         Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
 
         RegisterActions();
-        
-        Tools.Log("Quests Initialized.");
+
+        Tools.Log("Quests Initialized.", LogLevel.Info);
     }
 
     private static void RegisterActions()
@@ -52,7 +55,6 @@ public static class QuestController
         if (Game1.dayOfMonth % 7 == 1 && Game1.player.IsMainPlayer)
         {
             RPB_SpecialOrderBoard.UpdateAvailableSpecialOrders(true);
-            Tools.Log("Fresh RPB Special Orders");
         }
     }
 }
