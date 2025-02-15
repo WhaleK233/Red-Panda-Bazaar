@@ -1,37 +1,28 @@
 ﻿using HarmonyLib;
-using Red_Panda_Bazaar_Code.MiniGames;
+using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.HarmonyPatch;
 
-public static class HarmonyPatch_FishingGameEvent
+public static class HarmonyPatch_CustomFishingGame
 {
-    private static bool Applied { get; set; } = false;
-
     public static void ApplyPatch(Harmony harmony)
     {
-        if (!Applied)
-        {
-            Tools.Log(
-                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": prefixing SDV method \"Event.caughtFish()\".",
-                LogLevel.Trace);
-            harmony.Patch(
-                original: AccessTools.Method(typeof(Event), "caughtFish"),
-                prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_caughtFish))
-            );
+        Tools.Log(
+            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\": prefixing SDV method \"Event.caughtFish()\".");
+        harmony.Patch(
+            original: AccessTools.Method(typeof(Event), "caughtFish"),
+            prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_caughtFish))
+        );
 
-            Tools.Log(
-                $"Applying Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\": prefixing SDV method \"Event.perfectFishing()\".",
-                LogLevel.Trace);
-            harmony.Patch(
-                original: AccessTools.Method(typeof(Event), "perfectFishing"),
-                prefix: new HarmonyMethod(typeof(HarmonyPatch_FishingGameEvent), nameof(Prefix_Event_perfectFishing))
-            );
-
-            Applied = true;
-        }
+        Tools.Log(
+            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\": prefixing SDV method \"Event.perfectFishing()\".");
+        harmony.Patch(
+            original: AccessTools.Method(typeof(Event), "perfectFishing"),
+            prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_perfectFishing))
+        );
     }
 
     private static bool Prefix_Event_caughtFish(Event __instance, int size)
@@ -56,7 +47,7 @@ public static class HarmonyPatch_FishingGameEvent
         catch (Exception e)
         {
             Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;
         }
@@ -77,7 +68,7 @@ public static class HarmonyPatch_FishingGameEvent
         catch (Exception e)
         {
             Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_FishingGameEvent)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
                 LogLevel.Error);
             throw;
         }
