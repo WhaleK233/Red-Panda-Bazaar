@@ -38,7 +38,7 @@ public class ModEntry : Mod
         BuffController.Init();
     }
 
-    private void HarmonyPatch()
+    private static void HarmonyPatch()
     {
         var harmony = new Harmony(Tools.ModManifest.UniqueID);
         HarmonyPatch_CustomFishingGame.ApplyPatch(harmony);
