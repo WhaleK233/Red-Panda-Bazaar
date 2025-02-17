@@ -2,7 +2,6 @@
 /Red Panda Bazaar Code/obj
 /Red Panda Bazaar Code/out
 /Red Panda Bazaar Code/scripts
-Red Panda Bazaar Code.sln.DotSettings.user
 /.idea
 *.py
-*.csproj
+global.json
