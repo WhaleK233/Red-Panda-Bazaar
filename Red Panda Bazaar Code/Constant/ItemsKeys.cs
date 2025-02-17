@@ -27,6 +27,8 @@ public static class ItemsKeys
     public static class Machines
     {
         public const string StatuePlants1 = "RedPandaBazaar_StatuePlants1";
+        public const string StatuePlants2 = "RedPandaBazaar_StatuePlants2";
+        public const string StatuePlants3 = "RedPandaBazaar_StatuePlants3";
     }
 
     public static class Hats

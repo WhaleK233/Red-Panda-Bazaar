@@ -19,6 +19,13 @@ public static class CritterHandler
         "Custom_BazaarWest"
     };
 
+    private static readonly List<string> BCs = new()
+    {
+        ItemsKeys.Machines.StatuePlants1,
+        ItemsKeys.Machines.StatuePlants2,
+        ItemsKeys.Machines.StatuePlants3
+    };
+
     private static int Counter;
 
     private static bool IsRightLoc;
@@ -80,11 +87,7 @@ public static class CritterHandler
             foreach (var pair in loc.Objects.Pairs)
             {
                 var bc = pair.Value;
-                if (bc.bigCraftable.Value)
-                {
-                    Tools.Log(bc.name);
-                }
-                if (!bc.bigCraftable.Value || bc.name != ItemsKeys.Machines.StatuePlants1) continue;
+                if (!bc.bigCraftable.Value || !BCs.Contains(bc.name)) continue;
                 if (Tools.IsDayTime(loc)) RPB_Critters.spawns(loc, RPB_Critters.Butterfly);
                 else if (Tools.IsNightTime(loc)) RPB_Critters.spawns(loc, RPB_Critters.Firefly);
                 IsRightLoc = true;
