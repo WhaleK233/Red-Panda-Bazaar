@@ -41,7 +41,7 @@ public class ModEntry : Mod
     {
         var harmony = new Harmony(Tools.ModManifest.UniqueID);
         HarmonyPatch_CustomFishingGame.ApplyPatch(harmony);
-        HarmonyPatch_CustomBuffs.ApplyPatch(harmony);
+        HarmonyPatch_CustomFoodEffects.ApplyPatch(harmony);
         HarmonyPatch_CustomSpecialOrders.ApplyPatch(harmony);
     }
 }
