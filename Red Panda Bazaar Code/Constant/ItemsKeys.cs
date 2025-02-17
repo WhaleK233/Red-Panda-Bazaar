@@ -12,6 +12,7 @@ public static class ItemsKeys
         public const string Mango_Popsicle = "RedPandaBazaar_Mango_Popsicle";
         public const string Peach_Popsicle = "RedPandaBazaar_Peach_Popsicle";
         public const string Pumpkin_Popsicle = "RedPandaBazaar_Pumpkin_Popsicle";
+        public const string Milk_Pudding = "RedPandaBazaar_Milk_Pudding";
     }
 
     public static class Tickets
