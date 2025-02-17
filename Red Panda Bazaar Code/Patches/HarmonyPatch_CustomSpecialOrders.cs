@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.SpecialOrders;
 
@@ -13,16 +12,14 @@ public static class HarmonyPatch_CustomSpecialOrders
 
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.Monitor.Log(
-            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrders)}\": postfixing SDV method \"SpecialOrder.CheckCompletion()\".");
+        Tools.LogPatch(nameof(HarmonyPatch_CustomSpecialOrders), "SpecialOrder.CheckCompletion()", PatchType.Postfix);
         harmony.Patch(
             original: AccessTools.Method(typeof(SpecialOrder), "CheckCompletion"),
             postfix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
                 nameof(Postfix_SpecialOrder_CheckCompletion))
         );
 
-        Tools.Monitor.Log(
-            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrders)}\": prefixing SDV method \"SpecialOrder.Update()\".");
+        Tools.LogPatch(nameof(HarmonyPatch_CustomSpecialOrders), "SpecialOrder.Update()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(SpecialOrder), "Update"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
@@ -44,9 +41,7 @@ public static class HarmonyPatch_CustomSpecialOrders
         }
         catch (Exception e)
         {
-            Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrders)}\" has encountered an error. SpecialOrders in Red Panda Bazaar might not work properly. Full error message: \n{e}",
-                LogLevel.Error);
+            Tools.LogPatchErr(nameof(HarmonyPatch_CustomSpecialOrders), e);
             throw;
         }
     }
@@ -65,9 +60,7 @@ public static class HarmonyPatch_CustomSpecialOrders
         }
         catch (Exception e)
         {
-            Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrders)}\" has encountered an error. SpecialOrders in Red Panda Bazaar might not work properly. Full error message: \n{e}",
-                LogLevel.Error);
+            Tools.LogPatchErr(nameof(HarmonyPatch_CustomSpecialOrders), e);
             throw;
         }
     }

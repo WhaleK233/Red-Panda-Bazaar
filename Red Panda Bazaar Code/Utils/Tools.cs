@@ -30,6 +30,12 @@ public static class Tools
 
     public static void LogInfo(string message) => Log(message, LogLevel.Info);
 
+    public static void LogPatch(string ob, string methodName, string patchType) => Log(
+        $"Applying Harmony patch \"{ob}\": {patchType} SDV method \"{methodName}\".");
+
+    public static void LogPatchErr(string ob, Exception e) =>
+        LogOnce($"Harmony patch \"{ob}\" has encountered an error. Full error message: \n{e}", LogLevel.Error);
+
     public static void LogOnce(string message, LogLevel level = LogLevel.Trace) => Monitor.LogOnce(message, level);
 
     public static bool Charge(int cost)

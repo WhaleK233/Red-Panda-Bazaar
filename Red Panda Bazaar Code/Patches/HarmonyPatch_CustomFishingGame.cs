@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Patches;
@@ -10,15 +10,13 @@ public static class HarmonyPatch_CustomFishingGame
 {
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.Log(
-            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\": prefixing SDV method \"Event.caughtFish()\".");
+        Tools.LogPatch(nameof(HarmonyPatch_CustomFishingGame), "Event.caughtFish()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Event), "caughtFish"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_caughtFish))
         );
 
-        Tools.Log(
-            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\": prefixing SDV method \"Event.perfectFishing()\".");
+        Tools.LogPatch(nameof(HarmonyPatch_CustomFishingGame), "Event.perfectFishing()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Event), "perfectFishing"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_perfectFishing))
@@ -46,9 +44,7 @@ public static class HarmonyPatch_CustomFishingGame
         }
         catch (Exception e)
         {
-            Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e}",
-                LogLevel.Error);
+            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFishingGame), e);
             throw;
         }
     }
@@ -67,9 +63,7 @@ public static class HarmonyPatch_CustomFishingGame
         }
         catch (Exception e)
         {
-            Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e}",
-                LogLevel.Error);
+            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFishingGame), e);
             throw;
         }
     }
