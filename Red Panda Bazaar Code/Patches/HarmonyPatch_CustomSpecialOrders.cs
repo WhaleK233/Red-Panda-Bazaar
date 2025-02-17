@@ -56,7 +56,7 @@ public static class HarmonyPatch_CustomSpecialOrders
         try
         {
             if (__instance.questState.Value == SpecialOrderStatus.Complete &&
-                __instance.questKey.Value.Contains(QuestsKeys.CXM_OrderType))
+                __instance.orderType.Value.Contains(QuestsKeys.CXM_OrderType))
             {
                 Game1.player.stats.Increment(StatsKeys.ChenXiaomingRewardCount);
                 extraRewardGiven = true;
