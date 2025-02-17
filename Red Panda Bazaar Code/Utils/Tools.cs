@@ -27,8 +27,9 @@ public static class Tools
 
     public static void Log(string message, LogLevel level = LogLevel.Trace) => Monitor.Log(message, level);
 
-    public static void LogOnce(string message, LogLevel level = LogLevel.Trace) =>
-        Monitor.LogOnce(message, level);
+    public static void LogInfo(string message) => Log(message, LogLevel.Info);
+
+    public static void LogOnce(string message, LogLevel level = LogLevel.Trace) => Monitor.LogOnce(message, level);
 
     public static bool Charge(int cost)
     {

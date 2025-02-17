@@ -25,7 +25,7 @@ public static class Integrations
 
         centralStationApi?.RegisterStop(
             id: "RedPandaBazaarStation",
-            displayName: () => "Red Panda Bazaar",
+            displayName: () => Tools.GetI18n(I18nKeys.Text_RedPandaBazaar), //"Red Panda Bazaar"
             toLocation: "Custom_MapleBridge",
             toTile: new Point(27, 40),
             toFacingDirection: Game1.down,

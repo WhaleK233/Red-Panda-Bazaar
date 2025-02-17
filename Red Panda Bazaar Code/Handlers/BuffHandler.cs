@@ -15,12 +15,12 @@ public static class BuffHandler
     /// <summary>启用自定义Buff</summary>
     public static void Init()
     {
-        Tools.Log("Buffs Initializing.", LogLevel.Info);
+        Tools.Log("Buffs Initializing.");
         
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
-        Tools.Log("Buffs Initialized.", LogLevel.Info);
+        Tools.Log("Buffs Initialized.");
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
