@@ -47,7 +47,7 @@ public static class HarmonyPatch_CustomFishingGame
         catch (Exception e)
         {
             Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e}",
                 LogLevel.Error);
             throw;
         }
@@ -68,7 +68,7 @@ public static class HarmonyPatch_CustomFishingGame
         catch (Exception e)
         {
             Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e.ToString()}",
+                $"Harmony patch \"{nameof(HarmonyPatch_CustomFishingGame)}\" has encountered an error. FishingGame in SpringFair might not work properly. Full error message: \n{e}",
                 LogLevel.Error);
             throw;
         }

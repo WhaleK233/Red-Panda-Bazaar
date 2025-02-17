@@ -12,7 +12,7 @@ public static class EntranceHandler
 {
     public static void Init()
     {
-        Tools.Log("Entrance Initializing.", LogLevel.Info);
+        Tools.Log("Entrance Initializing.");
 
         if (!Integrations.Installed.CentralStation)
         {
@@ -21,7 +21,7 @@ public static class EntranceHandler
 
         Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
 
-        Tools.Log("Entrance Initialized.", LogLevel.Info);
+        Tools.Log("Entrance Initialized.");
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)

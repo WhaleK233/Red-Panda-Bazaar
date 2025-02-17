@@ -15,14 +15,14 @@ public static class FestivalHandler
     /// <summary>启用春8的一些效果</summary>
     public static void Init()
     {
-        Tools.Log("Festival Initializing.", LogLevel.Info);
+        Tools.Log("Festival Initializing.");
 
         Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
         Tools.Helper.Events.Player.Warped += OnPlayerWarped;
 
-        Tools.Log("Festival Initialized.", LogLevel.Info);
+        Tools.Log("Festival Initialized.");
     }
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)

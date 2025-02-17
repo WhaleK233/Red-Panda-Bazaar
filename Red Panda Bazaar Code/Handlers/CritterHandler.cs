@@ -1,7 +1,6 @@
 ﻿using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Objects;
@@ -32,12 +31,12 @@ public static class CritterHandler
     /// <summary>启用粒子效果</summary>
     public static void Init()
     {
-        Tools.Log("CritterEffects Initializing.", LogLevel.Info);
+        Tools.Log("CritterEffects Initializing.");
 
         Tools.Helper.Events.Player.Warped += OnPlayerWarped;
         Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
-        Tools.Log("CritterEffects Initialized.", LogLevel.Info);
+        Tools.Log("CritterEffects Initialized.");
     }
 
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
@@ -76,28 +75,20 @@ public static class CritterHandler
         ButterflyCount = Critters.GetNumber(loc, Critters.Butterfly);
         FireflyCount = Critters.GetNumber(loc, Critters.Firefly);
 
-        if (Game1.season is Season.Winter or Season.Fall) return;
-        if (Tools.IsGoodWeather() && !Tools.IsDuskTime(loc))
+        if (Game1.season is Season.Winter or Season.Fall || !Tools.IsGoodWeather()) return;
+        if (!Tools.IsDuskTime(loc))
         {
             var furnitureList = new List<Furniture>(loc.furniture);
             foreach (var furniture in furnitureList)
             {
                 if (furniture.name != ItemKeys.Furniture.FireFlyFurniture) continue;
-                if (Tools.IsDayTime(loc))
-                {
-                    Critters.spawns(loc, Critters.Butterfly);
-                    IsRightLoc = true;
-                }
-                else if (Tools.IsNightTime(loc))
-                {
-                    Critters.spawns(loc, Critters.Firefly);
-                    IsRightLoc = true;
-                }
+
+                if (Tools.IsDayTime(loc)) Critters.spawns(loc, Critters.Butterfly);
+                else if (Tools.IsNightTime(loc)) Critters.spawns(loc, Critters.Firefly);
+                IsRightLoc = true;
             }
         }
-        else if ((!Tools.IsDayTime(loc) && Tools.IsGoodWeather() &&
-                  Maps.Contains(loc.Name)) ||
-                 loc.Name == "Temp" && Game1.CurrentEvent.FestivalName == "SpringFair")
+        else if (Tools.IsNightTime(loc) && Maps.Contains(loc.Name))
         {
             Critters.spawns(loc, Critters.Firefly);
             IsRightLoc = true;

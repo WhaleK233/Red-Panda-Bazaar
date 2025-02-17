@@ -15,7 +15,7 @@ public class ModEntry : Mod
     {
         Tools.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
-        Tools.Log($"Red Panda Bazaar Code Initializing...");
+        Tools.LogInfo("Red Panda Bazaar Code Initializing...");
 
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
@@ -29,12 +29,11 @@ public class ModEntry : Mod
 
     private static void ControllerInit()
     {
-        DataHandler.Init();
         EntranceHandler.Init();
         CritterHandler.Init();
         FestivalHandler.Init();
         MenuHandler.Init();
-        QuestHandler.Init();
+        SpecialOrdersHandler.Init();
         BuffHandler.Init();
     }
 
@@ -43,5 +42,6 @@ public class ModEntry : Mod
         var harmony = new Harmony(Tools.ModManifest.UniqueID);
         HarmonyPatch_CustomFishingGame.ApplyPatch(harmony);
         HarmonyPatch_CustomBuffs.ApplyPatch(harmony);
+        HarmonyPatch_CustomSpecialOrders.ApplyPatch(harmony);
     }
 }

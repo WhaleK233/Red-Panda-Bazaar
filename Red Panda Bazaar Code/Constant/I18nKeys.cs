@@ -48,6 +48,10 @@ public static class I18nKeys
 
     public const string Dialogue_WhereToGo = "Dialogue.WhereToGo";
 
+    public const string Dialogue_GetXiaoMingReward = "Dialogue.GetXiaoMingReward";
+
+    public const string Dialogue_NoXiaoMingReward = "Dialogue.NoXiaoMingReward";
+
     #endregion Dialogue
 
     #region Display
