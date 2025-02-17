@@ -2,7 +2,6 @@
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Handlers;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Patches;
@@ -11,8 +10,7 @@ public static class HarmonyPatch_CustomFoodEffects
 {
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.Monitor.Log(
-            $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomFoodEffects)}\": postfixing SDV method \"Farmer.doneEating()\".");
+        Tools.LogPatch(nameof(HarmonyPatch_CustomFoodEffects), "Farmer.doneEating()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Farmer), "doneEating"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFoodEffects), nameof(Prefix_Farmer_doneEating))
@@ -40,9 +38,7 @@ public static class HarmonyPatch_CustomFoodEffects
         }
         catch (Exception e)
         {
-            Tools.LogOnce(
-                $"Harmony patch \"{nameof(HarmonyPatch_CustomFoodEffects)}\" has encountered an error. Custom Buffs might not work properly. Full error message: \n{e.ToString()}",
-                LogLevel.Error);
+            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFoodEffects), e);
             throw;
         }
     }
