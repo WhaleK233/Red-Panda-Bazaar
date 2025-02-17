@@ -1,6 +1,7 @@
 ﻿using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Utils;
@@ -63,5 +64,12 @@ public static class Tools
     public static bool IsNightTime(GameLocation loc)
     {
         return Game1.timeOfDay > Game1.getTrulyDarkTime(loc);
+    }
+
+    public static bool IsValidButtonAction(ButtonPressedEventArgs e)
+    {
+        return Context.IsWorldReady && e.Button.IsActionButton() && !Game1.player.hasMenuOpen.Value &&
+               Game1.player.canMove &&
+               (Constants.TargetPlatform != GamePlatform.Android || e.Button == SButton.MouseLeft);
     }
 }

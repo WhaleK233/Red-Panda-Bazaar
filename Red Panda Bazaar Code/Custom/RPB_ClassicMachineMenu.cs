@@ -100,7 +100,7 @@ public class RPB_ClassicMachineMenu : IClickableMenu
         {
             Game1.playSound("button_press"); // 则播放按钮按下音效
             this.pressedButtonTimer = 200f; // 重置按下按钮计时器
-            if (Game1.player.Items.CountId(ItemKeys.Tickets.ClassicTicket) + Game1.player.Items.CountId(ItemKeys.Tickets.GenericTicket) >
+            if (Game1.player.Items.CountId(ItemsKeys.Tickets.ClassicTicket) + Game1.player.Items.CountId(ItemsKeys.Tickets.GenericTicket) >
                 0) // 检测是否拥有抽奖券
             {
                 this.gettingReward = true; // 设置正在获奖
@@ -132,13 +132,13 @@ public class RPB_ClassicMachineMenu : IClickableMenu
                         Game1.player.currentLocation);
                 Tools.Log($"Get Prize: {prize.Name}"); // 打印日志
                 // 扣除费用
-                if (Game1.player.Items.CountId(ItemKeys.Tickets.ClassicTicket) > 0)
+                if (Game1.player.Items.CountId(ItemsKeys.Tickets.ClassicTicket) > 0)
                 {
-                    Game1.player.Items.ReduceId(ItemKeys.Tickets.ClassicTicket, 1);
+                    Game1.player.Items.ReduceId(ItemsKeys.Tickets.ClassicTicket, 1);
                 }
                 else
                 {
-                    Game1.player.Items.ReduceId(ItemKeys.Tickets.GenericTicket, 1);
+                    Game1.player.Items.ReduceId(ItemsKeys.Tickets.GenericTicket, 1);
                 }
 
                 prize = newPrizeItem();
@@ -176,7 +176,7 @@ public class RPB_ClassicMachineMenu : IClickableMenu
         }
 
         // 绘制抽奖券数量
-        string s = (Game1.player.Items.CountId(ItemKeys.Tickets.ClassicTicket) + Game1.player.Items.CountId(ItemKeys.Tickets.GenericTicket))
+        string s = (Game1.player.Items.CountId(ItemsKeys.Tickets.ClassicTicket) + Game1.player.Items.CountId(ItemsKeys.Tickets.GenericTicket))
             .ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
             this.yPositionOnScreen + 315, color: new Color(159, 144, 118, 0));

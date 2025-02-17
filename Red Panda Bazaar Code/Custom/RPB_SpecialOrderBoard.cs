@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.Extensions;
@@ -25,7 +26,6 @@ public class RPB_SpecialOrderBoard : SpecialOrdersBoard
 
     public static void UpdateAvailableSpecialOrders(bool forceRefresh)
     {
-        string orderType = "RPB";
         if (Game1.player.team.availableSpecialOrders is not null)
         {
             foreach (SpecialOrder order in Game1.player.team.availableSpecialOrders)
@@ -43,16 +43,16 @@ public class RPB_SpecialOrderBoard : SpecialOrdersBoard
         {
             foreach (SpecialOrder availableSpecialOrder in Game1.player.team.availableSpecialOrders)
             {
-                if (availableSpecialOrder.orderType.Value == orderType)
+                if (availableSpecialOrder.orderType.Value == QuestsKeys.CXM_OrderType)
                     return;
             }
         }
 
-        SpecialOrder.RemoveAllSpecialOrders(orderType);
+        SpecialOrder.RemoveAllSpecialOrders(QuestsKeys.CXM_OrderType);
         List<string> stringList = new List<string>();
         foreach (KeyValuePair<string, SpecialOrderData> specialOrder in DataLoader.SpecialOrders(Game1.content))
         {
-            if (specialOrder.Value.OrderType == orderType &&
+            if (specialOrder.Value.OrderType == QuestsKeys.CXM_OrderType &&
                 SpecialOrder.CanStartOrderNow(specialOrder.Key, specialOrder.Value))
                 stringList.Add(specialOrder.Key);
         }

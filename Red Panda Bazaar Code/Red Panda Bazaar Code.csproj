@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <Target Name="UpdateModVersion" BeforeTargets="BeforeBuild">
-        <Exec Command="python &quot;$(ProjectDir)Utils\UpdateVersion.py&quot;"/>
+        <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 
 </Project>
