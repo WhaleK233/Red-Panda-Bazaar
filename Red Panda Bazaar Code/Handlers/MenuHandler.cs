@@ -1,6 +1,5 @@
 ﻿using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -17,12 +16,12 @@ public static class MenuHandler
     /// <summary>启用自定义菜单</summary>
     public static void Init()
     {
-        Tools.Log("Menus Initializing.", LogLevel.Info);
+        Tools.Log("Menus Initializing.");
 
         InitCustomMenus();
         InitPrizeList();
 
-        Tools.Log("Menus Initialized.", LogLevel.Info);
+        Tools.Log("Menus Initialized.");
     }
 
     private static void InitCustomMenus()

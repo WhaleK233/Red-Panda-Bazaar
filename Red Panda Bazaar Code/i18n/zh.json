@@ -2,6 +2,8 @@
   /****** Version 1.0.5 Added ******/
   /****** Delete "Config.NumberOfFirefly" ******/
   "Config.NumberOfCritterMultiplier": "粒子数量倍数",
+  "Dialogue.GetXiaoMingReward": "你获得了陈小茗留下的奖励！",
+  "Dialogue.NoXiaoMingReward": "这里什么都没有，要不去给陈小茗供点货？",
   /****** Version 1.0.3 Added ******/
   /****** Delete "Text.50Glod" ******/
   "Text.RedPandaBazaar": "小熊猫集市",
