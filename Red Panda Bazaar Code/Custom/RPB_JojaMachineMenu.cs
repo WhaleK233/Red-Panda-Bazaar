@@ -106,7 +106,7 @@ public class RPB_JojaMachineMenu : IClickableMenu
         {
             Game1.playSound("button_press"); // 则播放按钮按下音效
             this.pressedButtonTimer = 200f; // 重置按下按钮计时器
-            if (Game1.player.Items.CountId(ItemKeys.Tickets.JojaTicket) > 0) // 检测是否拥有抽奖券
+            if (Game1.player.Items.CountId(ItemsKeys.Tickets.JojaTicket) > 0) // 检测是否拥有抽奖券
             {
                 this.gettingReward = true; // 设置正在获奖
                 this.getRewardTimer = 0.0f; // 重置获奖计时器
@@ -137,7 +137,7 @@ public class RPB_JojaMachineMenu : IClickableMenu
                         Game1.player.currentLocation);
                 Tools.Log($"Get Prize: {prize.Name}"); // 打印日志
                 // 扣除费用
-                Game1.player.Items.ReduceId(ItemKeys.Tickets.JojaTicket, 1);
+                Game1.player.Items.ReduceId(ItemsKeys.Tickets.JojaTicket, 1);
 
                 prize = newPrizeItem();
                 this.gettingReward = false; // 重置获奖状态为未获奖
@@ -190,7 +190,7 @@ public class RPB_JojaMachineMenu : IClickableMenu
         }
 
         // 绘制抽奖券数量
-        string s = Game1.player.Items.CountId(ItemKeys.Tickets.JojaTicket).ToString();
+        string s = Game1.player.Items.CountId(ItemsKeys.Tickets.JojaTicket).ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
             this.yPositionOnScreen + 315, color: new Color(11, 241, 239, 0));
         this.mainButton.draw(b);

@@ -3,7 +3,6 @@ using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Handlers;
 
@@ -47,7 +46,7 @@ public static class CritterHandler
         if (Tools.IsDayTime(loc) && loc.critters.Count < ButterflyCount)
         {
             var tile = loc.getRandomTile();
-            loc.critters.Add(Critters.GetNewCritter(loc, tile, Critters.Butterfly));
+            loc.critters.Add(RPB_Critters.GetNewCritter(loc, tile, RPB_Critters.Butterfly));
             Tools.Log("Spawn one critter");
             Counter = 0;
         }
@@ -63,7 +62,7 @@ public static class CritterHandler
             loc.critters.Count <= FireflyCount)
         {
             var tile = loc.getRandomTile();
-            loc.critters.Add(Critters.GetNewCritter(loc, tile, Critters.Firefly));
+            loc.critters.Add(RPB_Critters.GetNewCritter(loc, tile, RPB_Critters.Firefly));
             Tools.Log("Spawn one critter");
             Counter = 0;
         }
@@ -72,25 +71,29 @@ public static class CritterHandler
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
         var loc = e.NewLocation;
-        ButterflyCount = Critters.GetNumber(loc, Critters.Butterfly);
-        FireflyCount = Critters.GetNumber(loc, Critters.Firefly);
+        ButterflyCount = RPB_Critters.GetNumber(loc, RPB_Critters.Butterfly);
+        FireflyCount = RPB_Critters.GetNumber(loc, RPB_Critters.Firefly);
 
         if (Game1.season is Season.Winter or Season.Fall || !Tools.IsGoodWeather()) return;
         if (!Tools.IsDuskTime(loc))
         {
-            var furnitureList = new List<Furniture>(loc.furniture);
-            foreach (var furniture in furnitureList)
+            foreach (var pair in loc.Objects.Pairs)
             {
-                if (furniture.name != ItemKeys.Furniture.FireFlyFurniture) continue;
-
-                if (Tools.IsDayTime(loc)) Critters.spawns(loc, Critters.Butterfly);
-                else if (Tools.IsNightTime(loc)) Critters.spawns(loc, Critters.Firefly);
+                var bc = pair.Value;
+                if (bc.bigCraftable.Value)
+                {
+                    Tools.Log(bc.name);
+                }
+                if (!bc.bigCraftable.Value || bc.name != ItemsKeys.Machines.StatuePlants1) continue;
+                if (Tools.IsDayTime(loc)) RPB_Critters.spawns(loc, RPB_Critters.Butterfly);
+                else if (Tools.IsNightTime(loc)) RPB_Critters.spawns(loc, RPB_Critters.Firefly);
                 IsRightLoc = true;
+                break;
             }
         }
         else if (Tools.IsNightTime(loc) && Maps.Contains(loc.Name))
         {
-            Critters.spawns(loc, Critters.Firefly);
+            RPB_Critters.spawns(loc, RPB_Critters.Firefly);
             IsRightLoc = true;
         }
         else

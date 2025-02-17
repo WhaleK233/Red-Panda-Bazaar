@@ -5,7 +5,7 @@ using StardewValley.BellsAndWhistles;
 
 namespace Red_Panda_Bazaar_Code.Custom;
 
-public static class Critters
+public static class RPB_Critters
 {
     public const int Firefly = 0;
     public const int Butterfly = 1;

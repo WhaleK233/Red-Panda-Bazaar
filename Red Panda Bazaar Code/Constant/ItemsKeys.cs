@@ -1,6 +1,6 @@
 ﻿namespace Red_Panda_Bazaar_Code.Constant;
 
-public static class ItemKeys
+public static class ItemsKeys
 {
     public static class Food
     {
@@ -22,8 +22,11 @@ public static class ItemKeys
     }
 
     public static class Furniture
+    {}
+
+    public static class Machines
     {
-        public const string FireFlyFurniture = "RedPandaBazaar_StatuePlants1";
+        public const string StatuePlants1 = "RedPandaBazaar_StatuePlants1";
     }
 
     public static class Hats
