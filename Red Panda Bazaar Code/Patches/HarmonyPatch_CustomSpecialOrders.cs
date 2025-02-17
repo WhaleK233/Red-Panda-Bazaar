@@ -24,7 +24,7 @@ public static class HarmonyPatch_CustomSpecialOrders
             $"Applying Harmony patch \"{nameof(HarmonyPatch_CustomSpecialOrders)}\": prefixing SDV method \"SpecialOrder.Update()\".");
         harmony.Patch(
             original: AccessTools.Method(typeof(SpecialOrder), "Update"),
-            postfix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
+            prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
                 nameof(Prefix_SpecialOrder_Update))
         );
     }
