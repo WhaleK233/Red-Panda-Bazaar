@@ -1,4 +1,5 @@
-﻿using Red_Panda_Bazaar_Code.Custom;
+﻿using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.Menus;
@@ -40,7 +41,7 @@ public static class MenuHandler
         );
         GameLocation.RegisterTileAction("RedPandaBazaar_SpecialOrdersBoard", (location, strings, arg3, arg4) =>
             {
-                Game1.activeClickableMenu = (IClickableMenu)new RPB_SpecialOrderBoard("RPB");
+                Game1.activeClickableMenu = (IClickableMenu)new RPB_SpecialOrderBoard(QuestsKeys.CXM_OrderType);
                 return false;
             }
         );

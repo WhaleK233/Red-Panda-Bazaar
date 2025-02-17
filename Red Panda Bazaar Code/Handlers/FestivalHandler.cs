@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Objects;
@@ -45,7 +44,7 @@ public static class FestivalHandler
     {
         if (Game1.CurrentEvent?.FestivalName == "SpringFair")
         {
-            Critters.spawns(Game1.currentLocation, Critters.Firefly);
+            RPB_Critters.spawns(Game1.currentLocation, RPB_Critters.Firefly);
         }
     }
 
@@ -71,15 +70,7 @@ public static class FestivalHandler
     /// <summary>检测是否为节日交互图块</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value ||
-            !Game1.player.canMove)
-            return;
-
-        if (Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
-            return;
-
-        if (Game1.CurrentEvent?.FestivalName != "SpringFair")
-            return;
+        if (!Tools.IsValidButtonAction(e) || Game1.CurrentEvent?.FestivalName != "SpringFair") return;
 
         var tile = e.Cursor.GrabTile;
 

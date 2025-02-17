@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
@@ -55,9 +56,9 @@ public static class HarmonyPatch_CustomSpecialOrders
         try
         {
             if (__instance.questState.Value == SpecialOrderStatus.Complete &&
-                __instance.questKey.Value.Contains("RPB"))
+                __instance.questKey.Value.Contains(QuestsKeys.CXM_OrderType))
             {
-                Game1.player.stats.Increment("ChenXiaomingRewardCount");
+                Game1.player.stats.Increment(StatsKeys.ChenXiaomingRewardCount);
                 extraRewardGiven = true;
                 Tools.Log("A SpecialOrders of Chen Xiaoming has been completed.");
             }

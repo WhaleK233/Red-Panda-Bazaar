@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Custom;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
@@ -29,7 +28,7 @@ public static class SpecialOrdersHandler
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
     {
         if (Game1.currentLocation.Name != "Custom_ChenQiShop1" ||
-            Game1.player.stats.Get("ChenXiaomingRewardCount") <= 0U) return;
+            Game1.player.stats.Get(StatsKeys.ChenXiaomingRewardCount) <= 0U) return;
 
         var spriteBatch = e.SpriteBatch;
 
@@ -51,30 +50,21 @@ public static class SpecialOrdersHandler
 
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Context.IsWorldReady || !e.Button.IsActionButton() || Game1.player.hasMenuOpen.Value ||
-            !Game1.player.canMove)
-            return;
-
-        if (Constants.TargetPlatform == GamePlatform.Android && e.Button != SButton.MouseLeft)
-            return;
-
-        if (!Game1.currentLocation.Name.Contains("Custom_ChenQiShop1"))
-            return;
+        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains("Custom_ChenQiShop1")) return;
 
         var tile = e.Cursor.GrabTile;
 
-        if (tile is { X: 10, Y: 6 })
+        if (tile is not { X: 10, Y: 6 }) return;
+
+        if (Game1.stats.Get(StatsKeys.ChenXiaomingRewardCount) > 0)
         {
-            if (Game1.stats.Get("ChenXiaomingRewardCount") > 0)
-            {
-                Game1.player.addItemToInventory(ItemRegistry.Create("RedPandaBazaar_Prize_Ticket_1"));
-                Game1.stats.Decrement("ChenXiaomingRewardCount");
-                Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_GetXiaoMingReward));
-            }
-            else
-            {
-                Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_NoXiaoMingReward));
-            }
+            Game1.player.addItemToInventory(ItemRegistry.Create(ItemsKeys.Tickets.ClassicTicket));
+            Game1.stats.Decrement(StatsKeys.ChenXiaomingRewardCount);
+            Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_GetXiaoMingReward));
+        }
+        else
+        {
+            Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_NoXiaoMingReward));
         }
     }
 
