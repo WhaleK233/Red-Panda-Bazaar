@@ -2,4 +2,6 @@
 /Red Panda Bazaar Code/obj
 /Red Panda Bazaar Code/out
 /.idea
+.idea/*
+.idea/
 global.json

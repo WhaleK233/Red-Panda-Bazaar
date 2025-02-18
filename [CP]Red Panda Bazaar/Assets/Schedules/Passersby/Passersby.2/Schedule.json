@@ -1,0 +1,20 @@
+{
+    "Changes": [
+        {
+            "LogName": "Passersby.2 Schedule",
+            "Action": "EditData",
+            "Target": "Characters/Schedules/RedPandaBazaar_Passersby.2",
+            "Entries": {
+                "Mon": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 58 74 3/ 1400 Custom_RedPandaBazaar 61 62 0/ 1800 Custom_RedPandaBazaar 47 41 0",
+                "Tue": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 11 40 1/ 1400 Custom_SandalwoodHotel1 14 16 3/ 1800 Custom_SandalwoodHotel1 18 9 2",
+                "Wed": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 10 79 2/ 1400 Custom_RedPandaBazaar 19 57 2/ 1800 Custom_MirrorLake 151 25 0",
+                "Thu": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 58 74 3/ 1400 Custom_RedPandaBazaar 61 62 0/ 1800 Custom_RedPandaBazaar 47 41 0",
+                "Fri": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 11 40 1/ 1400 Custom_SandalwoodHotel1 14 16 3/ 1800 Custom_SandalwoodHotel1 18 9 2",
+                "Sat": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 10 79 2/ 1400 Custom_RedPandaBazaar 19 57 2/ 1800 Custom_MirrorLake 151 25 0",
+                "Sun": "700 Custom_RedPandaBazaar 15 53 2/ 1000 Custom_RedPandaBazaar 11 40 1/ 1400 Custom_SandalwoodHotel1 14 16 3/ 1800 Custom_SandalwoodHotel1 18 9 2",
+
+                "rain": "610 Custom_SandalwoodHotel1 18 9 2 "
+            }
+        }
+    ]
+}
