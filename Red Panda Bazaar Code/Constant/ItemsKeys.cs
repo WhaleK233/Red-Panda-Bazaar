@@ -23,7 +23,9 @@ public static class ItemsKeys
     }
 
     public static class Furniture
-    {}
+    {
+        public const string MarlinFishTank1 = "RedPandaBazaar_MarlinShop_FishTank1";
+    }
 
     public static class Machines
     {
