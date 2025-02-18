@@ -14,25 +14,8 @@ public static class FurnitureHandler
         Tools.Log("Furniture Initializing.");
 
         Tools.Helper.Events.Player.Warped += OnPlayerWarped;
-        Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
 
         Tools.Log("Furniture Initialized.");
-    }
-
-    private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
-    {
-        /*var b = e.SpriteBatch;
-        var loc = Game1.currentLocation;
-        if (loc.Name != "Custom_MarlinShop1") return;
-
-        Furniture.isDrawingLocationFurniture = true;
-        foreach (Furniture furniture in loc.furniture)
-        {
-            if (furniture.QualifiedItemId == "(F)" + ItemsKeys.Furniture.MarlinFishTank1)
-                furniture.draw(b, -1, -1, 1f);
-        }
-
-        Furniture.isDrawingLocationFurniture = false;*/
     }
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
@@ -51,14 +34,23 @@ public static class FurnitureHandler
 
         if (flag)
             return;
-        FishTankFurniture fishTankFurniture = new(ItemsKeys.Furniture.MarlinFishTank1, new Vector2(16f, 11f))
+        FishTankFurniture fishTankFurniture1 = new(ItemsKeys.Furniture.MarlinFishTank1, new Vector2(17f, 12f))
         {
             CanBeGrabbed = false,
             AllowLocalRemoval = false,
             Fragility = 2
         };
-        fishTankFurniture.heldItems.Add(ItemRegistry.Create("(O)143"));
-        fishTankFurniture.heldItems.Add(ItemRegistry.Create("(O)145"));
-        loc.furniture.Add(fishTankFurniture);
+        FishTankFurniture fishTankFurniture2 = new(ItemsKeys.Furniture.MarlinFishTank1, new Vector2(20f, 17f))
+        {
+            CanBeGrabbed = false,
+            AllowLocalRemoval = false,
+            Fragility = 2
+        };
+        fishTankFurniture1.heldItems.Add(ItemRegistry.Create("(O)143"));
+        fishTankFurniture2.heldItems.Add(ItemRegistry.Create("(O)143"));
+        fishTankFurniture1.heldItems.Add(ItemRegistry.Create("(O)145"));
+        fishTankFurniture2.heldItems.Add(ItemRegistry.Create("(O)145"));
+        loc.furniture.Add(fishTankFurniture1);
+        loc.furniture.Add(fishTankFurniture2);
     }
 }

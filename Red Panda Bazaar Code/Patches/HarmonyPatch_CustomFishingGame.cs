@@ -8,15 +8,17 @@ namespace Red_Panda_Bazaar_Code.Patches;
 
 public static class HarmonyPatch_CustomFishingGame
 {
+    private const string NAME = nameof(HarmonyPatch_CustomFishingGame);
+
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.LogPatch(nameof(HarmonyPatch_CustomFishingGame), "Event.caughtFish()", PatchType.Prefix);
+        Tools.LogPatch(NAME, "Event.caughtFish()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Event), "caughtFish"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_caughtFish))
         );
 
-        Tools.LogPatch(nameof(HarmonyPatch_CustomFishingGame), "Event.perfectFishing()", PatchType.Prefix);
+        Tools.LogPatch(NAME, "Event.perfectFishing()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Event), "perfectFishing"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFishingGame), nameof(Prefix_Event_perfectFishing))
@@ -44,7 +46,7 @@ public static class HarmonyPatch_CustomFishingGame
         }
         catch (Exception e)
         {
-            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFishingGame), e);
+            Tools.LogPatchErr(NAME, e);
             throw;
         }
     }
@@ -63,7 +65,7 @@ public static class HarmonyPatch_CustomFishingGame
         }
         catch (Exception e)
         {
-            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFishingGame), e);
+            Tools.LogPatchErr(NAME, e);
             throw;
         }
     }

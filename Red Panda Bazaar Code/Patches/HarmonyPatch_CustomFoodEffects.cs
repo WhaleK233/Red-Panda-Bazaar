@@ -8,9 +8,11 @@ namespace Red_Panda_Bazaar_Code.Patches;
 
 public static class HarmonyPatch_CustomFoodEffects
 {
+    private const string NAME = nameof(HarmonyPatch_CustomFoodEffects);
+
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.LogPatch(nameof(HarmonyPatch_CustomFoodEffects), "Farmer.doneEating()", PatchType.Prefix);
+        Tools.LogPatch(NAME, "Farmer.doneEating()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(Farmer), "doneEating"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomFoodEffects), nameof(Prefix_Farmer_doneEating))
@@ -38,7 +40,7 @@ public static class HarmonyPatch_CustomFoodEffects
         }
         catch (Exception e)
         {
-            Tools.LogPatchErr(nameof(HarmonyPatch_CustomFoodEffects), e);
+            Tools.LogPatchErr(NAME, e);
             throw;
         }
     }
