@@ -35,6 +35,7 @@ public class ModEntry : Mod
         MenuHandler.Init();
         SpecialOrdersHandler.Init();
         BuffHandler.Init();
+        FurnitureHandler.Init();
     }
 
     private static void HarmonyPatch()
