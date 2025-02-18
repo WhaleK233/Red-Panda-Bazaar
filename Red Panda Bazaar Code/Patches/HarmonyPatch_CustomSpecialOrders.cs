@@ -8,18 +8,20 @@ namespace Red_Panda_Bazaar_Code.Patches;
 
 public static class HarmonyPatch_CustomSpecialOrders
 {
+    private const string NAME = nameof(HarmonyPatch_CustomSpecialOrders);
+
     private static bool extraRewardGiven;
 
     public static void ApplyPatch(Harmony harmony)
     {
-        Tools.LogPatch(nameof(HarmonyPatch_CustomSpecialOrders), "SpecialOrder.CheckCompletion()", PatchType.Postfix);
+        Tools.LogPatch(NAME, "SpecialOrder.CheckCompletion()", PatchType.Postfix);
         harmony.Patch(
             original: AccessTools.Method(typeof(SpecialOrder), "CheckCompletion"),
             postfix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
                 nameof(Postfix_SpecialOrder_CheckCompletion))
         );
 
-        Tools.LogPatch(nameof(HarmonyPatch_CustomSpecialOrders), "SpecialOrder.Update()", PatchType.Prefix);
+        Tools.LogPatch(NAME, "SpecialOrder.Update()", PatchType.Prefix);
         harmony.Patch(
             original: AccessTools.Method(typeof(SpecialOrder), "Update"),
             prefix: new HarmonyMethod(typeof(HarmonyPatch_CustomSpecialOrders),
@@ -41,7 +43,7 @@ public static class HarmonyPatch_CustomSpecialOrders
         }
         catch (Exception e)
         {
-            Tools.LogPatchErr(nameof(HarmonyPatch_CustomSpecialOrders), e);
+            Tools.LogPatchErr(NAME, e);
             throw;
         }
     }
@@ -60,7 +62,7 @@ public static class HarmonyPatch_CustomSpecialOrders
         }
         catch (Exception e)
         {
-            Tools.LogPatchErr(nameof(HarmonyPatch_CustomSpecialOrders), e);
+            Tools.LogPatchErr(NAME, e);
             throw;
         }
     }
