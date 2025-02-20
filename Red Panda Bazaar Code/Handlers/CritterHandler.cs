@@ -94,9 +94,14 @@ public static class CritterHandler
                 break;
             }
         }
-        else if (Tools.IsNightTime(loc) && Maps.Contains(loc.Name))
+
+        if (Tools.IsNightTime(loc) && Maps.Contains(loc.Name))
         {
             RPB_Critters.spawns(loc, RPB_Critters.Firefly);
+            IsRightLoc = true;
+        }
+        else if (Maps.Contains(loc.Name))
+        {
             IsRightLoc = true;
         }
         else
