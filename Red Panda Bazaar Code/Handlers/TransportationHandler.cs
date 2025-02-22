@@ -7,7 +7,7 @@ using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class EntranceHandler
+public static class TransportationHandler
 {
     public static void Init()
     {
