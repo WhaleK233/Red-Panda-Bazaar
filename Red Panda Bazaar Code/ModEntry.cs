@@ -29,7 +29,7 @@ public class ModEntry : Mod
 
     private static void ControllerInit()
     {
-        EntranceHandler.Init();
+        TransportationHandler.Init();
         CritterHandler.Init();
         FestivalHandler.Init();
         MenuHandler.Init();
