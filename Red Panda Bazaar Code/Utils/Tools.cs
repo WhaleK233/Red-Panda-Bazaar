@@ -74,8 +74,18 @@ public static class Tools
 
     public static bool IsValidButtonAction(ButtonPressedEventArgs e)
     {
-        return Context.IsWorldReady && e.Button.IsActionButton() && !Game1.player.hasMenuOpen.Value &&
-               Game1.player.canMove &&
-               (Constants.TargetPlatform != GamePlatform.Android || e.Button == SButton.MouseLeft);
+        if (!Context.IsWorldReady || Game1.player.hasMenuOpen.Value) return false;
+
+        if (Constants.TargetPlatform == GamePlatform.Android)
+        {
+            if (e.Button != SButton.MouseLeft || e.Cursor.GrabTile != e.Cursor.Tile)
+                return false;
+        }
+        else if (!e.Button.IsActionButton())
+        {
+            return false;
+        }
+
+        return true;
     }
 }
