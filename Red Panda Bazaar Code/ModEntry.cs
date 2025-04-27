@@ -23,15 +23,16 @@ public class ModEntry : Mod
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         Integrations.Init();
-        ControllerInit();
+        HandlerInit();
         HarmonyPatch();
     }
 
-    private static void ControllerInit()
+    private static void HandlerInit()
     {
         TransportationHandler.Init();
         CritterHandler.Init();
-        FestivalHandler.Init();
+        SpringFairHandler.Init();
+        BufferflyNightHandler.Init();
         MenuHandler.Init();
         SpecialOrdersHandler.Init();
         BuffHandler.Init();
