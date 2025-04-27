@@ -15,7 +15,6 @@ public static class Integrations
         AddCentralStationDestination();
     }
 
-
     private static void AddCentralStationDestination()
     {
         var centralStationApi = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);

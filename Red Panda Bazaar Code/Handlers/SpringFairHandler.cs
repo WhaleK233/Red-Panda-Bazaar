@@ -9,19 +9,18 @@ using StardewValley.Objects;
 
 namespace Red_Panda_Bazaar_Code.Handlers;
 
-public static class FestivalHandler
+public static class SpringFairHandler
 {
-    /// <summary>启用春8的一些效果</summary>
     public static void Init()
     {
-        Tools.Log("Festival Initializing.");
+        Tools.Log("Spring Fair Initializing.");
 
         Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
         Tools.Helper.Events.Player.Warped += OnPlayerWarped;
 
-        Tools.Log("Festival Initialized.");
+        Tools.Log("Spring Fair Initialized.");
     }
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)

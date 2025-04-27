@@ -16,14 +16,14 @@ public static class RPB_Critters
         loc.instantiateCrittersList();
         while (number > 0)
         {
-            // 生成一个萤火虫
+            // 生成一个
             var tile = loc.getRandomTile();
 
             loc.critters.Add(GetNewCritter(loc, tile, type));
             number--;
 
             var chance = Game1.random.NextDouble();
-            // 20%的概率在附近生成一个萤火虫
+            // 20%的概率在附近生成一个
             if (chance is >= 0.1 and < 0.3 && number >= 1)
             {
                 var nearTile = GetNearTile(loc, tile);
@@ -32,7 +32,7 @@ public static class RPB_Critters
             }
 
             chance = Game1.random.NextDouble();
-            // 10%的概率在附近生成两个萤火虫
+            // 10%的概率在附近生成两个
             if (chance < 0.1 && number >= 2)
             {
                 var nearTile = GetNearTile(loc, tile);
@@ -50,6 +50,7 @@ public static class RPB_Critters
         {
             0 => new Firefly(tile),
             1 => new Butterfly(loc, tile),
+            2 => new Butterfly(loc, tile),
             _ => throw new ArgumentOutOfRangeException(nameof(cType), cType, null)
         };
     }
