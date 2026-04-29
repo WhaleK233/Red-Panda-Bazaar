@@ -1,7 +1,13 @@
-﻿/Red Panda Bazaar Code/bin
-/Red Panda Bazaar Code/obj
-/Red Panda Bazaar Code/out
-/.idea
-.idea/*
+# IDE
 .idea/
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+out/
+
+# Runtime
 global.json

@@ -78,7 +78,7 @@ public static class Tools
 
         if (Constants.TargetPlatform == GamePlatform.Android)
         {
-            if (e.Button != SButton.MouseLeft || e.Cursor.GrabTile != e.Cursor.Tile)
+            if (e.Button != SButton.MouseLeft)
                 return false;
         }
         else if (!e.Button.IsActionButton())

@@ -37,7 +37,6 @@ public class BufferflyNightHandler
     {
         if (Game1.season is Season.Fall && Game1.dayOfMonth == 11 && Game1.timeOfDay >= 1600)
         {
-            Tools.Log("11111111111111111");
             RPB_Critters.spawns(Game1.currentLocation, RPB_Critters.Butterfly);
         }
     }

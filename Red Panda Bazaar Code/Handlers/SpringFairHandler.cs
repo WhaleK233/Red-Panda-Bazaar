@@ -11,6 +11,12 @@ namespace Red_Panda_Bazaar_Code.Handlers;
 
 public static class SpringFairHandler
 {
+    private const int FishingGameTileX = 62, FishingGameTileY = 75;
+    private const int TargetGameTileX = 72, TargetGameTileY = 75;
+    private const int WheelBetTileX1 = 67, WheelBetTileY1 = 75;
+    private const int WheelBetTileX2 = 68, WheelBetTileY2 = 75;
+    private const int PrizeMachineTileX = 40, PrizeMachineTileY = 62;
+    private const int BuyBackpackTileX = 26, BuyBackpackTileY = 77;
     public static void Init()
     {
         Tools.Log("Spring Fair Initializing.");
@@ -75,21 +81,21 @@ public static class SpringFairHandler
 
         switch (tile.X, tile.Y)
         {
-            case (62, 75):
-                HandleFishingGame(); // 进行钓鱼小游戏
+            case (FishingGameTileX, FishingGameTileY):
+                HandleFishingGame();
                 break;
-            case (72, 75):
-                HandleTargetGame(); // 进行射击小游戏
+            case (TargetGameTileX, TargetGameTileY):
+                HandleTargetGame();
                 break;
-            case (67, 75):
-            case (68, 75):
-                HandleWheelBetGame(); // 进行轮盘赌小游戏
+            case (WheelBetTileX1, WheelBetTileY1):
+            case (WheelBetTileX2, WheelBetTileY2):
+                HandleWheelBetGame();
                 break;
-            case (40, 62):
-                Game1.activeClickableMenu = new RPB_ClassicMachineMenu(); // 打开兑奖机界面
+            case (PrizeMachineTileX, PrizeMachineTileY):
+                Game1.activeClickableMenu = new RPB_ClassicMachineMenu();
                 break;
-            case (26, 77):
-                BuyBackpack(); // 购买背包
+            case (BuyBackpackTileX, BuyBackpackTileY):
+                BuyBackpack();
                 break;
         }
     }
