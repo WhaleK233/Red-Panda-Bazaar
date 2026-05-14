@@ -170,6 +170,41 @@
             }
           ]
         },
+        "RedPandaBazaar.49.116.SpringFair": {
+          "Currency": 1,
+          "Owners": [
+            {
+              "Name": "AnyOrNone",
+              "Portrait": "Marnie",
+              "Dialogues": [
+                {
+                  "Id": "RedPandaBazaar.49.116.SpringFair",
+                  "Dialogue": "{{i18n:Shops.RedPandaBazaar.49.116.SpringFair}}"
+                }
+              ]
+            }
+          ],
+          "Items": [
+            {
+              "Id": "RedPandaBazaar.49.116.SpringFair.Golden.Animal.Cracker",
+              "ItemId": "(O)GoldenAnimalCracker",
+              "AvailableStock": 1,
+              "Price": 500
+            },
+            {
+              "Id": "RedPandaBazaar.49.116.SpringFair.Hay",
+              "ItemId": "(O)178",
+              "AvailableStock": 20,
+              "Price": 50
+            },
+            {
+              "Id": "RedPandaBazaar.49.116.SpringFair.Pumpkin.Pie",
+              "ItemId": "(O)608",
+              "AvailableStock": 1,
+              "Price": 100
+            }
+          ]
+        },
         "RedPandaBazaar.27.48.SpringFair": {
           "Currency": 1,
           "Owners": [
@@ -189,13 +224,13 @@
               "Id": "RedPandaBazaar.27.48.SpringFair.GamblerHat",
               "ItemId": "(H)RedPandaBazaar_GamblerHat",
               "AvailableStock": 1,
-              "Price": 7500
+              "Price": 3000
             },
             {
               "Id": "RedPandaBazaar.27.48.SpringFair.Phoenix.Ring",
               "ItemId": "(O)863",
               "AvailableStock": 1,
-              "Price": 4500
+              "Price": 2500
             },
             {
               "Id": "RedPandaBazaar.27.48.SpringFair.Hot.Java.Ring",
@@ -207,7 +242,7 @@
               "Id": "RedPandaBazaar.27.48.SpringFair.Mermaid.Boots",
               "ItemId": "(B)854",
               "AvailableStock": 1,
-              "Price": 4500
+              "Price": 3000
             },
             {
               "Id": "RedPandaBazaar.27.48.SpringFair.Dwarf.Dagger",
@@ -436,7 +471,7 @@
             {
               "Id": "RedPandaBazaar.76.62.SpringFair.Auto.Petter",
               "ItemId": "(BC)272",
-              "Price": 9500,
+              "Price": 5500,
               "AvailableStock": 1
             },
             {

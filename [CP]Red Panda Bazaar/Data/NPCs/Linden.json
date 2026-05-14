@@ -1,0 +1,75 @@
+{
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Characters",
+            "Entries": {
+                "RedPandaBazaar_Linden": {
+                    "DisplayName": "{{i18n:NPCName:RedPandaBazaar_Linden}}",
+                    "Language": "default",
+                    "Gender": "Undefined",
+                    "Age": "Adult",
+                    "Manner": "rude",
+                    "SocialAnxiety": "Neutral",
+                    "Optimism": "Neutral",
+                    "HomeRegion": "Other",
+                    "CanSocialize": false,
+                    "CanBeRomanced": false,
+                    "CanReceiveGifts":false,
+                    "CanCommentOnPurchasedShopItems":false,
+                    "CanGreetNearbyCharacters":false,
+                    "CanVisitIslandCondition": false,
+                    "LoveInterest": "",
+                    "Calendar": "HiddenAlways",
+                    "SocialTab": "UnknownUntilMet",
+                    "ExcludeFromIntroductionsQuest": false,
+                    "IntroductionsQuest": false,
+                    "ItemDeliveryQuests": false,
+                    "PerfectionScore": false,
+                    "ExcludeFromPerfectionScore": false,
+                    "WinterStarParticipant": false,
+                    "EndSlideShow": "Hidden",
+                    "FriendsAndFamily": {},
+                    "UnlockConditions": null,
+                    "SpawnIfMissing": true,
+                    "Home": [
+                        {
+                            "Id": "Custom_PlantResearch",
+                            "Condition": null,
+                            "Location": "Custom_PlantResearch",
+                            "Tile": {
+                                "X": 42,
+                                "Y": 29
+                            },
+                            "Direction": "down"
+                        }
+                    ],
+                    "TextureName": null,
+                    "Size": {
+                        "X": 16,
+                        "Y": 32
+                    },
+                    "CustomFields": {}
+                }
+            }
+        },
+        {
+            "Action": "Load",
+            "Target": "Characters/RedPandaBazaar_Linden",
+            "FromFile": "assets/Sprites/Linden.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Portraits/RedPandaBazaar_Linden",
+            "FromFile": "assets/Portraits/Linden.png"
+        },
+        {
+            "LogName": "Events",
+            "Action": "EditData",
+            "Target": "Data/Events/Custom_PlantResearch",
+            "Entries": {
+                "RPB.Linden.Heart.10/t 1800 2400": "null/42 29/farmer 42 34 0 RedPandaBazaar_Linden 42 29 2/skippable/pause 2000/speak RedPandaBazaar_Linden \"{{i18n:RPB.Linden.Heart.10.1.Linden}}\"/pause 500/end"
+            }
+        }
+    ]
+}

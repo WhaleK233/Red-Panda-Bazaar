@@ -33,12 +33,12 @@
                     "SpawnIfMissing": true,
                     "Home": [
                         {
-                            "Id": "Custom_RedPandaBazaar.22.19",
+                            "Id": "Custom_RedPandaBazaar.Building1.2",
                             "Condition": null,
-                            "Location": "Custom_RedPandaBazaar.22.19",
+                            "Location": "Custom_RedPandaBazaar.Building1.2",
                             "Tile": {
-                                "X": 0,
-                                "Y": 3
+                                "X": 32,
+                                "Y": 4
                             },
                             "Direction": "down"
                         }

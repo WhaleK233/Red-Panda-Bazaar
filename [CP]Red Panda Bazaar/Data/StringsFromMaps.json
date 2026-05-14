@@ -4,7 +4,13 @@
       "Action": "EditData",
       "Target": "Strings/StringsFromMaps",
       "Entries": {
+        "RedPandaBazaar_PlantResearch.42.32.Mail":"{{i18n:PlantResearch.42.32.Mail}}[letterbg 1]",
+        "RedPandaBazaar_PlantResearch.42.28.Mail":"{{i18n:PlantResearch.42.28.Mail}}[letterbg 1]",
 
+        "PlantResearch.38.33":"{{i18n:PlantResearch.38.33}}",
+        "PlantResearch.39.31":"{{i18n:PlantResearch.39.31}}",
+        "PlantResearch.42.28":"{{i18n:PlantResearch.42.28}}",
+        "PlantResearch.41.29":"{{i18n:PlantResearch.41.29}}",
         "RedPandaBazaar.Locked": "{{i18n:Locked}}",
 
         "MarlinShop1.15.12":"{{i18n:MarlinShop1.15.12}}",

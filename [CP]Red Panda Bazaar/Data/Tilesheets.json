@@ -2,6 +2,16 @@
     "Changes": [
         {
             "Action": "Load",
+            "Target": "Maps/PlantResearch_Layer",
+            "FromFile": "assets/Tilesheets/Layer/PlantResearch_Layer.png"
+        },
+        {
+            "Action": "Load",
+            "Target": "Maps/PlantResearch",
+            "FromFile": "assets/Tilesheets/LiLaoliu_RedPandaBazaar/PlantResearch.png"
+        },
+        {
+            "Action": "Load",
             "Target": "Maps/LiLaoliu_RedPandaBazaar_Tilesheets",
             "FromFile": "assets/Tilesheets/LiLaoliu_RedPandaBazaar/LiLaoliu_RedPandaBazaar_Tilesheets.png"
         },

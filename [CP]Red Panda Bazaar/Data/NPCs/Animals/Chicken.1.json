@@ -38,8 +38,8 @@
                             "Condition": null,
                             "Location": "Custom_BlankMaps",
                             "Tile": {
-                                "X": 0,
-                                "Y": 0
+                                "X": 1,
+                                "Y": 1
                             },
                             "Direction": "down"
                         }

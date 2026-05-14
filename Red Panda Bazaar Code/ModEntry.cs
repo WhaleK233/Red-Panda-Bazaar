@@ -1,18 +1,25 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
-using Red_Panda_Bazaar_Code.Handlers;
-using Red_Panda_Bazaar_Code.Patches;
+using Red_Panda_Bazaar_Code.DeBug;
+using Red_Panda_Bazaar_Code.Features.Buffs;
+using Red_Panda_Bazaar_Code.Features.ButterflyNight;
+using Red_Panda_Bazaar_Code.Features.Critters;
+using Red_Panda_Bazaar_Code.Features.FishingMiniGame;
+using Red_Panda_Bazaar_Code.Features.Furniture;
+using Red_Panda_Bazaar_Code.Features.PlayerStall;
+using Red_Panda_Bazaar_Code.Features.PrizeMachines;
+using Red_Panda_Bazaar_Code.Features.SpecialOrders;
+using Red_Panda_Bazaar_Code.Features.SpringFair;
+using Red_Panda_Bazaar_Code.Features.Transportation;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
 namespace Red_Panda_Bazaar_Code;
 
-public class ModEntry : Mod
-{
-    public override void Entry(IModHelper helper)
-    {
+public class ModEntry : Mod {
+    public override void Entry(IModHelper helper) {
         Tools.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
         Tools.LogInfo("Red Panda Bazaar Code Initializing...");
@@ -20,30 +27,30 @@ public class ModEntry : Mod
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
-    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
-    {
+    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e) {
         Integrations.Init();
-        HandlerInit();
+        FeatureInit();
         HarmonyPatch();
     }
 
-    private static void HandlerInit()
-    {
-        TransportationHandler.Init();
-        CritterHandler.Init();
-        SpringFairHandler.Init();
-        BufferflyNightHandler.Init();
-        MenuHandler.Init();
-        SpecialOrdersHandler.Init();
-        BuffHandler.Init();
-        FurnitureHandler.Init();
+    private static void FeatureInit() {
+        Buffs.Init();
+        Critter.Init();
+        Furniture.Init();
+        SpringFair.Init();
+        PlayerStall.Init();
+        DebugOverlay.Init();
+        PrizeMachines.Init();
+        SpecialOrders.Init();
+        ButterflyNight.Init();
+        Transportation.Init();
     }
 
-    private static void HarmonyPatch()
-    {
+    private static void HarmonyPatch() {
         var harmony = new Harmony(Tools.ModManifest.UniqueID);
-        HarmonyPatch_CustomFishingGame.ApplyPatch(harmony);
-        HarmonyPatch_CustomFoodEffects.ApplyPatch(harmony);
-        HarmonyPatch_CustomSpecialOrders.ApplyPatch(harmony);
+        FishingMiniGamePatch.ApplyPatch(harmony);
+        BuffsPatch.ApplyPatch(harmony);
+        SpecialOrdersPatch.ApplyPatch(harmony);
+        FurniturePatch.ApplyPatch(harmony);
     }
 }

@@ -43,6 +43,16 @@
           "Price": 250,
           "Texture": "Mods\\RedPandaBazaar\\Items",
           "SpriteIndex": 4
+        },
+        "RedPandaBazaar_ButterflyNight_Prize_Ticket": {
+          "Name": "RedPandaBazaar ButterflyNight Prize Ticket",
+          "DisplayName": "{{i18n:RedPandaBazaar.Object.ButterflyNight.Prize.Ticket.Name}}",
+          "Description": "{{i18n:RedPandaBazaar.Object.ButterflyNight.Prize.Ticket.Description}}",
+          "Type": "Basic",
+          "Category": 0,
+          "Price": 500,
+          "Texture": "Mods\\RedPandaBazaar\\Items",
+          "SpriteIndex": 5
         }
       }
     }

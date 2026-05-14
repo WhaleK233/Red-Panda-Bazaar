@@ -28,7 +28,7 @@
                     "SocialTab": "UnknownUntilMet",
                     "IntroductionsQuest": false,
                     "ItemDeliveryQuests": false,
-                    "PerfectionScore": true,
+                    "PerfectionScore": false,
                     "EndSlideShow": "TrailingGroup",
                     "DumpsterDiveEmote": 40,
                     "DumpsterDiveFriendshipEffect":-50,
