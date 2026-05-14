@@ -36,6 +36,9 @@ public static class PlayerStall {
 
     internal static IReadOnlyDictionary<string, Vector2> StallTiles => StallTilePositions;
 
+    /// <summary>摊位显示的物品图标缓存，库存变化时失效。</summary>
+    private static readonly Dictionary<string, Item> DisplayItemCache = new();
+
 
     /// <summary>注册结算账单的 Tile Action。</summary>
     public static void RegisterSettlement() {
@@ -106,7 +109,7 @@ public static class PlayerStall {
     }
 
     private static void OnSaving(object? sender, SavingEventArgs e) {
-        WriteSaveData();
+        if (Context.IsMainPlayer) WriteSaveData();
     }
 
     /// <summary>立即写入存档。</summary>
@@ -122,6 +125,8 @@ public static class PlayerStall {
     /// <summary>上架物品到指定摊位（乐观本地更新 + 主机权威同步）。</summary>
     public static bool AddItem(string actionId, string itemId, int amount, int price) {
         if (amount <= 0 || price < 1 || !RegisteredStalls.ContainsKey(actionId)) return false;
+        if (Data.Stock.TryGetValue(actionId, out var existing) && existing.Count > 0 && existing[0].ItemId != itemId)
+            return false;
         var item = new StallItem {
             Id = Guid.NewGuid().ToString(),
             ActionId = actionId,
@@ -132,6 +137,7 @@ public static class PlayerStall {
         if (!Data.Stock.TryGetValue(actionId, out var list))
             Data.Stock[actionId] = list = new();
         list.Add(item);
+        DisplayItemCache.Remove(actionId);
         Tools.SendToHostOrBroadcast(item, MPMessageType.PlayerStall_AddItem);
         return true;
     }
@@ -143,6 +149,7 @@ public static class PlayerStall {
         var itemId = list[index].Id;
         list.RemoveAt(index);
         if (list.Count == 0) Data.Stock.Remove(actionId);
+        DisplayItemCache.Remove(actionId);
         Tools.SendToHostOrBroadcast(itemId, MPMessageType.PlayerStall_RemoveItem);
         return true;
     }
@@ -156,6 +163,7 @@ public static class PlayerStall {
         }
 
         Tools.SendToHostOrBroadcast(item.Id, MPMessageType.PlayerStall_RemoveItem);
+        DisplayItemCache.Remove(item.ActionId);
     }
 
     /// <summary>更新物品数量/价格（乐观本地更新 + 主机权威同步）。</summary>
@@ -269,7 +277,10 @@ public static class PlayerStall {
                 if (Context.IsMainPlayer) break;
                 if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var syncData = e.ReadAs<StallSaveData>();
-                if (syncData != null) Data = syncData;
+                if (syncData != null) {
+                    Data = syncData;
+                    DisplayItemCache.Clear();
+                }
                 break;
             }
 
@@ -367,10 +378,16 @@ public static class PlayerStall {
             var tilePos = kv.Value;
 
             var stallItem = GetItems(actionId).FirstOrDefault();
-            if (stallItem == null) continue;
+            if (stallItem == null) {
+                DisplayItemCache.Remove(actionId);
+                continue;
+            }
 
-            var obj = ItemRegistry.Create(stallItem.ItemId, 1);
-            if (obj == null) continue;
+            if (!DisplayItemCache.TryGetValue(actionId, out var obj)) {
+                obj = ItemRegistry.Create(stallItem.ItemId, 1);
+                if (obj == null) continue;
+                DisplayItemCache[actionId] = obj;
+            }
 
             var screenPos = Game1.GlobalToLocal(Game1.viewport,
                 new Vector2(tilePos.X * 64f - 8f, tilePos.Y * 64f - 16f));
@@ -447,7 +464,7 @@ public static class PlayerStall {
                     ItemId = item.ItemId,
                     Amount = sellAmount,
                     Price = item.Price,
-                    SoldDate = $"{Game1.Date.Season}_{Game1.Date.DayOfMonth}_{Game1.Date.Year}"
+                    SoldDate = $"{Game1.seasonIndex}_{Game1.Date.DayOfMonth}_{Game1.Date.Year}"
                 });
 
                 // 原条目卖空后移除，避免 Amount=0 的空记录留在列表里
@@ -457,6 +474,8 @@ public static class PlayerStall {
 
             // 摊位卖空后清理空列表
             if (stock.Count == 0) Data.Stock.Remove(actionId);
+
+            DisplayItemCache.Remove(actionId);
 
             totalSold += soldCount;
             Tools.Log($"[{actionId}] 触发销售，售出 {soldCount} 件");
