@@ -10,4 +10,9 @@ public static class MPMessageType {
     public const string PlayerStall_AddItem = "PlayerStallAddItem";
     public const string PlayerStall_RemoveItem = "PlayerStallRemoveItem";
     public const string PlayerStall_UpdateItem = "PlayerStallUpdateItem";
+
+    // Bank
+    public const string Bank_SyncData = "BankSyncData";
+    public const string Bank_ActionRequest = "BankActionRequest";
+    public const string Bank_ActionResult = "BankActionResult";
 }
