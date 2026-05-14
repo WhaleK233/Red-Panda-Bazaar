@@ -59,9 +59,9 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
 
 ## 版本号
 
-格式 `1.x.y-beta.Build.z`，`y` 为语义化版本号，`z` 为构建号（构建脚本自动递增）。
+格式 `1.x.y-Build.z`，`y` 为语义化版本号，`z` 为构建号（构建脚本自动递增）。
 
 ## 分支策略
 
-- **master** — 稳定发布
+- **main** — 稳定发布
 - **develop** — 日常开发
