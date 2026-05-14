@@ -5,6 +5,11 @@
             "Target": "Characters/Dialogue/RedPandaBazaar_ShiFuShan",
             "Entries": {
                 "Introduction": "{{i18n:ShiFuShan.Introduction}}",
+                "DumpsterDiveComment": "{{i18n:ShiFuShan.DumpsterDiveComment}}",
+                "HitBySlingshot": "{{i18n:ShiFuShan.HitBySlingshot}}",
+                "GreenRain": "{{i18n:ShiFuShan.GreenRain}}",
+                "GreenRainFinished": "{{i18n:ShiFuShan.GreenRainFinished}}",
+                "GreenRain_2": "{{i18n:ShiFuShan.GreenRain.2}}",
 
                 "Mon": "{{i18n:ShiFuShan.Mon.0h}}",
                 "Tue": "{{i18n:ShiFuShan.Tue.0h}}",

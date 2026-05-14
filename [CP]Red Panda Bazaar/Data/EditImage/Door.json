@@ -19,7 +19,7 @@
         "Height": 48
       },
       "When": {
-        "LocationName": "Custom_ShiFuShanHouse1,Custom_ShiFuShanHouse2,Custom_SandalwoodHotel1,Custom_SandalwoodHotel2,Custom_ArtisanShop1,Custom_ArtisanShop2,Custom_LiQingFengCafe1,Custom_LiQingFengCafe2,Custom_LiQingFengHouse1,Custom_LiQingFengHouse2,Custom_LiQingFengHouse3,Custom_ChenQiShop1,Custom_ChenQiShop2,Custom_MarlinShop1,Custom_MirrorLake.Building4.1"
+        "LocationName": "Custom_ShiFuShanHouse1,Custom_ShiFuShanHouse2,Custom_SandalwoodHotel1,Custom_SandalwoodHotel2,Custom_ArtisanShop1,Custom_ArtisanShop2,Custom_LiQingFengCafe1,Custom_LiQingFengCafe2,Custom_LiQingFengHouse1,Custom_LiQingFengHouse2,Custom_LiQingFengHouse3,Custom_ChenQiShop1,Custom_ChenQiShop2,Custom_MarlinShop1,Custom_MirrorLake.Building4.1,Custom_RedPandaBazaar.Building1.1,Custom_RedPandaBazaar.Building1.2,Custom_LindenHouse.1"
       }
     },
     {
@@ -41,7 +41,7 @@
         "Height": 48
       },
       "When": {
-        "LocationName": "Custom_ShiFuShanHouse1,Custom_ShiFuShanHouse2,Custom_SandalwoodHotel1,Custom_SandalwoodHotel2,Custom_ArtisanShop1,Custom_ArtisanShop2,Custom_LiQingFengCafe1,Custom_LiQingFengCafe2,Custom_LiQingFengHouse1,Custom_LiQingFengHouse2,Custom_LiQingFengHouse3,Custom_ChenQiShop1,Custom_ChenQiShop2,Custom_MarlinShop1,Custom_MirrorLake.Building4.1"
+        "LocationName": "Custom_ShiFuShanHouse1,Custom_ShiFuShanHouse2,Custom_SandalwoodHotel1,Custom_SandalwoodHotel2,Custom_ArtisanShop1,Custom_ArtisanShop2,Custom_LiQingFengCafe1,Custom_LiQingFengCafe2,Custom_LiQingFengHouse1,Custom_LiQingFengHouse2,Custom_LiQingFengHouse3,Custom_ChenQiShop1,Custom_ChenQiShop2,Custom_MarlinShop1,Custom_MirrorLake.Building4.1,Custom_RedPandaBazaar.Building1.1,Custom_RedPandaBazaar.Building1.2,Custom_LindenHouse.1"
       }
     }
   ]

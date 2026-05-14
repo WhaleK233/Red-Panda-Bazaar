@@ -91,10 +91,7 @@
               "Condition": "LOCATION_Season Here Fall Spring Summer Winter",
               "Chance": 0.06
             }
-          ],
-          "When": {
-            "HasMod |contains=FlashShifter.StardewValleyExpandedCP": false
-          }
+          ]
         }
       }
     }

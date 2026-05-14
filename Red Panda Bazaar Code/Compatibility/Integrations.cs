@@ -2,7 +2,9 @@
 using Red_Panda_Bazaar_Code.Compatibility.ModApi;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.DeBug;
 using Red_Panda_Bazaar_Code.Utils;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Compatibility;
@@ -49,6 +51,26 @@ public static class Integrations
             save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
         );
 
+        // 启用税收
+        configMenuApi.AddBoolOption(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_EnableTax),
+            getValue: () => Tools.ModConfig.EnableTax,
+            setValue: value => Tools.ModConfig.EnableTax = value
+        );
+
+        // 税率
+        configMenuApi.AddNumberOption(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_TaxRate),
+            getValue: () => Tools.ModConfig.TaxRate,
+            setValue: value => Tools.ModConfig.TaxRate = value,
+            min: 0.0f,
+            max: 1.0f,
+            interval: 0.01f,
+            formatValue: value => (int)Math.Round(value * 100) + "%"
+        );
+
         // 萤火虫数量
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
@@ -69,6 +91,22 @@ public static class Integrations
             min: 0.5f,
             max: 5.0f,
             formatValue: value => Math.Round(value, 1) + "×"
+        );
+
+        // 调试模式开关
+        configMenuApi.AddBoolOption(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_DebugMode),
+            getValue: () => DebugOverlay.IsEnabled,
+            setValue: value => DebugOverlay.SetEnabled(value)
+        );
+
+        // 调试快捷键
+        configMenuApi.AddKeybind(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_DebugKey),
+            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugToggleKey, out var btn) ? btn : SButton.OemTilde,
+            setValue: value => Tools.ModConfig.DebugToggleKey = value.ToString()
         );
     }
 

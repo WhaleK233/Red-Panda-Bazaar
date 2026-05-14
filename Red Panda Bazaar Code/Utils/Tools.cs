@@ -15,8 +15,7 @@ public static class Tools
 
     public static IManifest ModManifest { get; set; }
 
-    public static void Init(IModHelper helper, ModConfig modConfig, IMonitor monitor, IManifest manifest)
-    {
+    public static void Init(IModHelper helper, ModConfig modConfig, IMonitor monitor, IManifest manifest) {
         Helper = helper;
         ModConfig = modConfig;
         Monitor = monitor;
@@ -36,56 +35,54 @@ public static class Tools
     public static void LogPatchErr(string ob, Exception e) =>
         LogOnce($"Harmony patch \"{ob}\" has encountered an error. Full error message: \n{e}", LogLevel.Error);
 
-    public static void LogOnce(string message, LogLevel level = LogLevel.Trace) => Monitor.LogOnce(message, level);
+    private static void LogOnce(string message, LogLevel level = LogLevel.Trace) => Monitor.LogOnce(message, level);
 
-    public static bool Charge(int cost)
-    {
-        if (Game1.player.Money >= cost)
-        {
+    public static bool TryCharge(int cost) {
+        if (Game1.player.Money >= cost) {
             Game1.player.Money -= cost;
             return true;
         }
-        else
-        {
-            Game1.drawObjectDialogue(GetI18n(I18nKeys.Dialogue_MoneyNotEnough));
-            return false;
-        }
+
+        Game1.drawObjectDialogue(GetI18n(I18nKeys.Dialogue_MoneyNotEnough));
+        return false;
     }
 
-    public static bool IsGoodWeather()
-    {
+    public static bool IsGoodWeather() {
         return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
     }
 
-    public static bool IsDayTime(GameLocation loc)
-    {
+    public static bool IsDayTime(GameLocation loc) {
         return Game1.timeOfDay < Game1.getStartingToGetDarkTime(loc);
     }
 
-    public static bool IsDuskTime(GameLocation loc)
-    {
+    public static bool IsDuskTime(GameLocation loc) {
         return !IsDayTime(loc) && !IsNightTime(loc);
     }
 
-    public static bool IsNightTime(GameLocation loc)
-    {
+    public static bool IsNightTime(GameLocation loc) {
         return Game1.timeOfDay > Game1.getTrulyDarkTime(loc);
     }
 
-    public static bool IsValidButtonAction(ButtonPressedEventArgs e)
-    {
+    public static bool IsValidButtonAction(ButtonPressedEventArgs e) {
         if (!Context.IsWorldReady || Game1.player.hasMenuOpen.Value) return false;
 
-        if (Constants.TargetPlatform == GamePlatform.Android)
-        {
+        if (Constants.TargetPlatform == GamePlatform.Android) {
             if (e.Button != SButton.MouseLeft)
                 return false;
         }
-        else if (!e.Button.IsActionButton())
-        {
+        else if (!e.Button.IsActionButton()) {
             return false;
         }
 
         return true;
+    }
+
+    /// <summary>发送 SMAPI 多人消息：客机发往主机，主机广播到所有客机。</summary>
+    public static void SendToHostOrBroadcast<T>(T data, string messageType) {
+        if (Context.IsMainPlayer) {
+            Helper.Multiplayer.SendMessage(data, messageType, modIDs: new[] { ModManifest.UniqueID });
+        } else {
+            Helper.Multiplayer.SendMessage(data, messageType, modIDs: new[] { ModManifest.UniqueID }, playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+        }
     }
 }

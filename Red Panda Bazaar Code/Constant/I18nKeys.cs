@@ -20,6 +20,14 @@ public static class I18nKeys
 
     public const string Config_AnimeSpeed_PrizeMenu = "Config.AnimationSpeed.PrizeMenu";
 
+    public const string Config_EnableTax = "Config.EnableTax";
+
+    public const string Config_TaxRate = "Config.TaxRate";
+
+    public const string Config_DebugMode = "Config.DebugMode";
+
+    public const string Config_DebugKey = "Config.DebugKey";
+
     #endregion
 
     #region Dialogue
@@ -103,6 +111,38 @@ public static class I18nKeys
 
     public const string Display_RedPandaBazaar_Pumpkin_Popsicle_BuffDisplayName =
         "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName";
+
+    #endregion
+
+    #region PlayerStall
+
+    public const string PlayerStall_StatusForSale = "PlayerStall.StatusForSale";
+    public const string PlayerStall_StatusSold = "PlayerStall.StatusSold";
+    public const string PlayerStall_CollectEarnings = "PlayerStall.CollectEarnings";
+    public const string PlayerStall_PriceEditTitle = "PlayerStall.PriceEditTitle";
+    public const string PlayerStall_BillTitle = "PlayerStall.BillTitle";
+    public const string PlayerStall_BillEmpty = "PlayerStall.BillEmpty";
+    public const string PlayerStall_ColHeader_Stall = "PlayerStall.ColHeader.Stall";
+    public const string PlayerStall_ColHeader_Item = "PlayerStall.ColHeader.Item";
+    public const string PlayerStall_ColHeader_Qty = "PlayerStall.ColHeader.Qty";
+    public const string PlayerStall_ColHeader_Price = "PlayerStall.ColHeader.Price";
+    public const string PlayerStall_TaxLine = "PlayerStall.TaxLine";
+    public const string PlayerStall_UnitPrice = "PlayerStall.UnitPrice";
+    public const string PlayerStall_DateUnknown = "PlayerStall.DateUnknown";
+    public const string PlayerStall_ColHeader_Time = "PlayerStall.ColHeader.Time";
+    public const string PlayerStall_Total = "PlayerStall.Total";
+    public const string PlayerStall_TotalTax = "PlayerStall.TotalTax";
+    public const string PlayerStall_CollectAll = "PlayerStall.CollectAll";
+    public const string PlayerStall_Collected = "PlayerStall.Collected";
+
+    #endregion
+
+    #region Date
+
+    public const string Date_Spring = "Date.Spring";
+    public const string Date_Summer = "Date.Summer";
+    public const string Date_Fall = "Date.Fall";
+    public const string Date_Winter = "Date.Winter";
 
     #endregion
 }

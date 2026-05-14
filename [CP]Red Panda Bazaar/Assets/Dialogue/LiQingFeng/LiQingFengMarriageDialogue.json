@@ -68,7 +68,7 @@
                 "Good_8": "{{i18n:LiQingFeng.spring.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.spring.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -175,7 +175,7 @@
                 "Good_8": "{{i18n:LiQingFeng.summer.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.summer.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -280,7 +280,7 @@
                 "Good_8": "{{i18n:LiQingFeng.fall.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.fall.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -384,7 +384,7 @@
                 "Good_8": "{{i18n:LiQingFeng.winter.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.winter.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -486,7 +486,7 @@
                 "Good_8": "{{i18n:LiQingFeng.spring.2.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.spring.2.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -593,7 +593,7 @@
                 "Good_8": "{{i18n:LiQingFeng.summer.2.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.summer.2.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -698,7 +698,7 @@
                 "Good_8": "{{i18n:LiQingFeng.fall.2.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.fall.2.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
@@ -803,7 +803,7 @@
                 "Good_8": "{{i18n:LiQingFeng.winter.2.MarriageDialogue.Good.8}}",
                 "Good_9": "{{i18n:LiQingFeng.winter.2.MarriageDialogue.Good.9}}",
 
-                "Neutral_": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
+                "Neutral_0": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.0}}",
                 "Neutral_1": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.1}}",
                 "Neutral_2": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.2}}",
                 "Neutral_3": "{{i18n:LiQingFeng.MarriageDialogue.Neutral.3}}",
