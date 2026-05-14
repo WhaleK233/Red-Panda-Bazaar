@@ -145,4 +145,80 @@ public static class I18nKeys
     public const string Date_Winter = "Date.Winter";
 
     #endregion
+
+    #region Bank
+
+    public const string Bank_Title = "Bank.Title";
+
+    // Checking
+    public const string Bank_CheckingTab = "Bank.CheckingTab";
+    public const string Bank_CheckingBalance = "Bank.CheckingBalance";
+    public const string Bank_InterestEarned = "Bank.InterestEarned";
+    public const string Bank_ClaimInterest = "Bank.ClaimInterest";
+    public const string Bank_TodayRate = "Bank.TodayRate";
+    public const string Bank_Deposit = "Bank.Deposit";
+    public const string Bank_Withdraw = "Bank.Withdraw";
+    public const string Bank_DepositTitle = "Bank.DepositTitle";
+    public const string Bank_WithdrawTitle = "Bank.WithdrawTitle";
+
+    // Fixed Deposit
+    public const string Bank_FixedTab = "Bank.FixedTab";
+    public const string Bank_NewFixed = "Bank.NewFixed";
+    public const string Bank_Redeem = "Bank.Redeem";
+    public const string Bank_EarlyWithdraw = "Bank.EarlyWithdraw";
+    public const string Bank_FixedAmount = "Bank.FixedAmount";
+    public const string Bank_FixedTerm = "Bank.FixedTerm";
+    public const string Bank_FixedStatus = "Bank.FixedStatus";
+    public const string Bank_FixedStatusActive = "Bank.FixedStatusActive";
+    public const string Bank_FixedStatusWithdrawn = "Bank.FixedStatusWithdrawn";
+    public const string Bank_FixedStatusMature = "Bank.FixedStatusMature";
+    public const string Bank_Days = "Bank.Days";
+    public const string Bank_FixedEmpty = "Bank.FixedEmpty";
+    public const string Bank_NewFixedTitle = "Bank.NewFixedTitle";
+    public const string Bank_NewFixedAmountTitle = "Bank.NewFixedAmountTitle";
+
+    // Loan
+    public const string Bank_LoanTab = "Bank.LoanTab";
+    public const string Bank_CreditTotal = "Bank.CreditTotal";
+    public const string Bank_CreditUsed = "Bank.CreditUsed";
+    public const string Bank_CreditRemain = "Bank.CreditRemain";
+    public const string Bank_PlanA = "Bank.PlanA";
+    public const string Bank_PlanB = "Bank.PlanB";
+    public const string Bank_PlanC = "Bank.PlanC";
+    public const string Bank_PlanDescA = "Bank.PlanDescA";
+    public const string Bank_PlanDescB = "Bank.PlanDescB";
+    public const string Bank_PlanDescC = "Bank.PlanDescC";
+    public const string Bank_DailyRateLabel = "Bank.DailyRateLabel";
+    public const string Bank_Apply = "Bank.Apply";
+    public const string Bank_Repay = "Bank.Repay";
+    public const string Bank_LoanPrincipal = "Bank.LoanPrincipal";
+    public const string Bank_LoanInterest = "Bank.LoanInterest";
+    public const string Bank_LoanStatus = "Bank.LoanStatus";
+    public const string Bank_LoanLockDays = "Bank.LoanLockDays";
+    public const string Bank_LoanLocked = "Bank.LoanLocked";
+    public const string Bank_LoanRepayTitle = "Bank.LoanRepayTitle";
+    public const string Bank_NoLoans = "Bank.NoLoans";
+    public const string Bank_RepayPartTitle = "Bank.RepayPartTitle";
+    public const string Bank_RepayAmount = "Bank.RepayAmount";
+
+    // Tax
+    public const string Bank_TaxTab = "Bank.TaxTab";
+    public const string Bank_TotalTax = "Bank.TotalTax";
+
+    // Messages
+    public const string Bank_DepositSuccess = "Bank.DepositSuccess";
+    public const string Bank_WithdrawSuccess = "Bank.WithdrawSuccess";
+    public const string Bank_InterestClaimed = "Bank.InterestClaimed";
+    public const string Bank_FixedCreated = "Bank.FixedCreated";
+    public const string Bank_FixedRedeemed = "Bank.FixedRedeemed";
+    public const string Bank_FixedEarlyWithdrawn = "Bank.FixedEarlyWithdrawn";
+    public const string Bank_LoanApplied = "Bank.LoanApplied";
+    public const string Bank_LoanRepaid = "Bank.LoanRepaid";
+    public const string Bank_CreditLimitReached = "Bank.CreditLimitReached";
+    public const string Bank_InvalidAmount = "Bank.InvalidAmount";
+    public const string Bank_NotEnoughBalance = "Bank.NotEnoughBalance";
+    public const string Bank_LockedCantRepay = "Bank.LockedCantRepay";
+    public const string Bank_NoMoney = "Bank.NoMoney";
+
+    #endregion
 }

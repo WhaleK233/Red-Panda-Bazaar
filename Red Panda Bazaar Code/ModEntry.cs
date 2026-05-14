@@ -11,6 +11,7 @@ using Red_Panda_Bazaar_Code.Features.PlayerStall;
 using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Features.SpecialOrders;
 using Red_Panda_Bazaar_Code.Features.SpringFair;
+using Red_Panda_Bazaar_Code.Features.Bank;
 using Red_Panda_Bazaar_Code.Features.Transportation;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -44,6 +45,7 @@ public class ModEntry : Mod {
         SpecialOrders.Init();
         ButterflyNight.Init();
         Transportation.Init();
+        Bank.Init();
     }
 
     private static void HarmonyPatch() {
