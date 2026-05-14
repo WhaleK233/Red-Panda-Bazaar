@@ -35,8 +35,28 @@
     "CustomLocations": [
         /*************   Maps   IndoorsMaps  *************/
         {
+            "Name": "Custom_LindenHouse.1",
+            "FromMapFile": "assets/Maps/IndoorsMaps/LindenHouse.1.tmx"
+        },
+        {
+            "Name": "Custom_RedPandaBazaarBank1",
+            "FromMapFile": "assets/Maps/IndoorsMaps/RedPandaBazaarBank1.tmx"
+        },
+        {
+            "Name": "Custom_FarmerShop1",
+            "FromMapFile": "assets/Maps/IndoorsMaps/FarmerShop1.tmx"
+        },
+        {
             "Name": "Custom_MirrorLake.Building4.1",
             "FromMapFile": "assets/Maps/IndoorsMaps/MirrorLake.Building4.1.tmx"
+        },
+        {
+            "Name": "Custom_RedPandaBazaar.Building1.1",
+            "FromMapFile": "assets/Maps/IndoorsMaps/RedPandaBazaar.Building1.1.tmx"
+        },
+        {
+            "Name": "Custom_RedPandaBazaar.Building1.2",
+            "FromMapFile": "assets/Maps/IndoorsMaps/RedPandaBazaar.Building1.2.tmx"
         },
         {
             "Name": "Custom_MarlinShop1",
@@ -188,6 +208,10 @@
         },
         /*************   Maps   OutdoorsMaps  *************/
         {
+            "Name": "Custom_PlantResearch",
+            "FromMapFile": "assets/Maps/OutdoorsMaps/PlantResearch.tmx"
+        },
+        {
             "Name": "Custom_RedPandaBazaar",
             "FromMapFile": "assets/Maps/OutdoorsMaps/RedPandaBazaar.tmx"
         },
@@ -214,6 +238,10 @@
         {
             "Name": "Custom_RedPandaBazaar.SpringFair.Year2",
             "FromMapFile": "assets/Maps/FestivalMaps/RedPandaBazaar.SpringFair.Year2.tmx"
+        },
+        {
+            "Name": "Custom_RedPandaBazaar.ButterflyNight",
+            "FromMapFile": "assets/Maps/FestivalMaps/RedPandaBazaar.ButterflyNight.tmx"
         }
     ],
     "Changes": [
@@ -232,12 +260,12 @@
         {
             "LogName": "OutdoorsMaps.Locations",
             "Action": "Include",
-            "FromFile": "Data/Locations/OutdoorsMaps/MirrorLake.json,Data/Locations/OutdoorsMaps/LiQingFengCourtyard.json,Data/Locations/OutdoorsMaps/MapleBridge.json,Data/Locations/OutdoorsMaps/RedPandaBazaar.json,Data/Locations/OutdoorsMaps/BazaarWest.json"
+            "FromFile": "Data/Locations/OutdoorsMaps/MirrorLake.json,Data/Locations/OutdoorsMaps/LiQingFengCourtyard.json,Data/Locations/OutdoorsMaps/MapleBridge.json,Data/Locations/OutdoorsMaps/RedPandaBazaar.json,Data/Locations/OutdoorsMaps/BazaarWest.json,Data/Locations/OutdoorsMaps/PlantResearch.json"
         },
         {
             "LogName": "IndoorsMaps.Locations",
             "Action": "Include",
-            "FromFile": "Data/Locations/IndoorsMaps/LiQingFengCafe.json,Data/Locations/IndoorsMaps/LiQingFengHouse.json,Data/Locations/IndoorsMaps/ArtisanShop.json,Data/Locations/IndoorsMaps/ChenQiShop.json,Data/Locations/IndoorsMaps/LaoLiuGallery.json,Data/Locations/IndoorsMaps/SandalwoodHotel.json,Data/Locations/IndoorsMaps/RedPandaBazaarJojaMart.json,Data/Locations/IndoorsMaps/ShiFuShanHouse.json"
+            "FromFile": "Data/Locations/IndoorsMaps/LiQingFengCafe.json,Data/Locations/IndoorsMaps/LiQingFengHouse.json,Data/Locations/IndoorsMaps/ArtisanShop.json,Data/Locations/IndoorsMaps/ChenQiShop.json,Data/Locations/IndoorsMaps/LaoLiuGallery.json,Data/Locations/IndoorsMaps/SandalwoodHotel.json,Data/Locations/IndoorsMaps/RedPandaBazaarJojaMart.json,Data/Locations/IndoorsMaps/ShiFuShanHouse.json,Data/Locations/IndoorsMaps/MarlinShop.json"
         },
         {
             "LogName": "OutdoorsMaps.EditMap",
@@ -252,7 +280,12 @@
         {
             "LogName": "EditImage",
             "Action": "Include",
-            "FromFile": "Data/EditImage/SpringFair_Cursors.json,Data/EditImage/Door.json,Data/EditImage/SchedulesSprites.json,Data/EditImage/WinterCharacters.json"
+            "FromFile": "Data/EditImage/WhiteButterfly.json,Data/EditImage/SpringFair_Cursors.json,Data/EditImage/Door.json,Data/EditImage/SchedulesSprites.json,Data/EditImage/WinterCharacters.json"
+        },
+        {
+            "LogName": "Event",
+            "Action": "Include",
+            "FromFile": "Data/Event.json"
         },
         {
             "LogName": "CJBWarp",
@@ -352,7 +385,7 @@
         {
             "LogName": "RedPandaBazaar.Shops",
             "Action": "Include",
-            "FromFile": "Data/Shops/RedPandaBazaar/ChenQiShop1/ChenQiShop1.json,Data/Shops/RedPandaBazaar/ArtisanShop1/ArtisanShop1.json,Data/Shops/RedPandaBazaar/LiQingFengCafe1/LiQingFengCafe.json,Data/Shops/RedPandaBazaar/LiQingFengCafe1/LiQingFengCafe1.json,Data/Shops/RedPandaBazaar/RedemptionCouponShop/RedemptionCouponShop.json,Data/Shops/RedPandaBazaar/JojaRedemptionCouponShop/JojaRedemptionCouponShop.json,Data/Shops/RedPandaBazaar/MirrorLakeShop1/MirrorLakeShop1.json,Data/Shops/RedPandaBazaar/SpringFair/SpringFair.json,Data/Shops/RedPandaBazaar/RedPandaBazaarJojaMart1/RedPandaBazaarJojaMart1.json"
+            "FromFile": "Data/Shops/RedPandaBazaar/ChenQiShop1/ChenQiShop1.json,Data/Shops/RedPandaBazaar/ArtisanShop1/ArtisanShop1.json,Data/Shops/RedPandaBazaar/LiQingFengCafe1/LiQingFengCafe.json,Data/Shops/RedPandaBazaar/LiQingFengCafe1/LiQingFengCafe1.json,Data/Shops/RedPandaBazaar/RedemptionCouponShop/RedemptionCouponShop.json,Data/Shops/RedPandaBazaar/JojaRedemptionCouponShop/JojaRedemptionCouponShop.json,Data/Shops/RedPandaBazaar/MirrorLakeShop1/MirrorLakeShop1.json,Data/Shops/RedPandaBazaar/SpringFair/SpringFair.json,Data/Shops/RedPandaBazaar/RedPandaBazaarJojaMart1/RedPandaBazaarJojaMart1.json,Data/Shops/RedPandaBazaar/MarlinShop1/MarlinShop1.json"
         },
         {
             "LogName": "Vanilla.Shops",
@@ -382,12 +415,12 @@
         {
             "LogName": "Include.NPCs",
             "Action": "Include",
-            "FromFile": "data/NPCs/ChenXiaoMing.json,data/NPCs/ShiFuShan.json,data/NPCs/Chandler.json,data/NPCs/LiQingFeng.json,data/NPCs/PumpkinPie.json,data/NPCs/XiaoLeiWen.json,data/NPCs/Roy.json"
+            "FromFile": "data/NPCs/ChenXiaoMing.json,data/NPCs/ShiFuShan.json,data/NPCs/Chandler.json,data/NPCs/LiQingFeng.json,data/NPCs/PumpkinPie.json,data/NPCs/XiaoLeiWen.json,data/NPCs/Roy.json,data/NPCs/Marlin.json,data/NPCs/Linden.json"
         },
         {
             "LogName": "Include.Dialogue",
             "Action": "Include",
-            "FromFile": "assets/Dialogue/Chandler/ChandlerDialogue.json,assets/Dialogue/ShiFuShan/ShiFuShanDialogue.json,assets/Dialogue/ChenXiaoMing/ChenXiaoMingDialogue.json,assets/Dialogue/LiQingFeng/LiQingFengDialogue.json"
+            "FromFile": "assets/Dialogue/Chandler/ChandlerDialogue.json,assets/Dialogue/ShiFuShan/ShiFuShanDialogue.json,assets/Dialogue/ChenXiaoMing/ChenXiaoMingDialogue.json,assets/Dialogue/LiQingFeng/LiQingFengDialogue.json,assets/Dialogue/Marlin/MarlinDialogue.json"
         },
         {
             "LogName": "Include.MarriageDialogue",
@@ -397,7 +430,7 @@
         {
             "LogName": "Include.Schedules",
             "Action": "Include",
-            "FromFile": "assets/Schedules/ChenXiaoMing/Schedule.json,assets/Schedules/ShiFuShan/Schedule.json,assets/Schedules/Chandler/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/XiaoLeiWen/Schedule.json,assets/Schedules/LiQingFeng/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json"
+            "FromFile": "assets/Schedules/ChenXiaoMing/Schedule.json,assets/Schedules/ShiFuShan/Schedule.json,assets/Schedules/Chandler/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/XiaoLeiWen/Schedule.json,assets/Schedules/LiQingFeng/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/Marlin/Schedule.json"
         },
         {
             "LogName": "Include.ScheduleDialogue",
@@ -407,7 +440,7 @@
         {
             "LogName": "Include.Passersby.NPCs",
             "Action": "Include",
-            "FromFile":"data/NPCs/Passersby/Passersby.1.json,data/NPCs/Passersby/Passersby.2.json,data/NPCs/Passersby/Passersby.3.json,data/NPCs/Passersby/Passersby.4.json,data/NPCs/Passersby/Passersby.5.json,data/NPCs/Passersby/Passersby.6.json,data/NPCs/Passersby/Passersby.7.json,data/NPCs/Passersby/Passersby.8.json,data/NPCs/Passersby/Passersby.9.json,data/NPCs/Passersby/Passersby.10.json,,data/NPCs/Passersby/Passersby.11.json,data/NPCs/Passersby/Passersby.12.json,data/NPCs/Passersby/Passersby.13.json,data/NPCs/Passersby/Passersby.14.json,"
+            "FromFile":"data/NPCs/Passersby/Passersby.1.json,data/NPCs/Passersby/Passersby.2.json,data/NPCs/Passersby/Passersby.3.json,data/NPCs/Passersby/Passersby.4.json,data/NPCs/Passersby/Passersby.5.json,data/NPCs/Passersby/Passersby.6.json,data/NPCs/Passersby/Passersby.7.json,data/NPCs/Passersby/Passersby.8.json,data/NPCs/Passersby/Passersby.9.json,data/NPCs/Passersby/Passersby.10.json,,data/NPCs/Passersby/Passersby.11.json,data/NPCs/Passersby/Passersby.12.json,data/NPCs/Passersby/Passersby.13.json,data/NPCs/Passersby/Passersby.14.json,data/NPCs/Passersby/Passersby.15.json,"
         },
         {
             "LogName": "Include.Passersby.Schedules",
@@ -419,7 +452,6 @@
             "Action": "Include",
             "FromFile":"data/NPCs/FestivalsPassersby/FestivalsPassersby.1.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.2.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.3.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.4.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.5.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.6.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.7.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.8.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.9.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.10.json,,data/NPCs/FestivalsPassersby/FestivalsPassersby.11.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.12.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.13.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.14.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.15.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.16.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.17.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.18.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.19.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.20.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.21.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.22.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.23.json,data/NPCs/FestivalsPassersby/FestivalsPassersby.24.json,"
         },
-
         {
             "LogName": "Include.JojaEmployee.NPCs",
             "Action": "Include",
@@ -440,7 +472,6 @@
             "Action": "Include",
             "FromFile": "assets/Schedules/Workers/Workers.1/Schedule.json,assets/Schedules/Workers/Workers.2/Schedule.json,assets/Schedules/Workers/Workers.3/Schedule.json,assets/Schedules/Workers/Workers.4/Schedule.json,assets/Schedules/Workers/Workers.5/Schedule.json,assets/Schedules/Workers/Workers.6/Schedule.json,assets/Schedules/Workers/Workers.7/Schedule.json"
         },
-
         {
             "LogName": "Include.Animals.NPCs",
             "Action": "Include",
@@ -449,19 +480,19 @@
         {
             "LogName": "Load.Strings",
             "Action": "Load",
-            "Target": "Strings/schedules/RedPandaBazaar_ChenXiaoMing,Strings/schedules/RedPandaBazaar_ShiFuShan,Strings/schedules/RedPandaBazaar_Chandler,Strings/schedules/RedPandaBazaar_PumpkinPie,Strings/schedules/RedPandaBazaar_XiaoLeiWen,Strings/schedules/RedPandaBazaar_LiQingFeng",
+            "Target": "Strings/schedules/RedPandaBazaar_ChenXiaoMing,Strings/schedules/RedPandaBazaar_ShiFuShan,Strings/schedules/RedPandaBazaar_Chandler,Strings/schedules/RedPandaBazaar_PumpkinPie,Strings/schedules/RedPandaBazaar_XiaoLeiWen,Strings/schedules/RedPandaBazaar_LiQingFeng,Strings/schedules/RedPandaBazaar_Marlin",
             "FromFile": "data/blank.json"
         },
         {
             "LogName": "Load.Characters",
             "Action": "Load",
-            "Target": "Characters/schedules/RedPandaBazaar_ChenXiaoMing,Characters/schedules/RedPandaBazaar_ShiFuShan,Characters/schedules/RedPandaBazaar_Chandler,Characters/schedules/RedPandaBazaar_LiQingFeng,Characters/schedules/RedPandaBazaar_Roy",
+            "Target": "Characters/schedules/RedPandaBazaar_ChenXiaoMing,Characters/schedules/RedPandaBazaar_ShiFuShan,Characters/schedules/RedPandaBazaar_Chandler,Characters/schedules/RedPandaBazaar_LiQingFeng,Characters/schedules/RedPandaBazaar_Roy,Characters/schedules/RedPandaBazaar_Marlin,Characters/schedules/RedPandaBazaar_Linden",
             "FromFile": "data/blank.json"
         },
         {
             "LogName": "Load.Dialogue",
             "Action": "Load",
-            "Target": "Characters/Dialogue/RedPandaBazaar_XiaoLeiWen,Characters/Dialogue/RedPandaBazaar_PumpkinPie,Characters/Dialogue/RedPandaBazaar_Chandler,Characters/Dialogue/RedPandaBazaar_ShiFuShan,Characters/Dialogue/RedPandaBazaar_ChenXiaoMing,Characters/Dialogue/RedPandaBazaar_LiQingFeng",
+            "Target": "Characters/Dialogue/RedPandaBazaar_XiaoLeiWen,Characters/Dialogue/RedPandaBazaar_PumpkinPie,Characters/Dialogue/RedPandaBazaar_Chandler,Characters/Dialogue/RedPandaBazaar_ShiFuShan,Characters/Dialogue/RedPandaBazaar_ChenXiaoMing,Characters/Dialogue/RedPandaBazaar_LiQingFeng,Characters/Dialogue/RedPandaBazaar_Marlin",
             "FromFile": "data/blank.json"
         },
         {
@@ -470,17 +501,16 @@
             "Target": "Characters/Dialogue/MarriageDialogueRedPandaBazaar_LiQingFeng,Characters/Dialogue/MarriageDialogueRedPandaBazaar_ChenXiaoMing,",
             "FromFile": "data/blank.json"
         },
-
         {
             "LogName": "Passersby",
             "Action": "Load",
-            "Target": "Characters/schedules/RedPandaBazaar_Passersby.1,Characters/schedules/RedPandaBazaar_Passersby.2,Characters/schedules/RedPandaBazaar_Passersby.3,Characters/schedules/RedPandaBazaar_Passersby.4,Characters/schedules/RedPandaBazaar_Passersby.5,Characters/schedules/RedPandaBazaar_Passersby.6,Characters/schedules/RedPandaBazaar_Passersby.7,Characters/schedules/RedPandaBazaar_Passersby.8,Characters/schedules/RedPandaBazaar_Passersby.9,Characters/schedules/RedPandaBazaar_Passersby.10,Characters/schedules/RedPandaBazaar_Passersby.11,Characters/schedules/RedPandaBazaar_Passersby.12,Characters/schedules/RedPandaBazaar_Passersby.13,Characters/schedules/RedPandaBazaar_Passersby.14",
+            "Target": "Characters/schedules/RedPandaBazaar_Passersby.1,Characters/schedules/RedPandaBazaar_Passersby.2,Characters/schedules/RedPandaBazaar_Passersby.3,Characters/schedules/RedPandaBazaar_Passersby.4,Characters/schedules/RedPandaBazaar_Passersby.5,Characters/schedules/RedPandaBazaar_Passersby.6,Characters/schedules/RedPandaBazaar_Passersby.7,Characters/schedules/RedPandaBazaar_Passersby.8,Characters/schedules/RedPandaBazaar_Passersby.9,Characters/schedules/RedPandaBazaar_Passersby.10,Characters/schedules/RedPandaBazaar_Passersby.11,Characters/schedules/RedPandaBazaar_Passersby.12,Characters/schedules/RedPandaBazaar_Passersby.13,Characters/schedules/RedPandaBazaar_Passersby.14,Characters/schedules/RedPandaBazaar_Passersby.15",
             "FromFile": "data/blank.json"
         },
         {
             "LogName": "Passersby",
             "Action": "Load",
-            "Target": "Strings/schedules/RedPandaBazaar_Passersby.1,Strings/schedules/RedPandaBazaar_Passersby.2,Strings/schedules/RedPandaBazaar_Passersby.3,Strings/schedules/RedPandaBazaar_Passersby.4,Strings/schedules/RedPandaBazaar_Passersby.5,Strings/schedules/RedPandaBazaar_Passersby.6,Strings/schedules/RedPandaBazaar_Passersby.7,Strings/schedules/RedPandaBazaar_Passersby.8,Strings/schedules/RedPandaBazaar_Passersby.9,Strings/schedules/RedPandaBazaar_Passersby.10,Strings/schedules/RedPandaBazaar_Passersby.11,Strings/schedules/RedPandaBazaar_Passersby.12,Strings/schedules/RedPandaBazaar_Passersby.13,Strings/schedules/RedPandaBazaar_Passersby.14",
+            "Target": "Strings/schedules/RedPandaBazaar_Passersby.1,Strings/schedules/RedPandaBazaar_Passersby.2,Strings/schedules/RedPandaBazaar_Passersby.3,Strings/schedules/RedPandaBazaar_Passersby.4,Strings/schedules/RedPandaBazaar_Passersby.5,Strings/schedules/RedPandaBazaar_Passersby.6,Strings/schedules/RedPandaBazaar_Passersby.7,Strings/schedules/RedPandaBazaar_Passersby.8,Strings/schedules/RedPandaBazaar_Passersby.9,Strings/schedules/RedPandaBazaar_Passersby.10,Strings/schedules/RedPandaBazaar_Passersby.11,Strings/schedules/RedPandaBazaar_Passersby.12,Strings/schedules/RedPandaBazaar_Passersby.13,Strings/schedules/RedPandaBazaar_Passersby.14,Strings/schedules/RedPandaBazaar_Passersby.15",
             "FromFile": "data/blank.json"
         },
         {
@@ -489,7 +519,6 @@
             "Target": "Characters/schedules/RedPandaBazaar_FestivalsPassersby.1,Characters/schedules/RedPandaBazaar_FestivalsPassersby.2,Characters/schedules/RedPandaBazaar_FestivalsPassersby.3,Characters/schedules/RedPandaBazaar_FestivalsPassersby.4,Characters/schedules/RedPandaBazaar_FestivalsPassersby.5,Characters/schedules/RedPandaBazaar_FestivalsPassersby.6,Characters/schedules/RedPandaBazaar_FestivalsPassersby.7,Characters/schedules/RedPandaBazaar_FestivalsPassersby.8,Characters/schedules/RedPandaBazaar_FestivalsPassersby.9,Characters/schedules/RedPandaBazaar_FestivalsPassersby.10,Characters/schedules/RedPandaBazaar_FestivalsPassersby.11,Characters/schedules/RedPandaBazaar_FestivalsPassersby.12,Characters/schedules/RedPandaBazaar_FestivalsPassersby.13,Characters/schedules/RedPandaBazaar_FestivalsPassersby.14,Characters/schedules/RedPandaBazaar_FestivalsPassersby.15,Characters/schedules/RedPandaBazaar_FestivalsPassersby.16,Characters/schedules/RedPandaBazaar_FestivalsPassersby.17,Characters/schedules/RedPandaBazaar_FestivalsPassersby.18,Characters/schedules/RedPandaBazaar_FestivalsPassersby.19,Characters/schedules/RedPandaBazaar_FestivalsPassersby.20,Characters/schedules/RedPandaBazaar_FestivalsPassersby.21,Characters/schedules/RedPandaBazaar_FestivalsPassersby.22,Characters/schedules/RedPandaBazaar_FestivalsPassersby.23,Characters/schedules/RedPandaBazaar_FestivalsPassersby.24",
             "FromFile": "data/blank.json"
         },
-
         {
             "LogName": "JojaEmployee",
             "Action": "Load",
@@ -502,7 +531,6 @@
             "Target": "Strings/schedules/RedPandaBazaar_JojaEmployee.1,Strings/schedules/RedPandaBazaar_JojaEmployee.2,Strings/schedules/RedPandaBazaar_JojaEmployee.3,Strings/schedules/RedPandaBazaar_JojaEmployee.4,Strings/schedules/RedPandaBazaar_JojaEmployee.5,Strings/schedules/RedPandaBazaar_JojaEmployee.6,Strings/schedules/RedPandaBazaar_JojaEmployee.7",
             "FromFile": "data/blank.json"
         },
-
         {
             "LogName": "Workers",
             "Action": "Load",
@@ -515,7 +543,6 @@
             "Target": "Strings/schedules/RedPandaBazaar_Workers.1,Strings/schedules/RedPandaBazaar_Workers.2,Strings/schedules/RedPandaBazaar_Workers.3,Strings/schedules/RedPandaBazaar_Workers.4,Strings/schedules/RedPandaBazaar_Workers.5,Strings/schedules/RedPandaBazaar_Workers.6,Strings/schedules/RedPandaBazaar_Workers.7",
             "FromFile": "data/blank.json"
         },
-
         {
             "LogName": "Animals",
             "Action": "Load",

@@ -7,14 +7,48 @@
         <Nullable>enable</Nullable>
         <EnableHarmony>true</EnableHarmony>
         <OutputPath>out\</OutputPath>
+        <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.2"/>
     </ItemGroup>
 
+    <Target Name="SyncCPFromSVN" BeforeTargets="BeforeBuild">
+        <Exec Command="svn update &quot;D:\svn\RedPandaBazaar&quot;" ContinueOnError="true"/>
+        <ItemGroup>
+            <SvCpFiles Include="D:\svn\RedPandaBazaar\[CP]Red Panda Bazaar\**\*"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(SvCpFiles)"
+              DestinationFolder="$(SolutionDir)[CP]Red Panda Bazaar\%(RecursiveDir)"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"/>
+        <!-- 构建前：清空并部署 CP 到 Mods 目录 -->
+        <Exec Command="if exist &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot; rmdir /s /q &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot;"
+              ContinueOnError="true"/>
+        <ItemGroup>
+            <CpToMods Include="$(SolutionDir)[CP]Red Panda Bazaar\**\*"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(CpToMods)"
+              DestinationFolder="$(GameModsPath)\[CP]Red Panda Bazaar\%(RecursiveDir)"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"/>
+    </Target>
+
     <Target Name="UpdateModVersion" BeforeTargets="BeforeBuild">
         <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
+    </Target>
+
+    <Target Name="SyncToSVN" AfterTargets="AfterBuild">
+        <!-- 构建后：复制 Code 文件到 SVN 并提交 -->
+        <ItemGroup>
+            <CodeFiles Include="$(GameModsPath)\Red Panda Bazaar Code\**\*"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(CodeFiles)"
+              DestinationFolder="D:\svn\RedPandaBazaar\Red Panda Bazaar Code\%(RecursiveDir)"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"/>
+        <Exec Command="svn commit &quot;D:\svn\RedPandaBazaar&quot; -m &quot;Auto sync build output&quot;" ContinueOnError="true"/>
     </Target>
 
 </Project>

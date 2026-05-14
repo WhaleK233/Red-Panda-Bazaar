@@ -1,4 +1,28 @@
 ﻿{
+  /****** Version 1.1.0 Added ******/
+  /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 税率百分比 ******/
+  "Config.DebugMode": "调试模式",
+  "Config.DebugKey": "调试快捷键",
+  "PlayerStall.StatusForSale": "在售",
+  "PlayerStall.TaxLine": "税款: -{{amount}}{{gold}} ({{rate}}%)",
+  "PlayerStall.UnitPrice": "单价",
+  "PlayerStall.DateUnknown": "未知",
+  "PlayerStall.ColHeader.Time": "时间",
+  "Config.EnableTax": "启用税收",
+  "Config.TaxRate": "税率",
+  "PlayerStall.StatusSold": "已售",
+  "PlayerStall.CollectEarnings": "收钱",
+  "PlayerStall.PriceEditTitle": "修改价格",
+  "PlayerStall.BillTitle": "昨日账单",
+  "PlayerStall.BillEmpty": "昨日没有物品售出。",
+  "PlayerStall.ColHeader.Stall": "序号",
+  "PlayerStall.ColHeader.Item": "物品",
+  "PlayerStall.ColHeader.Qty": "数量",
+  "PlayerStall.ColHeader.Price": "金额",
+  "PlayerStall.Total": "合计: {{amount}}{{gold}}",
+  "PlayerStall.TotalTax": "历史总税收: {{amount}}{{gold}}",
+  "PlayerStall.CollectAll": "全部收取",
+  "PlayerStall.Collected": "已收取",
   /****** Version 1.0.5 Added ******/
   /****** Delete "Config.NumberOfFirefly" ******/
   "Config.NumberOfCritterMultiplier": "粒子数量倍数",
@@ -51,5 +75,10 @@
   "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplaySource": "小桃子冰棍",
   "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplayName": "美妙的味道, 爱来自小桃子冰棍",
   "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplaySource": "南瓜冰棍",
-  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "美妙的味道, 爱来自南瓜冰棍"
+  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "美妙的味道, 爱来自南瓜冰棍",
+  /****** Date ******/
+  "Date.Spring": "春",
+  "Date.Summer": "夏",
+  "Date.Fall": "秋",
+  "Date.Winter": "冬"
 }

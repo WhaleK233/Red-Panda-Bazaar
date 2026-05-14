@@ -3,6 +3,12 @@
     {
       "Action": "Load",
       "Priority": "Low",
+      "Target": "Mods/RedPandaBazaar/LiLaoliu_RedPandaBazaar_BlueArchivePortraits",
+      "FromFile": "Assets/Items/Furniture/LiLaoliu_RedPandaBazaar_BlueArchivePortraits.png"
+    },
+    {
+      "Action": "Load",
+      "Priority": "Low",
       "Target": "Mods/RedPandaBazaar/LiLaoliu_RedPandaBazaar_LiQingFengPortraits",
       "FromFile": "Assets/Items/Furniture/LiLaoliu_RedPandaBazaar_LiQingFengPortraits.png"
     },

@@ -34,14 +34,14 @@
                     "SpawnIfMissing": true,
                     "Home": [
                         {
-                            "Id": "Custom_BlankMaps",
+                            "Id": "Custom_RedemptionCouponShop1",
                             "Condition": null,
-                            "Location": "Custom_BlankMaps",
+                            "Location": "Custom_RedemptionCouponShop1",
                             "Tile": {
-                                "X": 1,
-                                "Y": 1
+                                "X": 9,
+                                "Y": 13
                             },
-                            "Direction": "right"
+                            "Direction": "down"
                         }
                     ],
                     "TextureName": null,
@@ -61,7 +61,7 @@
         {
             "Action": "Load",
             "Target": "Portraits/RedPandaBazaar_Roy",
-            "FromFile": "assets/Shops/ShopRoy.png"
+            "FromFile": "assets/Portraits/Roy.png"
         }
     ]
 }

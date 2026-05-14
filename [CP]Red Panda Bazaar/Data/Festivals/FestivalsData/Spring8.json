@@ -25,13 +25,13 @@
           {
             "Operation": "Append",
             "Target": ["Entries", "Set-Up_additionalCharacters"],
-            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0",
+            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0/RedPandaBazaar_Marlin 14 62 0",
             "Delimiter": "/"
           },
           {
             "Operation": "Append",
             "Target": ["Entries", "MainEvent_additionalCharacters"],
-            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0",
+            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0/RedPandaBazaar_Marlin 14 62 0",
             "Delimiter": "/"
           }
         ]
@@ -97,13 +97,13 @@
           {
             "Operation": "Append",
             "Target": ["Entries", "Set-Up_additionalCharacters_y2"],
-            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0",
+            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0/RedPandaBazaar_Marlin 14 62 0",
             "Delimiter": "/"
           },
           {
             "Operation": "Append",
             "Target": ["Entries", "MainEvent_additionalCharacters_y2"],
-            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0",
+            "Value": "RedPandaBazaar_LiQingFeng 47 42 2/RedPandaBazaar_ChenXiaoMing 28 63 2/RedPandaBazaar_PumpkinPie 22 96 2/RedPandaBazaar_ShiFuShan 24 98 0/RedPandaBazaar_Chandler 60 76 2/RedPandaBazaar_XiaoLeiWen 13 62 0/RedPandaBazaar_Marlin 14 62 0",
             "Delimiter": "/"
           }
         ]
