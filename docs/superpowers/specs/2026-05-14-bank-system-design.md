@@ -2,11 +2,12 @@
 
 **日期：** 2026-05-14  
 **模组：** Red Panda Bazaar  
-**建筑：** Custom_RedPandaBazaarBank1（已有 CP 地图，枫林桥 LockedDoorWarp 进入）
+**建筑：** Custom_RedPandaBazaarBank1（已有 CP 地图，枫林桥 LockedDoorWarp 进入）  
+**多人前提：** 所有玩家共用同一个银行账户，存档由主机持有。
 
 ## 1. 功能总览
 
-为小熊猫集市银行建筑实现完整的金融系统，包含四个核心功能：活期存款、定期存款、贷款、税收记录。
+为小熊猫集市银行建筑实现完整的金融系统，包含四个核心功能：活期存款、定期存款、贷款、税收记录。多人模式下所有玩家共用同一银行账户。
 
 ## 2. 数据模型 (`Bank/BankData.cs`)
 
@@ -99,12 +100,13 @@ public static void Init() {
 4. 更新 `LastInterestDay = DaysPlayed`
 5. 主机广播同步数据给所有客机
 
-### 多人同步
+### 多人同步（共用账户模式）
 
-参考 PlayerStall 的同步模式：
-- 客机 `DayStarted` 时向主机请求完整数据
-- 主机作为权威端执行所有金融操作（存/取/贷/还），广播结果
-- 客机应用广播数据，保持 UI 同步
+所有玩家共用同一账户数据，存档由主机持有：
+- **`SaveLoaded`**：主机读取存档，客机不读取
+- **`DayStarted`**：主机执行利息结算后，广播完整 `BankSaveData` 给所有客机
+- **金融操作**（存/取/贷/还）：客机通过 `ModMessage` 发送操作请求 → 主机验证并执行 → 主机广播更新后的完整 `BankSaveData` 给所有客机
+- 客机收到广播后更新本地副本，UI 随之刷新
 
 ## 5. 菜单界面 (`Bank/BankMenu.cs`)
 
@@ -156,4 +158,3 @@ public static void Init() {
 
 - 税收奖励系统（累计缴税兑换物品/buff）
 - 贷款额度上限（基于信用/存款/游戏进度）
-- 转账功能（多人模式玩家间转账）
