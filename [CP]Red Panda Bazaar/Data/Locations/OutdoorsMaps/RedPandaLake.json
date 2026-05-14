@@ -66,9 +66,6 @@
               "Chance": 0.06
             }
           ]
-        },
-        "When": {
-          "HasMod |contains=FlashShifter.StardewValleyExpandedCP": false
         }
       }
     }

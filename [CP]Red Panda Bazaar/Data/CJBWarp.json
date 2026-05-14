@@ -19,13 +19,34 @@
             "Action": "EditData",
             "Target": "Mods/CJBok.CheatsMenu/Warps",
             "Entries": {
+                "{{ModId}}_RedPandaBazaar_FarmerShop": {
+                    "Id": "{{ModId}}_RedPandaBazaar_FarmerShop",
+                    "SectionId": "{{ModId}}_RedPandaBazaar",
+                    "DisplayName": "{{i18n:FarmerShop}}",
+                    "Location": "Custom_RedPandaBazaar",
+                    "Tile": "53, 52"
+                },
+                "{{ModId}}_RedPandaBazaar_RedPandaBazaarBank": {
+                    "Id": "{{ModId}}_RedPandaBazaar_RedPandaBazaarBank",
+                    "SectionId": "{{ModId}}_RedPandaBazaar",
+                    "DisplayName": "{{i18n:RedPandaBazaarBank}}",
+                    "Location": "Custom_MapleBridge",
+                    "Tile": "47, 23"
+                },
+                "{{ModId}}_RedPandaBazaar_PlantResearch": {
+                    "Id": "{{ModId}}_RedPandaBazaar_PlantResearch",
+                    "SectionId": "{{ModId}}_RedPandaBazaar",
+                    "DisplayName": "{{i18n:PlantResearch}}",
+                    "Location": "Custom_MirrorLake",
+                    "Tile": "21, 36"
+                },
                 "{{ModId}}_RedPandaBazaar_MarlinShop": {
-                "Id": "{{ModId}}_RedPandaBazaar_MarlinShop",
-                "SectionId": "{{ModId}}_RedPandaBazaar",
-                "DisplayName": "{{i18n:MarlinShop}}",
-                "Location": "Custom_MirrorLake",
-                "Tile": "128, 39"
-            },
+                    "Id": "{{ModId}}_RedPandaBazaar_MarlinShop",
+                    "SectionId": "{{ModId}}_RedPandaBazaar",
+                    "DisplayName": "{{i18n:MarlinShop}}",
+                    "Location": "Custom_MirrorLake",
+                    "Tile": "128, 39"
+                },
                 "{{ModId}}_RedPandaBazaar_ChenQiShop": {
                     "Id": "{{ModId}}_RedPandaBazaar_ChenQiShop",
                     "SectionId": "{{ModId}}_RedPandaBazaar",
