@@ -168,12 +168,12 @@ public class SettlementMenu : IClickableMenu {
             if (netEarnings >= 0) {
                 Game1.player.Money += netEarnings;
                 Game1.playSound("coin");
-            }
-            if (netEarnings == PlayerStall.CollectPending) {
+                _collected = true;
+            } else if (netEarnings == PlayerStall.CollectPending) {
+                _collected = true;
                 Game1.playSound("smallSelect");
-                return;
             }
-            _collected = true;
+            if (_collected) return;
             return;
         }
 
@@ -430,13 +430,20 @@ public class SettlementMenu : IClickableMenu {
         if (!int.TryParse(parts[1], out var day) || !int.TryParse(parts[2], out var year))
             return null;
 
-        var season = parts[0].Trim();
-        var seasonIdx = season.Equals("Spring", StringComparison.OrdinalIgnoreCase) ? 0
-            : season.Equals("Summer", StringComparison.OrdinalIgnoreCase) ? 1
-            : season.Equals("Fall", StringComparison.OrdinalIgnoreCase) ? 2
-            : season.Equals("Winter", StringComparison.OrdinalIgnoreCase) ? 3
-            : -1;
-        if (seasonIdx < 0) return null;
+        var seasonIdx = -1;
+        // 新格式：数字索引（0=Spring, 1=Summer, 2=Fall, 3=Winter）
+        if (int.TryParse(parts[0], out var idx)) {
+            seasonIdx = idx;
+        } else {
+            // 旧格式兼容：英文赛季名
+            var season = parts[0].Trim();
+            seasonIdx = season.Equals("Spring", StringComparison.OrdinalIgnoreCase) ? 0
+                : season.Equals("Summer", StringComparison.OrdinalIgnoreCase) ? 1
+                : season.Equals("Fall", StringComparison.OrdinalIgnoreCase) ? 2
+                : season.Equals("Winter", StringComparison.OrdinalIgnoreCase) ? 3
+                : -1;
+        }
+        if (seasonIdx is < 0 or > 3) return null;
 
         var totalDays = (year - 1) * 112 + seasonIdx * 28 + day;
         return (int)Game1.stats.DaysPlayed - totalDays;
