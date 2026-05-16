@@ -50,6 +50,7 @@
   "Bank.FixedStatusMature": "已到期",
   "Bank.Days": "天",
   "Bank.FixedEmpty": "暂无定期存款。",
+  "Bank.FixedEarlyWithdrawTip": "提示：提前支取利息减半",
   "Bank.NewFixedAmountTitle": "存款金额",
   "Bank.TaxTab": "税收",
   "Bank.TotalTax": "累计缴税: {{amount}}{{gold}}",

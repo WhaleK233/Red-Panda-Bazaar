@@ -14,14 +14,21 @@ public class BankFixedMenu : UiBaseMenu
 
     protected override void BuildUi()
     {
-        // 新建定期（横排）
-        var row = new UiRow { Spacing = 10 };
+        // 三种定期方案，每种一行
+        var days = Tools.GetI18n(I18nKeys.Bank_Days).ToString();
         foreach (var term in BankCalculator.FixedTermOptions)
         {
-            var label = $"{term}{Tools.GetI18n(I18nKeys.Bank_Days).ToString()}";
-            row.Add(new UiButton(label, () => OpenNewFixed(term)));
+            var rate = BankCalculator.GetFixedTermRate(term);
+            var dailyRate = rate / term;
+            var t = term; // capture
+            var desc = $"{term}{days}  日利率 {(dailyRate * 100):F2}%";
+            Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
+                .Add(new UiText(desc))
+                .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(), () => OpenNewFixed(t))));
         }
-        Root.Add(row);
+
+        // 分割线
+        Root.Add(new UiSeparator { Width = 550 });
 
         // 现有定期列表
         var deposits = Bank.GetFixedDeposits();
@@ -43,8 +50,11 @@ public class BankFixedMenu : UiBaseMenu
                 var elapsed = (int)Game1.stats.DaysPlayed - d.StartDay;
                 var matured = elapsed >= d.TermDays;
 
+                var rate = BankCalculator.GetFixedTermRate(d.TermDays);
+                var interest = (long)(d.Amount * rate * Math.Min(elapsed, d.TermDays) / d.TermDays);
                 var line = $"[{displayIndex}] ";
                 line += Tools.GetI18n(I18nKeys.Bank_FixedAmount).Tokens(new { amount = d.Amount, gold }).ToString();
+                line += $" | {Tools.GetI18n(I18nKeys.Bank_LoanInterest).Tokens(new { amount = interest, gold })}";
                 line += $" | {d.TermDays} {Tools.GetI18n(I18nKeys.Bank_Days).ToString()}";
                 line += " | ";
                 line += matured
@@ -64,6 +74,9 @@ public class BankFixedMenu : UiBaseMenu
                     .Add(new UiButton(btnLabel, action)));
             }
         }
+
+        // 底部提示
+        Root.Add(new UiText(Tools.GetI18n(I18nKeys.Bank_FixedEarlyWithdrawTip).ToString(), color: Color.Gray));
     }
 
     private void OpenNewFixed(int termDays)
