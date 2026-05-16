@@ -9,6 +9,9 @@ public class StallSaveData {
     /// <summary>已售出记录（未领取），结算后清空。</summary>
     public List<SoldRecord> SoldRecords { get; set; } = new();
 
+    /// <summary>最近一次已领取的售出记录副本，收取后当天仍可查看账单明细。</summary>
+    public List<SoldRecord>? LastSoldRecords { get; set; }
+
     public int TotalEarnings { get; set; }
     public int TotalTax { get; set; }
     public int CollectDay { get; set; } = -1;
