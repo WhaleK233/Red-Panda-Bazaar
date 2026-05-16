@@ -35,6 +35,7 @@ public class ModEntry : Mod {
     }
 
     private static void FeatureInit() {
+        Bank.Init();
         Buffs.Init();
         Critter.Init();
         Furniture.Init();
@@ -45,7 +46,6 @@ public class ModEntry : Mod {
         SpecialOrders.Init();
         ButterflyNight.Init();
         Transportation.Init();
-        Bank.Init();
     }
 
     private static void HarmonyPatch() {

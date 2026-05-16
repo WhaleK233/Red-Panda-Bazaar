@@ -430,7 +430,7 @@
         {
             "LogName": "Include.Schedules",
             "Action": "Include",
-            "FromFile": "assets/Schedules/ChenXiaoMing/Schedule.json,assets/Schedules/ShiFuShan/Schedule.json,assets/Schedules/Chandler/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/XiaoLeiWen/Schedule.json,assets/Schedules/LiQingFeng/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/Marlin/Schedule.json"
+            "FromFile": "assets/Schedules/ChenXiaoMing/Schedule.json,assets/Schedules/ShiFuShan/Schedule.json,assets/Schedules/Chandler/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/XiaoLeiWen/Schedule.json,assets/Schedules/LiQingFeng/Schedule.json,assets/Schedules/PumpkinPie/Schedule.json,assets/Schedules/Marlin/Schedule.json,assets/Schedules/Linden/Schedule.json"
         },
         {
             "LogName": "Include.ScheduleDialogue",
@@ -480,7 +480,7 @@
         {
             "LogName": "Load.Strings",
             "Action": "Load",
-            "Target": "Strings/schedules/RedPandaBazaar_ChenXiaoMing,Strings/schedules/RedPandaBazaar_ShiFuShan,Strings/schedules/RedPandaBazaar_Chandler,Strings/schedules/RedPandaBazaar_PumpkinPie,Strings/schedules/RedPandaBazaar_XiaoLeiWen,Strings/schedules/RedPandaBazaar_LiQingFeng,Strings/schedules/RedPandaBazaar_Marlin",
+            "Target": "Strings/schedules/RedPandaBazaar_ChenXiaoMing,Strings/schedules/RedPandaBazaar_ShiFuShan,Strings/schedules/RedPandaBazaar_Chandler,Strings/schedules/RedPandaBazaar_PumpkinPie,Strings/schedules/RedPandaBazaar_XiaoLeiWen,Strings/schedules/RedPandaBazaar_LiQingFeng,Strings/schedules/RedPandaBazaar_Marlin,Strings/schedules/RedPandaBazaar_Linden",
             "FromFile": "data/blank.json"
         },
         {
