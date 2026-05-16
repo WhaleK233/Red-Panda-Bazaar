@@ -9,18 +9,23 @@ public class UiColumn : UiElement
 
     public UiColumn Add(UiElement child)
     {
+        child.Parent = this;
         Children.Add(child);
         return this;
     }
 
     public UiColumn Add(params UiElement[] children)
     {
+        foreach (var child in children)
+            child.Parent = this;
         Children.AddRange(children);
         return this;
     }
 
     public UiColumn Clear()
     {
+        foreach (var child in Children)
+            child.Parent = null;
         Children.Clear();
         return this;
     }
@@ -62,6 +67,14 @@ public class UiColumn : UiElement
         if (!Visible) return false;
         foreach (var child in Children)
             if (child.HandleClick(x, y)) return true;
+        return false;
+    }
+
+    public override bool HandleScroll(int direction)
+    {
+        if (!Visible) return false;
+        for (var i = Children.Count - 1; i >= 0; i--)
+            if (Children[i].HandleScroll(direction)) return true;
         return false;
     }
 }

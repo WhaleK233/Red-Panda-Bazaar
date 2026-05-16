@@ -13,8 +13,14 @@ public abstract class UiElement
 
     public Rectangle Bounds => new(X, Y, Width, Height);
 
+    /// <summary>父容器引用，用于向上遍历（焦点导航、滚动容器查找）。</summary>
+    public UiElement? Parent { get; set; }
+
+    public virtual bool IsFocusable => false;
+
     public abstract void Draw(SpriteBatch b);
     public virtual bool HandleClick(int x, int y) => false;
+    public virtual bool HandleScroll(int direction) => false;
 
     /// <summary>测量内容大小并设置子元素位置。</summary>
     public virtual void Arrange() { }
