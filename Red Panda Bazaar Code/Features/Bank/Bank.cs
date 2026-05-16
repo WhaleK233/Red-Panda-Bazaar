@@ -116,7 +116,7 @@ public static class Bank
         }
     }
 
-    /// <summary>按天逐日结算活期利息。</summary>
+    /// <summary>按天逐日复利结算活期利息。</summary>
     private static void SettleDailyInterest()
     {
         if (Data.LastInterestDay >= Game1.stats.DaysPlayed) return;
@@ -127,7 +127,7 @@ public static class Bank
         for (var i = 0; i < daysElapsed; i++)
         {
             var rate = BankCalculator.GetDailyCheckingRate();
-            Data.InterestEarned += (long)(Data.CheckingBalance * rate);
+            Data.CheckingBalance += (long)(Data.CheckingBalance * rate);
 
             foreach (var loan in Data.Loans.Where(l => !l.Repaid))
             {
@@ -142,7 +142,6 @@ public static class Bank
     // ====== 读取接口 ======
 
     public static long GetCheckingBalance() => Context.IsMainPlayer ? Data.CheckingBalance : (_clientCache?.CheckingBalance ?? 0);
-    public static long GetInterestEarned() => Context.IsMainPlayer ? Data.InterestEarned : (_clientCache?.InterestEarned ?? 0);
     public static int GetLastInterestDay() => Context.IsMainPlayer ? Data.LastInterestDay : (_clientCache?.LastInterestDay ?? 0);
 
     public static List<FixedDeposit> GetFixedDeposits()
@@ -189,21 +188,6 @@ public static class Bank
         else
         {
             SendActionRequest("withdraw", amount, 0);
-        }
-    }
-
-    public static void ClaimInterest()
-    {
-        if (Context.IsMainPlayer)
-        {
-            if (Data.InterestEarned <= 0) return;
-            Game1.player.Money += (int)Data.InterestEarned;
-            Data.InterestEarned = 0;
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("claim", 0, 0);
         }
     }
 
@@ -305,14 +289,6 @@ public static class Bank
         Data.CheckingBalance -= amount;
         var farmer = GetFarmer(playerId);
         if (farmer != null) farmer.Money += amount;
-    }
-
-    private static void ExecuteClaimInterest(long? playerId)
-    {
-        if (Data.InterestEarned <= 0) return;
-        var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += (int)Data.InterestEarned;
-        Data.InterestEarned = 0;
     }
 
     private static void ExecuteCreateFixedDeposit(int amount, int termDays, long? playerId)
@@ -417,7 +393,6 @@ public static class Bank
         var syncData = new BankSyncData
         {
             CheckingBalance = Data.CheckingBalance,
-            InterestEarned = Data.InterestEarned,
             FixedDeposits = Data.FixedDeposits,
             Loans = Data.Loans,
             LastInterestDay = Data.LastInterestDay
@@ -441,7 +416,6 @@ public static class Bank
                     _clientCache = new BankSaveData
                     {
                         CheckingBalance = syncData.CheckingBalance,
-                        InterestEarned = syncData.InterestEarned,
                         FixedDeposits = syncData.FixedDeposits,
                         Loans = syncData.Loans,
                         LastInterestDay = syncData.LastInterestDay
@@ -464,9 +438,6 @@ public static class Bank
                         break;
                     case "withdraw":
                         ExecuteWithdraw(request.Amount, pid);
-                        break;
-                    case "claim":
-                        ExecuteClaimInterest(pid);
                         break;
                     case "newFixed":
                         ExecuteCreateFixedDeposit(request.Amount, request.Param, pid);
