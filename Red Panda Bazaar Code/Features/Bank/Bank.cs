@@ -106,14 +106,25 @@ public static class Bank
         Tools.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
-    /// <summary>每日利息结算（仅主机执行）。</summary>
+    /// <summary>每日利息结算及到期提醒（仅主机执行）。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
         if (Context.IsMainPlayer)
         {
             SettleDailyInterest();
+            CheckMaturedDeposits();
             BroadcastSyncData();
         }
+    }
+
+    /// <summary>检查是否有到期的定期存款未领取。</summary>
+    private static void CheckMaturedDeposits()
+    {
+        var now = (int)Game1.stats.DaysPlayed;
+        var matured = Data.FixedDeposits.Any(d => !d.Withdrawn && now - d.StartDay >= d.TermDays);
+        if (matured)
+            Game1.chatBox?.addMessage(
+                Tools.GetI18n(I18nKeys.Bank_FixedMatureReminder).ToString(), Color.Green);
     }
 
     /// <summary>按天逐日复利结算活期利息。</summary>
