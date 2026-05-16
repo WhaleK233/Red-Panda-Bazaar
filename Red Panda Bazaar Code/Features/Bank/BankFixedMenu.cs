@@ -61,14 +61,23 @@ public class BankFixedMenu : IClickableMenu
 
         var deposits = Bank.GetFixedDeposits();
         var listY = cy + 56;
+        var contentW = width - ContentPadding * 2;
         for (var i = 0; i < deposits.Count; i++)
         {
-            if (deposits[i].Withdrawn) continue;
-            var contentW = width - ContentPadding * 2;
-            _fixedActionButtons.Add(new ClickableComponent(
-                new Rectangle(cx + contentW - 200, listY, 90, 36), $"redeem_{i}"));
-            _fixedActionButtons.Add(new ClickableComponent(
-                new Rectangle(cx + contentW - 100, listY, 90, 36), $"early_{i}"));
+            var d = deposits[i];
+            if (d.Withdrawn) continue;
+
+            var elapsed = (int)Game1.stats.DaysPlayed - d.StartDay;
+            if (elapsed >= d.TermDays)
+            {
+                _fixedActionButtons.Add(new ClickableComponent(
+                    new Rectangle(cx + contentW - 100, listY, 90, 36), $"redeem_{i}"));
+            }
+            else
+            {
+                _fixedActionButtons.Add(new ClickableComponent(
+                    new Rectangle(cx + contentW - 100, listY, 90, 36), $"early_{i}"));
+            }
             listY += 40;
         }
     }
@@ -207,20 +216,14 @@ public class BankFixedMenu : IClickableMenu
 
                 Utility.drawTextWithShadow(b, line, Game1.smallFont, new Vector2(cx, listY), Color.Black);
 
-                if (!d.Withdrawn)
+                if (!d.Withdrawn && btnIndex < _fixedActionButtons.Count)
                 {
-                    if (btnIndex < _fixedActionButtons.Count)
-                    {
-                        var rBtn = _fixedActionButtons[btnIndex++];
-                        DrawButton(b, rBtn.bounds.X, rBtn.bounds.Y, rBtn.bounds.Width, rBtn.bounds.Height,
-                            Tools.GetI18n(I18nKeys.Bank_Redeem).ToString());
-                    }
-                    if (btnIndex < _fixedActionButtons.Count)
-                    {
-                        var eBtn = _fixedActionButtons[btnIndex++];
-                        DrawButton(b, eBtn.bounds.X, eBtn.bounds.Y, eBtn.bounds.Width, eBtn.bounds.Height,
-                            Tools.GetI18n(I18nKeys.Bank_EarlyWithdraw).ToString());
-                    }
+                    var actionBtn = _fixedActionButtons[btnIndex++];
+                    var label = actionBtn.name.StartsWith("redeem")
+                        ? Tools.GetI18n(I18nKeys.Bank_Redeem).ToString()
+                        : Tools.GetI18n(I18nKeys.Bank_EarlyWithdraw).ToString();
+                    DrawButton(b, actionBtn.bounds.X, actionBtn.bounds.Y,
+                        actionBtn.bounds.Width, actionBtn.bounds.Height, label);
                 }
 
                 listY += 40;
