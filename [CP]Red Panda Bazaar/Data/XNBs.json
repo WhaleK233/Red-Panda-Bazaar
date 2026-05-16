@@ -12,6 +12,11 @@
         },
         {
             "Action": "Load",
+            "Target": "Data/Events/Custom_MapleBridge",
+            "FromFile": "assets/XNBs/blank.xnb"
+        },
+        {
+            "Action": "Load",
             "Target": "Data/Events/Custom_MarlinShop1",
             "FromFile": "assets/XNBs/blank.xnb"
         },
