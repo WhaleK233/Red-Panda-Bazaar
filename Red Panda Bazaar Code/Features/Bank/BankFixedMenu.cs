@@ -196,6 +196,8 @@ public class BankFixedMenu : IClickableMenu
             for (var i = 0; i < deposits.Count; i++)
             {
                 var d = deposits[i];
+                if (d.Withdrawn) continue;
+
                 var elapsed = (int)Game1.stats.DaysPlayed - d.StartDay;
                 var matured = elapsed >= d.TermDays;
 
@@ -204,9 +206,7 @@ public class BankFixedMenu : IClickableMenu
                 line += $" | {d.TermDays} {Tools.GetI18n(I18nKeys.Bank_Days).ToString()}";
                 line += " | ";
 
-                if (d.Withdrawn)
-                    line += Tools.GetI18n(I18nKeys.Bank_FixedStatusWithdrawn).ToString();
-                else if (matured)
+                if (matured)
                     line += Tools.GetI18n(I18nKeys.Bank_FixedStatusMature).ToString();
                 else
                 {
@@ -216,7 +216,7 @@ public class BankFixedMenu : IClickableMenu
 
                 Utility.drawTextWithShadow(b, line, Game1.smallFont, new Vector2(cx, listY), Color.Black);
 
-                if (!d.Withdrawn && btnIndex < _fixedActionButtons.Count)
+                if (btnIndex < _fixedActionButtons.Count)
                 {
                     var actionBtn = _fixedActionButtons[btnIndex++];
                     var label = actionBtn.name.StartsWith("redeem")
