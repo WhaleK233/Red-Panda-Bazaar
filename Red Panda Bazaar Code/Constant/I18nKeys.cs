@@ -20,8 +20,6 @@ public static class I18nKeys
 
     public const string Config_AnimeSpeed_PrizeMenu = "Config.AnimationSpeed.PrizeMenu";
 
-    public const string Config_EnableTax = "Config.EnableTax";
-
     public const string Config_TaxRate = "Config.TaxRate";
 
     public const string Config_DebugMode = "Config.DebugMode";
