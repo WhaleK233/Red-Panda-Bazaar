@@ -136,17 +136,12 @@ public class SettlementMenu : UiBaseMenu
         var totalW = _colWidths.Sum() + ColGap * (_colWidths.Length - 1);
         Root.Add(new UiSeparator { Width = totalW });
 
-        // 税收（如未启用税率则为 0）
-        var taxAmount = Tools.ModConfig.EnableTax
-            ? (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate)
-            : 0;
-        if (Tools.ModConfig.EnableTax)
-        {
-            var taxPct = (int)(Tools.ModConfig.TaxRate * 100);
-            var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
-                .Tokens(new { amount = taxAmount, gold, rate = taxPct }).ToString();
-            Root.Add(new UiText(taxText) { HorizontalAlignment = 1f, Color = Color.Red });
-        }
+        // 税收
+        var taxAmount = (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate);
+        var taxPct = (int)(Tools.ModConfig.TaxRate * 100);
+        var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
+            .Tokens(new { amount = taxAmount, gold, rate = taxPct }).ToString();
+        Root.Add(new UiText(taxText) { HorizontalAlignment = 1f, Color = Color.Red });
 
         // 合计
         var net = _totalEarnings - taxAmount;

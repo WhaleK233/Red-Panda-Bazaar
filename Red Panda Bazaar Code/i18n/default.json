@@ -8,7 +8,6 @@
   "PlayerStall.UnitPrice": "Unit",
   "PlayerStall.DateUnknown": "Unknown",
   "PlayerStall.ColHeader.Time": "Time",
-  "Config.EnableTax": "Enable Tax",
   "Config.TaxRate": "Tax Rate",
   "PlayerStall.StatusSold": "Sold",
   "PlayerStall.CollectEarnings": "Collect",

@@ -51,14 +51,6 @@ public static class Integrations
             save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
         );
 
-        // 启用税收
-        configMenuApi.AddBoolOption(
-            mod: Tools.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_EnableTax),
-            getValue: () => Tools.ModConfig.EnableTax,
-            setValue: value => Tools.ModConfig.EnableTax = value
-        );
-
         // 税率
         configMenuApi.AddNumberOption(
             mod: Tools.ModManifest,
