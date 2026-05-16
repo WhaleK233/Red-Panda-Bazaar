@@ -14,8 +14,8 @@ public class UiText : UiElement
     /// <summary>最小宽度，0 表不限制。用于表格列对齐。</summary>
     public int MinWidth { get; set; }
 
-    /// <summary>水平对齐：0=左，0.5=中，1=右。</summary>
-    public float HorizontalAlignment { get; set; }
+    /// <summary>水平对齐方式。</summary>
+    public UiAlign HorizontalAlignment { get; set; }
 
     public UiText(string text, SpriteFont? font = null, Color? color = null)
     {
@@ -36,7 +36,12 @@ public class UiText : UiElement
         if (!Visible || string.IsNullOrEmpty(Text)) return;
 
         var textSize = Font.MeasureString(Text);
-        var xOff = HorizontalAlignment * (Width - textSize.X);
+        var xOff = HorizontalAlignment switch
+        {
+            UiAlign.Center => (Width - textSize.X) / 2,
+            UiAlign.Right => Width - textSize.X,
+            _ => 0,
+        };
 
         if (Shadow)
             Utility.drawTextWithShadow(b, Text, Font, new Vector2(X + xOff, Y), Color);
