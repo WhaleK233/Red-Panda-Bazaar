@@ -93,8 +93,8 @@ public class BankCheckingMenu : IClickableMenu
                     if (Context.IsMainPlayer && number > 0)
                         Game1.activeClickableMenu = new BankCheckingMenu();
                 },
-                price: -1, minValue: 1, maxValue: Math.Max(1, Bank.GetCheckingBalance()),
-                defaultNumber: Math.Min(100, Bank.GetCheckingBalance()));
+                price: -1, minValue: 1, maxValue: (int)Math.Max(1L, Bank.GetCheckingBalance()),
+                defaultNumber: (int)Math.Min(100L, Bank.GetCheckingBalance()));
         }
     }
 

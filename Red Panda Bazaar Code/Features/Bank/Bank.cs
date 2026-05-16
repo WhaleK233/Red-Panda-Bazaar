@@ -127,12 +127,12 @@ public static class Bank
         for (var i = 0; i < daysElapsed; i++)
         {
             var rate = BankCalculator.GetDailyCheckingRate();
-            Data.InterestEarned += (int)(Data.CheckingBalance * rate);
+            Data.InterestEarned += (long)(Data.CheckingBalance * rate);
 
             foreach (var loan in Data.Loans.Where(l => !l.Repaid))
             {
                 var loanRate = BankCalculator.LoanDailyRate[loan.PlanType];
-                loan.InterestAccrued += (int)(loan.Principal * loanRate);
+                loan.InterestAccrued += (long)(loan.Principal * loanRate);
             }
         }
 
@@ -141,8 +141,8 @@ public static class Bank
 
     // ====== 读取接口 ======
 
-    public static int GetCheckingBalance() => Context.IsMainPlayer ? Data.CheckingBalance : (_clientCache?.CheckingBalance ?? 0);
-    public static int GetInterestEarned() => Context.IsMainPlayer ? Data.InterestEarned : (_clientCache?.InterestEarned ?? 0);
+    public static long GetCheckingBalance() => Context.IsMainPlayer ? Data.CheckingBalance : (_clientCache?.CheckingBalance ?? 0);
+    public static long GetInterestEarned() => Context.IsMainPlayer ? Data.InterestEarned : (_clientCache?.InterestEarned ?? 0);
     public static int GetLastInterestDay() => Context.IsMainPlayer ? Data.LastInterestDay : (_clientCache?.LastInterestDay ?? 0);
 
     public static List<FixedDeposit> GetFixedDeposits()
@@ -197,7 +197,7 @@ public static class Bank
         if (Context.IsMainPlayer)
         {
             if (Data.InterestEarned <= 0) return;
-            Game1.player.Money += Data.InterestEarned;
+            Game1.player.Money += (int)Data.InterestEarned;
             Data.InterestEarned = 0;
             BroadcastSyncData();
         }
@@ -311,7 +311,7 @@ public static class Bank
     {
         if (Data.InterestEarned <= 0) return;
         var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += Data.InterestEarned;
+        if (farmer != null) farmer.Money += (int)Data.InterestEarned;
         Data.InterestEarned = 0;
     }
 
@@ -364,9 +364,8 @@ public static class Bank
         // 每种方案同时只能有一笔未还贷款
         if (Data.Loans.Any(l => !l.Repaid && l.PlanType == planType)) return;
 
-        var playerMoney = farmer.Money;
-        var remaining = BankCalculator.GetRemainingCredit(playerMoney, Data.Loans);
-        var amount = BankCalculator.GetAvailableLoanAmount(planType, playerMoney, remaining);
+        var remaining = BankCalculator.GetRemainingCredit(Data.Loans);
+        var amount = BankCalculator.GetAvailableLoanAmount(planType, remaining, Data.Loans);
         if (amount <= 0) return;
 
         Data.Loans.Add(new LoanAccount
@@ -377,7 +376,7 @@ public static class Bank
             InterestAccrued = 0,
             Repaid = false
         });
-        farmer.Money += amount;
+        farmer.Money += (int)amount;
     }
 
     private static void ExecuteRepayLoan(int loanIndex, long? playerId)
@@ -386,7 +385,7 @@ public static class Bank
         var loan = Data.Loans[loanIndex];
         if (loan.Repaid) return;
 
-        var total = loan.Principal + loan.InterestAccrued;
+        var total = (int)(loan.Principal + loan.InterestAccrued);
         var farmer = GetFarmer(playerId);
         if (farmer == null || farmer.Money < total) return;
 
