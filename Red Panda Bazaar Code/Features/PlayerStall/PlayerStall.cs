@@ -177,8 +177,15 @@ public static class PlayerStall {
             MPMessageType.PlayerStall_UpdateItem);
     }
 
-    /// <summary>获取所有未领取的售出记录。</summary>
-    public static List<SoldRecord> GetSoldItems() => Data.SoldRecords.ToList();
+    /// <summary>获取售出记录。未收取时返回当前待领取的记录；已收取后当天仍返回最近一次记录。</summary>
+    public static List<SoldRecord> GetSoldItems()
+    {
+        if (Data.SoldRecords.Count > 0)
+            return Data.SoldRecords.ToList();
+        if (Data.CollectDay == Game1.stats.DaysPlayed && Data.LastSoldRecords != null)
+            return Data.LastSoldRecords.ToList();
+        return new();
+    }
 
     /// <summary>累计历史税收总额。</summary>
     public static int TotalTax => Data?.TotalTax ?? 0;
@@ -211,6 +218,7 @@ public static class PlayerStall {
         if (gross <= 0) return -1;
 
         Data.CollectDay = (int)Game1.stats.DaysPlayed;
+        Data.LastSoldRecords = Data.SoldRecords.ToList();
         Data.SoldRecords.Clear();
 
         // 通过 SMAPI 多人消息通知其他玩家
@@ -234,6 +242,7 @@ public static class PlayerStall {
                 if (!Context.IsMainPlayer && e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID)
                     break;
                 Data.CollectDay = e.ReadAs<int>();
+                Data.LastSoldRecords = Data.SoldRecords.ToList();
                 Data.SoldRecords.Clear();
                 break;
 
