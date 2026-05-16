@@ -340,7 +340,8 @@ public static class Bank
 
         var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
         var interest = (long)(deposit.Amount * rate);
-        Data.CheckingBalance += deposit.Amount + interest;
+        var farmer = GetFarmer(playerId);
+        if (farmer != null) farmer.Money += (int)(deposit.Amount + interest);
         deposit.Withdrawn = true;
     }
 
@@ -352,7 +353,8 @@ public static class Bank
 
         var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
         var interest = (long)(deposit.Amount * rate * 0.5);
-        Data.CheckingBalance += deposit.Amount + interest;
+        var farmer = GetFarmer(playerId);
+        if (farmer != null) farmer.Money += (int)(deposit.Amount + interest);
         deposit.Withdrawn = true;
     }
 
