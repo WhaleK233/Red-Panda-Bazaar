@@ -9,7 +9,7 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public static class Bank
 {
-    private const string SaveKey = "WhaleK233.RedPandaBazaar.Bank";
+    private const string SaveKey = StatsKeys.BankSave;
     private const string BankLocation = "Custom_RedPandaBazaarBank1";
 
     private static BankSaveData Data { get; set; } = new();
@@ -339,7 +339,7 @@ public static class Bank
         if (elapsed < deposit.TermDays) return;
 
         var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
-        var interest = (int)(deposit.Amount * rate);
+        var interest = (long)(deposit.Amount * rate);
         Data.CheckingBalance += deposit.Amount + interest;
         deposit.Withdrawn = true;
     }
@@ -351,7 +351,7 @@ public static class Bank
         if (deposit.Withdrawn) return;
 
         var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
-        var interest = (int)(deposit.Amount * rate * 0.5);
+        var interest = (long)(deposit.Amount * rate * 0.5);
         Data.CheckingBalance += deposit.Amount + interest;
         deposit.Withdrawn = true;
     }
