@@ -7,6 +7,9 @@ public class UiRow : UiElement
     public List<UiElement> Children { get; } = new();
     public int Spacing { get; set; } = 10;
 
+    /// <summary>子元素垂直对齐方式。</summary>
+    public UiAlign VerticalAlignment { get; set; } = UiAlign.Center;
+
     public UiRow Add(UiElement child)
     {
         child.Parent = this;
@@ -44,12 +47,17 @@ public class UiRow : UiElement
         Width = totalW > 0 ? totalW - Spacing : 0;
         Height = maxH;
 
-        // 第二遍：设置正确坐标后向下传播（含垂直居中）
+        // 第二遍：设置正确坐标后向下传播（含垂直对齐）
         var currentX = 0;
         foreach (var child in Children)
         {
             child.X = X + currentX;
-            child.Y = Y + (maxH - child.Height) / 2;
+            child.Y = VerticalAlignment switch
+            {
+                UiAlign.Top => Y,
+                UiAlign.Bottom => Y + maxH - child.Height,
+                _ => Y + (maxH - child.Height) / 2,
+            };
             child.Arrange(); // 子容器用正确坐标重排后代
             currentX += child.Width + Spacing;
         }

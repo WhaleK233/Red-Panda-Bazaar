@@ -55,7 +55,7 @@ public class SettlementMenu : UiBaseMenu
     protected override void BuildUi()
     {
         var title = Tools.GetI18n(I18nKeys.PlayerStall_BillTitle).ToString();
-        Root.Add(new UiText(title, Game1.dialogueFont) { HorizontalAlignment = 0.5f });
+        Root.Add(new UiText(title, Game1.dialogueFont) { HorizontalAlignment = UiAlign.Center });
 
         if (_entries.Count == 0)
         {
@@ -74,7 +74,7 @@ public class SettlementMenu : UiBaseMenu
 
         var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
             .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
-        Root.Add(new UiText(totalTaxText) { HorizontalAlignment = 1f, Color = Color.Black });
+        Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
     }
 
     private void BuildTable()
@@ -141,13 +141,13 @@ public class SettlementMenu : UiBaseMenu
         var taxPct = (int)(Tools.ModConfig.TaxRate * 100);
         var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
             .Tokens(new { amount = taxAmount, gold, rate = taxPct }).ToString();
-        Root.Add(new UiText(taxText) { HorizontalAlignment = 1f, Color = Color.Red });
+        Root.Add(new UiText(taxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Red });
 
         // 合计
         var net = _totalEarnings - taxAmount;
         var totalText = Tools.GetI18n(I18nKeys.PlayerStall_Total)
             .Tokens(new { amount = net, gold }).ToString();
-        Root.Add(new UiText(totalText, Game1.dialogueFont) { HorizontalAlignment = 1f });
+        Root.Add(new UiText(totalText, Game1.dialogueFont) { HorizontalAlignment = UiAlign.Right });
 
         // 按钮
         var collected = PlayerStall.IsCollectedToday;
@@ -161,7 +161,7 @@ public class SettlementMenu : UiBaseMenu
         {
             var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
                 .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
-            Root.Add(new UiText(totalTaxText) { HorizontalAlignment = 1f, Color = Color.Black });
+            Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
         }
     }
 
@@ -196,7 +196,7 @@ public class SettlementMenu : UiBaseMenu
         return new UiText(text)
         {
             MinWidth = width,
-            HorizontalAlignment = right ? 1f : 0f,
+            HorizontalAlignment = right ? UiAlign.Right : UiAlign.Left,
             Color = bold ? Color.Black : Game1.textColor
         };
     }

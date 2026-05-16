@@ -7,6 +7,9 @@ public class UiColumn : UiElement
     public List<UiElement> Children { get; } = new();
     public int Spacing { get; set; } = 6;
 
+    /// <summary>子元素水平对齐方式。</summary>
+    public UiAlign HorizontalAlignment { get; set; }
+
     public UiColumn Add(UiElement child)
     {
         child.Parent = this;
@@ -48,7 +51,12 @@ public class UiColumn : UiElement
         var currentY = 0;
         foreach (var child in Children)
         {
-            child.X = X;
+            child.X = HorizontalAlignment switch
+            {
+                UiAlign.Center => X + (maxW - child.Width) / 2,
+                UiAlign.Right => X + maxW - child.Width,
+                _ => X,
+            };
             child.Y = Y + currentY;
             child.Arrange(); // 子容器用正确坐标重排后代
             currentY += child.Height + Spacing;
