@@ -224,13 +224,9 @@ public static class PlayerStall {
         // 通过 SMAPI 多人消息通知其他玩家
         Tools.SendToHostOrBroadcast(Data.CollectDay, MPMessageType.PlayerStall_Collect);
 
-        if (Tools.ModConfig.EnableTax) {
-            var tax = (int)Math.Round(gross * Tools.ModConfig.TaxRate);
-            Data.TotalTax += tax;
-            return gross - tax;
-        }
-
-        return gross;
+        var tax = (int)Math.Round(gross * Tools.ModConfig.TaxRate);
+        Data.TotalTax += tax;
+        return gross - tax;
     }
 
     /// <summary>接收其他玩家的同步消息。主机负责接收客机请求并转发给所有客机；客机直接应用主机广播。</summary>
