@@ -81,7 +81,7 @@ public static class Bank
         }
     }
 
-    /// <summary>按天逐日结算，确保每次调用 GetDailyCheckingRate() 时运气/日期分量都正确。</summary>
+    /// <summary>按天逐日结算活期利息。</summary>
     private static void SettleDailyInterest()
     {
         if (Data.LastInterestDay >= Game1.stats.DaysPlayed) return;
@@ -93,12 +93,6 @@ public static class Bank
         {
             var rate = BankCalculator.GetDailyCheckingRate();
             Data.InterestEarned += (int)(Data.CheckingBalance * rate);
-
-            foreach (var loan in Data.Loans.Where(l => !l.Repaid))
-            {
-                var loanRate = BankCalculator.LoanDailyRate[loan.PlanType];
-                loan.InterestAccrued += (int)(loan.Principal * loanRate);
-            }
         }
 
         Data.LastInterestDay = (int)Game1.stats.DaysPlayed;
@@ -113,11 +107,6 @@ public static class Bank
     public static List<FixedDeposit> GetFixedDeposits()
     {
         return Context.IsMainPlayer ? Data.FixedDeposits.ToList() : (_clientCache?.FixedDeposits.ToList() ?? new());
-    }
-
-    public static List<LoanAccount> GetLoans()
-    {
-        return Context.IsMainPlayer ? Data.Loans.ToList() : (_clientCache?.Loans.ToList() ?? new());
     }
 
     // ====== 操作接口 ======
@@ -220,47 +209,6 @@ public static class Bank
         }
     }
 
-    public static void ApplyLoan(int planType)
-    {
-        if (planType < 0 || planType > 2) return;
-        if (Context.IsMainPlayer)
-        {
-            ExecuteApplyLoan(planType, null);
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("applyLoan", 0, planType);
-        }
-    }
-
-    public static void RepayLoan(int loanIndex)
-    {
-        if (Context.IsMainPlayer)
-        {
-            ExecuteRepayLoan(loanIndex, null);
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("repayLoan", 0, loanIndex);
-        }
-    }
-
-    public static void RepayLoanPartial(int loanIndex, int amount)
-    {
-        if (amount <= 0) return;
-        if (Context.IsMainPlayer)
-        {
-            ExecuteRepayLoanPartial(loanIndex, amount, null);
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("repayPartLoan", amount, loanIndex);
-        }
-    }
-
     // ====== 主机执行方法 ======
     // playerId 为请求方玩家，主机用它操作对应玩家的金币（NetInt 自动同步到客机）。
     // null = 主机自己在操作（单机或主机玩家本人）。
@@ -332,68 +280,6 @@ public static class Bank
         deposit.Withdrawn = true;
     }
 
-    private static void ExecuteApplyLoan(int planType, long? playerId)
-    {
-        var remaining = BankCalculator.GetRemainingCredit(GetFarmer(playerId)?.Money ?? Game1.player.Money, Data.Loans);
-        var amount = BankCalculator.GetAvailableLoanAmount(planType, GetFarmer(playerId)?.Money ?? Game1.player.Money, remaining);
-        if (amount <= 0) return;
-
-        Data.Loans.Add(new LoanAccount
-        {
-            PlanType = planType,
-            Principal = amount,
-            StartDay = (int)Game1.stats.DaysPlayed,
-            InterestAccrued = 0,
-            Repaid = false
-        });
-        var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += amount;
-    }
-
-    private static void ExecuteRepayLoan(int loanIndex, long? playerId)
-    {
-        if (loanIndex < 0 || loanIndex >= Data.Loans.Count) return;
-        var loan = Data.Loans[loanIndex];
-        if (loan.Repaid) return;
-
-        if (loan.PlanType == 2)
-        {
-            var elapsed = (int)Game1.stats.DaysPlayed - loan.StartDay;
-            if (elapsed < 7) return;
-        }
-
-        var total = loan.Principal + loan.InterestAccrued;
-        var farmer = GetFarmer(playerId);
-        if (farmer == null || farmer.Money < total) return;
-
-        farmer.Money -= total;
-        loan.Repaid = true;
-    }
-
-    private static void ExecuteRepayLoanPartial(int loanIndex, int amount, long? playerId)
-    {
-        if (loanIndex < 0 || loanIndex >= Data.Loans.Count) return;
-        var loan = Data.Loans[loanIndex];
-        if (loan.Repaid) return;
-        if (loan.PlanType != 0) return;
-
-        if (amount > loan.Principal + loan.InterestAccrued) amount = loan.Principal + loan.InterestAccrued;
-        var farmer = GetFarmer(playerId);
-        if (farmer == null || farmer.Money < amount) return;
-
-        farmer.Money -= amount;
-
-        var totalDebt = loan.Principal + loan.InterestAccrued;
-        var interestPortion = (int)((double)loan.InterestAccrued / totalDebt * amount);
-        var principalPortion = amount - interestPortion;
-
-        loan.InterestAccrued -= interestPortion;
-        loan.Principal -= principalPortion;
-
-        if (loan.Principal <= 0 && loan.InterestAccrued <= 0)
-            loan.Repaid = true;
-    }
-
     // ====== 多人同步 ======
 
     private static void SendActionRequest(string action, int amount, int param)
@@ -417,7 +303,6 @@ public static class Bank
             CheckingBalance = Data.CheckingBalance,
             InterestEarned = Data.InterestEarned,
             FixedDeposits = Data.FixedDeposits,
-            Loans = Data.Loans,
             LastInterestDay = Data.LastInterestDay
         };
         Tools.Helper.Multiplayer.SendMessage(
@@ -441,7 +326,6 @@ public static class Bank
                         CheckingBalance = syncData.CheckingBalance,
                         InterestEarned = syncData.InterestEarned,
                         FixedDeposits = syncData.FixedDeposits,
-                        Loans = syncData.Loans,
                         LastInterestDay = syncData.LastInterestDay
                     };
                 }
@@ -452,7 +336,6 @@ public static class Bank
                 var request = e.ReadAs<BankActionRequestData>();
                 if (request == null) break;
 
-                // 先补上到今日的利息，再执行操作，确保利息准确
                 SettleDailyInterest();
                 long? pid = e.FromPlayerID;
 
@@ -475,15 +358,6 @@ public static class Bank
                         break;
                     case "earlyWithdraw":
                         ExecuteEarlyWithdrawFixedDeposit(request.Param, pid);
-                        break;
-                    case "applyLoan":
-                        ExecuteApplyLoan(request.Param, pid);
-                        break;
-                    case "repayLoan":
-                        ExecuteRepayLoan(request.Param, pid);
-                        break;
-                    case "repayPartLoan":
-                        ExecuteRepayLoanPartial(request.Param, request.Amount, pid);
                         break;
                 }
 
