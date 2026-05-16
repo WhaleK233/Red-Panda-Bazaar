@@ -3,7 +3,6 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 public class BankSaveData
 {
     public long CheckingBalance { get; set; }
-    public long InterestEarned { get; set; }
     public List<FixedDeposit> FixedDeposits { get; set; } = new();
     public List<LoanAccount> Loans { get; set; } = new();
     public int LastInterestDay { get; set; }
@@ -30,7 +29,6 @@ public class LoanAccount
 public class BankSyncData
 {
     public long CheckingBalance { get; set; }
-    public long InterestEarned { get; set; }
     public List<FixedDeposit> FixedDeposits { get; set; } = new();
     public List<LoanAccount> Loans { get; set; } = new();
     public int LastInterestDay { get; set; }
