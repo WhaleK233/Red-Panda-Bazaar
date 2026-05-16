@@ -10,6 +10,9 @@ public abstract class UiBaseMenu : IClickableMenu
     protected const int ContentPadding = 24;
     protected const int TopPadding = 24;
 
+    private const int ChromeWidth = 24;
+    private const int ChromeHeight = 40;
+
     protected UiColumn Root { get; } = new();
     protected abstract void BuildUi();
 
@@ -18,6 +21,9 @@ public abstract class UiBaseMenu : IClickableMenu
 
     public UiBaseMenu()
     {
+        Game1.player.isCharging = false;
+        Game1.player.canMove = true;
+
         Rebuild();
     }
 
@@ -31,8 +37,8 @@ public abstract class UiBaseMenu : IClickableMenu
         var w = Math.Max(content.X, Root.Width) + ContentPadding * 2;
         var h = Math.Max(content.Y, Root.Height) + ContentPadding + TopPadding;
 
-        width = Math.Clamp(w + 24, 300, Game1.uiViewport.Width - 40);
-        height = Math.Clamp(h + 40, 120, Game1.uiViewport.Height - 40);
+        width = Math.Clamp(w + ChromeWidth, 300, Game1.uiViewport.Width - 40);
+        height = Math.Clamp(h + ChromeHeight, 120, Game1.uiViewport.Height - 40);
 
         xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
         yPositionOnScreen = (Game1.uiViewport.Height - height) / 2;
@@ -42,6 +48,13 @@ public abstract class UiBaseMenu : IClickableMenu
         Root.X = xPositionOnScreen + ContentPadding;
         Root.Y = yPositionOnScreen + TopPadding;
         Root.Arrange();
+    }
+
+    protected override void cleanupBeforeExit()
+    {
+        Game1.player.isCharging = false;
+        Game1.player.canMove = true;
+        base.cleanupBeforeExit();
     }
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
