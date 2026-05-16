@@ -68,14 +68,13 @@ public class SettlementMenu : UiBaseMenu
 
     private void BuildEmptyState()
     {
+        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var emptyMsg = Tools.GetI18n(I18nKeys.PlayerStall_BillEmpty).ToString();
         Root.Add(new UiText(emptyMsg) { Color = Game1.textColor * 0.6f });
 
-        if (PlayerStall.TotalTax <= 0) return;
-        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
-        var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
+        var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
             .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
-        Root.Add(new UiText(taxText) { HorizontalAlignment = 1f, Color = Color.Black });
+        Root.Add(new UiText(totalTaxText) { HorizontalAlignment = 1f, Color = Color.Black });
     }
 
     private void BuildTable()
@@ -137,9 +136,11 @@ public class SettlementMenu : UiBaseMenu
         var totalW = _colWidths.Sum() + ColGap * (_colWidths.Length - 1);
         Root.Add(new UiSeparator { Width = totalW });
 
-        // 税收
-        var taxAmount = (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate);
-        if (Tools.ModConfig.EnableTax && taxAmount > 0)
+        // 税收（如未启用税率则为 0）
+        var taxAmount = Tools.ModConfig.EnableTax
+            ? (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate)
+            : 0;
+        if (Tools.ModConfig.EnableTax)
         {
             var taxPct = (int)(Tools.ModConfig.TaxRate * 100);
             var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
@@ -148,7 +149,7 @@ public class SettlementMenu : UiBaseMenu
         }
 
         // 合计
-        var net = Tools.ModConfig.EnableTax ? _totalEarnings - taxAmount : _totalEarnings;
+        var net = _totalEarnings - taxAmount;
         var totalText = Tools.GetI18n(I18nKeys.PlayerStall_Total)
             .Tokens(new { amount = net, gold }).ToString();
         Root.Add(new UiText(totalText, Game1.dialogueFont) { HorizontalAlignment = 1f });
