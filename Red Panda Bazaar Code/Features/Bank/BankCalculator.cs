@@ -36,25 +36,33 @@ public static class BankCalculator
         return dailyRate * termDays * multiplier;
     }
 
-    /// <summary>总信用额度 = 玩家持有金币 × 1.5。</summary>
-    public static int GetTotalCreditLimit(int playerMoney)
+    /// <summary>玩家靠自己赚的钱 = 总收入 − 历史上所有贷款本金。</summary>
+    private static long GetEffectiveEarnings(List<LoanAccount> allLoans)
     {
-        return (int)(playerMoney * 1.5);
+        var totalBorrowed = allLoans.Sum(l => l.Principal);
+        var effective = Game1.player.totalMoneyEarned - totalBorrowed;
+        return effective > 0 ? effective : 0;
+    }
+
+    /// <summary>总信用额度 = 靠赚的钱 × 1.5。</summary>
+    public static long GetTotalCreditLimit(List<LoanAccount> allLoans)
+    {
+        return (long)(GetEffectiveEarnings(allLoans) * 1.5);
     }
 
     /// <summary>剩余可用额度 = 总额度 − 所有未还贷款的（本金+利息）。</summary>
-    public static int GetRemainingCredit(int playerMoney, List<LoanAccount> loans)
+    public static long GetRemainingCredit(List<LoanAccount> allLoans)
     {
-        var total = GetTotalCreditLimit(playerMoney);
-        var used = loans.Where(l => !l.Repaid).Sum(l => l.Principal + l.InterestAccrued);
+        var total = GetTotalCreditLimit(allLoans);
+        var used = allLoans.Where(l => !l.Repaid).Sum(l => l.Principal + l.InterestAccrued);
         return total - used;
     }
 
     /// <summary>某方案当前可贷 = min(方案上限, 剩余额度)。</summary>
-    public static int GetAvailableLoanAmount(int planType, int playerMoney, int remainingCredit)
+    public static long GetAvailableLoanAmount(int planType, long remainingCredit, List<LoanAccount> allLoans)
     {
         if (planType < 0 || planType >= LoanMultiplier.Length) return 0;
-        var planMax = (int)(playerMoney * LoanMultiplier[planType]);
-        return Math.Min(planMax, Math.Max(0, remainingCredit));
+        var planMax = (long)(GetEffectiveEarnings(allLoans) * LoanMultiplier[planType]);
+        return Math.Min(planMax, Math.Max(0L, remainingCredit));
     }
 }

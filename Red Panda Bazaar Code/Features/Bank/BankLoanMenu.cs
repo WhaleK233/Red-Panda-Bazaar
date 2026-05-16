@@ -46,14 +46,14 @@ public class BankLoanMenu : IClickableMenu
         var cx = xPositionOnScreen + ContentPadding;
         var cy = yPositionOnScreen + TopPadding;
 
+        var allLoans = Bank.GetLoans();
         for (var t = 0; t < 3; t++)
         {
-            var playerMoney = Game1.player.Money;
-            var remaining = BankCalculator.GetRemainingCredit(playerMoney, Bank.GetLoans());
-            var available = BankCalculator.GetAvailableLoanAmount(t, playerMoney, remaining);
+            var remaining = BankCalculator.GetRemainingCredit(allLoans);
+            var available = BankCalculator.GetAvailableLoanAmount(t, remaining, allLoans);
 
             // 该方案已有未还贷款则隐藏申请按钮
-            var hasActiveLoan = Bank.GetLoans().Any(l => !l.Repaid && l.PlanType == t);
+            var hasActiveLoan = allLoans.Any(l => !l.Repaid && l.PlanType == t);
             if (available <= 0 || hasActiveLoan) continue;
 
             _actionButtons.Add(new ClickableComponent(
@@ -105,9 +105,9 @@ public class BankLoanMenu : IClickableMenu
     {
         if (!name.StartsWith("apply_") || !int.TryParse(name.Replace("apply_", ""), out var planType)) return;
 
-        var playerMoney = Game1.player.Money;
-        var remaining = BankCalculator.GetRemainingCredit(playerMoney, Bank.GetLoans());
-        var available = BankCalculator.GetAvailableLoanAmount(planType, playerMoney, remaining);
+        var allLoans = Bank.GetLoans();
+        var remaining = BankCalculator.GetRemainingCredit(allLoans);
+        var available = BankCalculator.GetAvailableLoanAmount(planType, remaining, allLoans);
         if (available <= 0)
         {
             Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Bank_CreditLimitReached).ToString());
@@ -150,9 +150,9 @@ public class BankLoanMenu : IClickableMenu
         var cy = yPositionOnScreen + TopPadding;
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
 
-        var playerMoney = Game1.player.Money;
-        var remaining = BankCalculator.GetRemainingCredit(playerMoney, Bank.GetLoans());
-        var totalCredit = BankCalculator.GetTotalCreditLimit(playerMoney);
+        var allLoans = Bank.GetLoans();
+        var remaining = BankCalculator.GetRemainingCredit(allLoans);
+        var totalCredit = BankCalculator.GetTotalCreditLimit(allLoans);
         var usedCredit = totalCredit - remaining;
 
         Utility.drawTextWithShadow(b,
@@ -184,8 +184,8 @@ public class BankLoanMenu : IClickableMenu
         for (var t = 0; t < 3; t++)
         {
             var ratePercent = (BankCalculator.LoanDailyRate[t] * 100).ToString("F2");
-            var avail = BankCalculator.GetAvailableLoanAmount(t, playerMoney,
-                BankCalculator.GetRemainingCredit(playerMoney, Bank.GetLoans()));
+            var avail = BankCalculator.GetAvailableLoanAmount(t,
+                BankCalculator.GetRemainingCredit(allLoans), allLoans);
             var yPos = cy + 60 + t * 28;
 
             Utility.drawTextWithShadow(b,
