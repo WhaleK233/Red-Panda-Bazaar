@@ -42,6 +42,16 @@ public class BankTaxMenu : IClickableMenu
 
     public override void receiveRightClick(int x, int y, bool playSound = true) { }
 
+    public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+    {
+        base.gameWindowSizeChanged(oldBounds, newBounds);
+        width = CalcWidth();
+        height = CalcHeight();
+        xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
+        yPositionOnScreen = (Game1.uiViewport.Height - height) / 2;
+        initializeUpperRightCloseButton();
+    }
+
     public override void draw(SpriteBatch b)
     {
         b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.5f);
