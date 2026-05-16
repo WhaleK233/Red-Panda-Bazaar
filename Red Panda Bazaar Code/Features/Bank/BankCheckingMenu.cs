@@ -23,7 +23,7 @@ public class BankCheckingMenu : UiBaseMenu {
             new UiText(Tools.GetI18n(I18nKeys.Bank_TodayInterest)
                 .Tokens(new { amount = todayInterest, gold }).ToString()),
             new UiText(Tools.GetI18n(I18nKeys.Bank_TodayRate)
-                .Tokens(new { rate = (rate * 100).ToString("F4") }).ToString(), color: Color.Gray),
+                .Tokens(new { rate = (rate * 100).ToString("F2") }).ToString(), color: Color.Gray),
             new UiRow { Spacing = 20 }
                 .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Deposit).ToString(), () => OpenDeposit()))
                 .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Withdraw).ToString(), () => OpenWithdraw()))

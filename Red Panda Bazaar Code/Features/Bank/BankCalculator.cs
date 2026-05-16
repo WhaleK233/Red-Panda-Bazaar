@@ -6,10 +6,10 @@ public static class BankCalculator {
     private const double BaseCheckingRate = 0.01;
 
     /// <summary>三种贷款方案日利率：灵活贷 / 标准贷 / 定期贷</summary>
-    public static readonly double[] LoanDailyRate = { 0.0012, 0.0010, 0.0007 };
+    public static readonly double[] LoanDailyRate = { 0.02, 0.018, 0.014 };
 
     /// <summary>三种贷款方案占信用额度的比例</summary>
-    private static readonly double[] LoanPlanFactor = { 0.1, 0.4, 0.8 };
+    private static readonly double[] LoanPlanFactor = { 0.1, 0.3, 0.6 };
 
     /// <summary>三种贷款方案的最低可贷额度</summary>
     private static readonly long[] LoanMinAmount = { 500, 8000, 20000 };
@@ -41,9 +41,8 @@ public static class BankCalculator {
     /// <summary>总信用额度 = max(有效收入 × 0.5, 游戏天数 × 10000) + 总税收 × 0.5。</summary>
     public static long GetTotalCreditLimit(List<LoanAccount> allLoans) {
         var byEarnings = (long)(GetEffectiveEarnings(allLoans) * 0.5);
-        var byDays = Game1.stats.DaysPlayed * 10000L;
         var taxBonus = (long)(PlayerStall.PlayerStall.TotalTax * 0.5);
-        return Math.Max(byEarnings, byDays) + taxBonus;
+        return Math.Max(byEarnings, 10000) + taxBonus;
     }
 
     /// <summary>剩余可用额度 = 总额度 − 所有未还贷款的（本金+利息）。</summary>

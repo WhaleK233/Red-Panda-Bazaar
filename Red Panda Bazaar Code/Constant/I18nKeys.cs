@@ -181,6 +181,7 @@ public static class I18nKeys
     public const string Bank_Days = "Bank.Days";
     public const string Bank_FixedEmpty = "Bank.FixedEmpty";
     public const string Bank_NewFixedAmountTitle = "Bank.NewFixedAmountTitle";
+    public const string Bank_FixedEarlyWithdrawTip = "Bank.FixedEarlyWithdrawTip";
 
     // Tax
     public const string Bank_TaxTab = "Bank.TaxTab";

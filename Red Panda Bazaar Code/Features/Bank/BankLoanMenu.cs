@@ -30,7 +30,7 @@ public class BankLoanMenu : UiBaseMenu
         );
 
         // 方案分隔
-        Root.Add(new UiText("── " + Tools.GetI18n(I18nKeys.Bank_LoanTab) + " ──", color: Color.Gray));
+        Root.Add(new UiSeparator { Width = 550 });
 
         // 三个贷款方案
         var descKeys = new[] { I18nKeys.Bank_PlanDescA, I18nKeys.Bank_PlanDescB, I18nKeys.Bank_PlanDescC };
@@ -60,7 +60,7 @@ public class BankLoanMenu : UiBaseMenu
         }
 
         // 现有贷款分隔
-        Root.Add(new UiText("── " + Tools.GetI18n(I18nKeys.Bank_LoanRepayTitle) + " ──", color: Color.Gray));
+        Root.Add(new UiSeparator { Width = 550 });
 
         // 现有贷款列表
         var planNames = new[]
@@ -83,12 +83,14 @@ public class BankLoanMenu : UiBaseMenu
                 if (loan.Repaid) continue;
                 var idx = i; // capture
 
+                var total = loan.Principal + loan.InterestAccrued;
                 var line = $"[{planNames[loan.PlanType]}] ";
                 line += Tools.GetI18n(I18nKeys.Bank_LoanPrincipal)
                     .Tokens(new { amount = loan.Principal, gold }).ToString();
                 line += " | ";
                 line += Tools.GetI18n(I18nKeys.Bank_LoanInterest)
                     .Tokens(new { amount = loan.InterestAccrued, gold }).ToString();
+                line += $" | 待还: {total}{gold}";
 
                 var repayBtn = new UiButton(Tools.GetI18n(I18nKeys.Bank_Repay).ToString(),
                     () => HandleRepay(idx));
