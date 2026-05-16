@@ -11,6 +11,12 @@ public class UiText : UiElement
     public Color Color { get; set; } = Color.Black;
     public bool Shadow { get; set; } = true;
 
+    /// <summary>最小宽度，0 表不限制。用于表格列对齐。</summary>
+    public int MinWidth { get; set; }
+
+    /// <summary>水平对齐：0=左，0.5=中，1=右。</summary>
+    public float HorizontalAlignment { get; set; }
+
     public UiText(string text, SpriteFont? font = null, Color? color = null)
     {
         Text = text;
@@ -21,16 +27,20 @@ public class UiText : UiElement
     public override void Arrange()
     {
         var size = Font.MeasureString(Text);
-        Width = (int)size.X;
+        Width = Math.Max((int)size.X, MinWidth);
         Height = (int)size.Y;
     }
 
     public override void Draw(SpriteBatch b)
     {
         if (!Visible || string.IsNullOrEmpty(Text)) return;
+
+        var textSize = Font.MeasureString(Text);
+        var xOff = HorizontalAlignment * (Width - textSize.X);
+
         if (Shadow)
-            Utility.drawTextWithShadow(b, Text, Font, new Vector2(X, Y), Color);
+            Utility.drawTextWithShadow(b, Text, Font, new Vector2(X + xOff, Y), Color);
         else
-            b.DrawString(Font, Text, new Vector2(X, Y), Color);
+            b.DrawString(Font, Text, new Vector2(X + xOff, Y), Color);
     }
 }
