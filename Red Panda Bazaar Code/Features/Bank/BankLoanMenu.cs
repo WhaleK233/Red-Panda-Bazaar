@@ -52,9 +52,7 @@ public class BankLoanMenu : IClickableMenu
             var remaining = BankCalculator.GetRemainingCredit(allLoans);
             var available = BankCalculator.GetAvailableLoanAmount(t, remaining, allLoans);
 
-            // 该方案已有未还贷款则隐藏申请按钮
-            var hasActiveLoan = allLoans.Any(l => !l.Repaid && l.PlanType == t);
-            if (available <= 0 || hasActiveLoan) continue;
+            if (available <= 0) continue;
 
             _actionButtons.Add(new ClickableComponent(
                 new Rectangle(cx + 480, cy + 60 + t * 28, 60, 24), $"apply_{t}"));

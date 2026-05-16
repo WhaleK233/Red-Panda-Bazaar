@@ -361,9 +361,6 @@ public static class Bank
         var farmer = GetFarmer(playerId);
         if (farmer == null) return;
 
-        // 每种方案同时只能有一笔未还贷款
-        if (Data.Loans.Any(l => !l.Repaid && l.PlanType == planType)) return;
-
         var remaining = BankCalculator.GetRemainingCredit(Data.Loans);
         var amount = BankCalculator.GetAvailableLoanAmount(planType, remaining, Data.Loans);
         if (amount <= 0) return;
