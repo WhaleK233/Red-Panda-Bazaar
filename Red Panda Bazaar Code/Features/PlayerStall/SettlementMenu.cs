@@ -159,6 +159,14 @@ public class SettlementMenu : UiBaseMenu
             ? Tools.GetI18n(I18nKeys.PlayerStall_Collected).ToString()
             : Tools.GetI18n(I18nKeys.PlayerStall_CollectAll).ToString();
         Root.Add(new UiButton(btnText, OnCollect) { Enabled = !collected });
+
+        // 累计已交税额
+        if (PlayerStall.TotalTax > 0)
+        {
+            var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
+                .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
+            Root.Add(new UiText(totalTaxText) { HorizontalAlignment = 1f, Color = Color.Black });
+        }
     }
 
     private void OnCollect()
