@@ -82,6 +82,7 @@
   "Bank.FixedCreated": "开设了 {{days}} 天定期存款 {{amount}}{{gold}}。",
   "Bank.FixedRedeemed": "领取定期本息: {{amount}}{{gold}}",
   "Bank.FixedEarlyWithdrawn": "提前支取: {{amount}}{{gold}} (已扣除手续费)",
+  "Bank.FixedMatureReminder": "你有到期的定期存款未领取！",
   "Bank.LoanApplied": "贷款已批准: {{amount}}{{gold}} (方案{{plan}})",
   "Bank.LoanRepaid": "贷款已还清: {{amount}}{{gold}}",
   "Bank.CreditLimitReached": "信用额度已达上限！",
