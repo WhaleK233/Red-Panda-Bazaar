@@ -59,7 +59,7 @@ public class BankFixedMenu : UiBaseMenu
                     ? (Action)(() => HandleRedeem(idx))
                     : () => HandleEarly(idx);
 
-                Root.Add(new UiRow { Spacing = 20 }
+                Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
                     .Add(new UiText(line))
                     .Add(new UiButton(btnLabel, action)));
             }
