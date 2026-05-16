@@ -52,6 +52,8 @@ public class BankLoanMenu : IClickableMenu
             var remaining = BankCalculator.GetRemainingCredit(allLoans);
             var available = BankCalculator.GetAvailableLoanAmount(t, remaining, allLoans);
 
+            // 每种方案同时只能有一笔未还贷款
+            if (allLoans.Any(l => !l.Repaid && l.PlanType == t)) continue;
             if (available <= 0) continue;
 
             _actionButtons.Add(new ClickableComponent(
