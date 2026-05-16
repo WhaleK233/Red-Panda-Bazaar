@@ -20,6 +20,8 @@ public class UiButton : UiElement
         OnClick = onClick;
     }
 
+    public override bool IsFocusable => Enabled && Visible;
+
     public override void Arrange()
     {
         var size = Game1.smallFont.MeasureString(Text);
