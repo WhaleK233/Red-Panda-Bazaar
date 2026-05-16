@@ -51,7 +51,10 @@ public class BankLoanMenu : IClickableMenu
             var playerMoney = Game1.player.Money;
             var remaining = BankCalculator.GetRemainingCredit(playerMoney, Bank.GetLoans());
             var available = BankCalculator.GetAvailableLoanAmount(t, playerMoney, remaining);
-            if (available <= 0) continue;
+
+            // 该方案已有未还贷款则隐藏申请按钮
+            var hasActiveLoan = Bank.GetLoans().Any(l => !l.Repaid && l.PlanType == t);
+            if (available <= 0 || hasActiveLoan) continue;
 
             _actionButtons.Add(new ClickableComponent(
                 new Rectangle(cx + 480, cy + 60 + t * 28, 60, 24), $"apply_{t}"));
@@ -90,7 +93,10 @@ public class BankLoanMenu : IClickableMenu
             if (parts.Length >= 2 && int.TryParse(parts[1], out var idx))
                 Bank.RepayLoan(idx);
             Game1.playSound("coin");
-            exitThisMenu();
+            if (Context.IsMainPlayer)
+                Game1.activeClickableMenu = new BankLoanMenu();
+            else
+                Game1.exitActiveMenu();
             return;
         }
     }
@@ -200,7 +206,6 @@ public class BankLoanMenu : IClickableMenu
         }
 
         var listY = cy + 170;
-        var contentW = width - ContentPadding * 2;
 
         Utility.drawTextWithShadow(b, "── " + Tools.GetI18n(I18nKeys.Bank_LoanRepayTitle) + " ──",
             Game1.smallFont, new Vector2(cx, listY - 24), Color.Gray);
