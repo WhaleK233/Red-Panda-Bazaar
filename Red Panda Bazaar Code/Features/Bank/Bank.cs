@@ -360,6 +360,10 @@ public static class Bank
     {
         var farmer = GetFarmer(playerId);
         if (farmer == null) return;
+
+        // 每种方案同时只能有一笔未还贷款
+        if (Data.Loans.Any(l => !l.Repaid && l.PlanType == planType)) return;
+
         var playerMoney = farmer.Money;
         var remaining = BankCalculator.GetRemainingCredit(playerMoney, Data.Loans);
         var amount = BankCalculator.GetAvailableLoanAmount(planType, playerMoney, remaining);
