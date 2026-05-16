@@ -82,6 +82,7 @@
   "Bank.FixedCreated": "Opened a {{days}}-day fixed deposit of {{amount}}{{gold}}.",
   "Bank.FixedRedeemed": "Redeemed fixed deposit: {{amount}}{{gold}}",
   "Bank.FixedEarlyWithdrawn": "Early withdrawal: {{amount}}{{gold}} (penalty applied)",
+  "Bank.FixedMatureReminder": "You have matured fixed deposits to claim!",
   "Bank.LoanApplied": "Loan approved: {{amount}}{{gold}} (Plan {{plan}})",
   "Bank.LoanRepaid": "Loan repaid: {{amount}}{{gold}}",
   "Bank.CreditLimitReached": "Credit limit reached!",

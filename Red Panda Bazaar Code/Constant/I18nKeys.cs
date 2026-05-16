@@ -218,6 +218,7 @@ public static class I18nKeys
     public const string Bank_FixedCreated = "Bank.FixedCreated";
     public const string Bank_FixedRedeemed = "Bank.FixedRedeemed";
     public const string Bank_FixedEarlyWithdrawn = "Bank.FixedEarlyWithdrawn";
+    public const string Bank_FixedMatureReminder = "Bank.FixedMatureReminder";
     public const string Bank_LoanApplied = "Bank.LoanApplied";
     public const string Bank_LoanRepaid = "Bank.LoanRepaid";
     public const string Bank_CreditLimitReached = "Bank.CreditLimitReached";
