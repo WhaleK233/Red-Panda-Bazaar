@@ -50,6 +50,7 @@
   "Bank.FixedStatusMature": "Matured",
   "Bank.Days": "Days",
   "Bank.FixedEmpty": "No fixed deposits yet.",
+  "Bank.FixedEarlyWithdrawTip": "Tip: Early withdrawal gives half interest",
   "Bank.NewFixedAmountTitle": "Deposit Amount",
   "Bank.TaxTab": "Tax",
   "Bank.TotalTax": "Total Tax Paid: {{amount}}{{gold}}",
