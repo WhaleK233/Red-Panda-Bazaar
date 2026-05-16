@@ -27,18 +27,27 @@ public class UiColumn : UiElement
 
     public override void Arrange()
     {
-        var currentY = 0;
+        // 第一遍：测量所有子元素的高度
+        var totalH = 0;
         var maxW = 0;
         foreach (var child in Children)
         {
             child.Arrange();
-            child.X = X;
-            child.Y = Y + currentY;
             maxW = Math.Max(maxW, child.Width);
-            currentY += child.Height + Spacing;
+            totalH += child.Height + Spacing;
         }
         Width = maxW;
-        Height = currentY > 0 ? currentY - Spacing : 0;
+        Height = totalH > 0 ? totalH - Spacing : 0;
+
+        // 第二遍：设置正确坐标后向下传播
+        var currentY = 0;
+        foreach (var child in Children)
+        {
+            child.X = X;
+            child.Y = Y + currentY;
+            child.Arrange(); // 子容器用正确坐标重排后代
+            currentY += child.Height + Spacing;
+        }
     }
 
     public override void Draw(SpriteBatch b)
