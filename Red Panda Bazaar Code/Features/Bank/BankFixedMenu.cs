@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -15,15 +14,36 @@ public class BankFixedMenu : IClickableMenu
     private readonly List<ClickableComponent> _actionButtons = new();
     private readonly List<ClickableComponent> _fixedActionButtons = new();
 
+    private static int BtnH() => (int)(Game1.smallFont.MeasureString("X").Y + 20);
+
+    private static int ActionBtnW()
+    {
+        var font = Game1.smallFont;
+        var redeemW = font.MeasureString(Tools.GetI18n(I18nKeys.Bank_Redeem).ToString()).X;
+        var earlyW = font.MeasureString(Tools.GetI18n(I18nKeys.Bank_EarlyWithdraw).ToString()).X;
+        return (int)Math.Max(redeemW, earlyW) + 32;
+    }
+
+    private static int DurationButtonsTotalW()
+    {
+        var font = Game1.smallFont;
+        var days = Tools.GetI18n(I18nKeys.Bank_Days).ToString();
+        var total = 0;
+        foreach (var term in BankCalculator.FixedTermOptions)
+            total += (int)font.MeasureString($"{term}{days}").X + 32 + 10;
+        return total - 10; // last gap removed
+    }
+
     private static int CalcWidth()
     {
         var font = Game1.smallFont;
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var lineW = font.MeasureString(
             $"[1] {Tools.GetI18n(I18nKeys.Bank_FixedAmount).Tokens(new { amount = 9999999, gold })} | 112 {Tools.GetI18n(I18nKeys.Bank_Days).ToString()} | {Tools.GetI18n(I18nKeys.Bank_FixedStatusActive).ToString()}"
-        ).X + 200;
-        var w = (int)lineW + ContentPadding * 3 + 40;
-        return Math.Clamp(w, 600, Game1.uiViewport.Width - 40);
+        ).X;
+
+        var totalW = Math.Max(lineW + ActionBtnW() + 40, DurationButtonsTotalW());
+        return Math.Clamp((int)(totalW + ContentPadding * 3 + 40), 600, Game1.uiViewport.Width - 40);
     }
 
     private static int CalcHeight()
@@ -51,33 +71,33 @@ public class BankFixedMenu : IClickableMenu
 
         var cx = xPositionOnScreen + ContentPadding;
         var cy = yPositionOnScreen + TopPadding;
+        var bh = BtnH();
 
         var terms = BankCalculator.FixedTermOptions;
+        var days = Tools.GetI18n(I18nKeys.Bank_Days).ToString();
+        var offsetX = 0;
         for (var t = 0; t < terms.Length; t++)
         {
+            var label = $"{terms[t]}{days}";
+            var btnW = (int)Game1.smallFont.MeasureString(label).X + 32;
             _actionButtons.Add(new ClickableComponent(
-                new Rectangle(cx + t * 90, cy, 80, 40), $"newFixed_{terms[t]}"));
+                new Rectangle(cx + offsetX, cy, btnW, bh), $"newFixed_{terms[t]}"));
+            offsetX += btnW + 10;
         }
 
         var deposits = Bank.GetFixedDeposits();
         var listY = cy + 56;
         var contentW = width - ContentPadding * 2;
+        var actionW = ActionBtnW();
         for (var i = 0; i < deposits.Count; i++)
         {
             var d = deposits[i];
             if (d.Withdrawn) continue;
 
             var elapsed = (int)Game1.stats.DaysPlayed - d.StartDay;
-            if (elapsed >= d.TermDays)
-            {
-                _fixedActionButtons.Add(new ClickableComponent(
-                    new Rectangle(cx + contentW - 100, listY, 90, 36), $"redeem_{i}"));
-            }
-            else
-            {
-                _fixedActionButtons.Add(new ClickableComponent(
-                    new Rectangle(cx + contentW - 100, listY, 90, 36), $"early_{i}"));
-            }
+            var name = elapsed >= d.TermDays ? $"redeem_{i}" : $"early_{i}";
+            _fixedActionButtons.Add(new ClickableComponent(
+                new Rectangle(cx + contentW - actionW, listY, actionW, (int)bh), name));
             listY += 40;
         }
     }
@@ -134,12 +154,18 @@ public class BankFixedMenu : IClickableMenu
             case "redeem":
                 Bank.RedeemFixedDeposit(index);
                 Game1.playSound("coin");
-                exitThisMenu();
+                if (Context.IsMainPlayer)
+                    Game1.activeClickableMenu = new BankFixedMenu();
+                else
+                    Game1.exitActiveMenu();
                 break;
             case "early":
                 Bank.EarlyWithdrawFixedDeposit(index);
                 Game1.playSound("coin");
-                exitThisMenu();
+                if (Context.IsMainPlayer)
+                    Game1.activeClickableMenu = new BankFixedMenu();
+                else
+                    Game1.exitActiveMenu();
                 break;
         }
     }
@@ -183,7 +209,6 @@ public class BankFixedMenu : IClickableMenu
         var deposits = Bank.GetFixedDeposits();
         var listY = cy + 56;
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
-        var contentW = width - ContentPadding * 2;
 
         if (deposits.Count == 0)
         {
@@ -192,16 +217,18 @@ public class BankFixedMenu : IClickableMenu
         }
         else
         {
+            var displayIndex = 0;
             var btnIndex = 0;
             for (var i = 0; i < deposits.Count; i++)
             {
                 var d = deposits[i];
                 if (d.Withdrawn) continue;
 
+                displayIndex++;
                 var elapsed = (int)Game1.stats.DaysPlayed - d.StartDay;
                 var matured = elapsed >= d.TermDays;
 
-                var line = $"[{i + 1}] ";
+                var line = $"[{displayIndex}] ";
                 line += Tools.GetI18n(I18nKeys.Bank_FixedAmount).Tokens(new { amount = d.Amount, gold }).ToString();
                 line += $" | {d.TermDays} {Tools.GetI18n(I18nKeys.Bank_Days).ToString()}";
                 line += " | ";
@@ -239,6 +266,6 @@ public class BankFixedMenu : IClickableMenu
         IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
             x, y, w, h, Color.White, 4f);
         Utility.drawTextWithShadow(b, label, Game1.smallFont,
-            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + 8), Game1.textColor);
+            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + (h - Game1.smallFont.MeasureString(label).Y) / 2), Game1.textColor);
     }
 }
