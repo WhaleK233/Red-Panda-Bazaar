@@ -31,7 +31,7 @@ public static class Bank
 
     private static bool OnTileAction(GameLocation location, string[] args, Farmer who, Point tile)
     {
-        Game1.activeClickableMenu = new BankMenu();
+        ShowBankServiceDialogue(location);
         return false;
     }
 
@@ -45,8 +45,43 @@ public static class Bank
             (int)tile.X, (int)tile.Y, "Action", "Buildings");
         if (action != "RedPandaBazaar_BankMenu") return;
 
-        Game1.activeClickableMenu = new BankMenu();
+        ShowBankServiceDialogue(Game1.currentLocation);
         Tools.Helper.Input.Suppress(e.Button);
+    }
+
+    /// <summary>弹出业务选择对话框。</summary>
+    private static void ShowBankServiceDialogue(GameLocation location)
+    {
+        location.createQuestionDialogue(
+            Tools.GetI18n(I18nKeys.Bank_ServiceQuestion).ToString(),
+            new Response[]
+            {
+                new("Checking", Tools.GetI18n(I18nKeys.Bank_ServiceChecking).ToString()),
+                new("Fixed", Tools.GetI18n(I18nKeys.Bank_ServiceFixed).ToString()),
+                new("Loan", Tools.GetI18n(I18nKeys.Bank_ServiceLoan).ToString()),
+                new("Tax", Tools.GetI18n(I18nKeys.Bank_ServiceTax).ToString()),
+                new("Cancel", Tools.GetI18n(I18nKeys.Bank_ServiceCancel).ToString()),
+            },
+            OnBankDialogResponse);
+    }
+
+    private static void OnBankDialogResponse(Farmer who, string whichAnswer)
+    {
+        switch (whichAnswer)
+        {
+            case "Checking":
+                Game1.activeClickableMenu = new BankCheckingMenu();
+                break;
+            case "Fixed":
+                Game1.activeClickableMenu = new BankFixedMenu();
+                break;
+            case "Loan":
+                Game1.activeClickableMenu = new BankLoanMenu();
+                break;
+            case "Tax":
+                Game1.activeClickableMenu = new BankTaxMenu();
+                break;
+        }
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
@@ -93,6 +128,12 @@ public static class Bank
         {
             var rate = BankCalculator.GetDailyCheckingRate();
             Data.InterestEarned += (int)(Data.CheckingBalance * rate);
+
+            foreach (var loan in Data.Loans.Where(l => !l.Repaid))
+            {
+                var loanRate = BankCalculator.LoanDailyRate[loan.PlanType];
+                loan.InterestAccrued += (int)(loan.Principal * loanRate);
+            }
         }
 
         Data.LastInterestDay = (int)Game1.stats.DaysPlayed;
@@ -107,6 +148,11 @@ public static class Bank
     public static List<FixedDeposit> GetFixedDeposits()
     {
         return Context.IsMainPlayer ? Data.FixedDeposits.ToList() : (_clientCache?.FixedDeposits.ToList() ?? new());
+    }
+
+    public static List<LoanAccount> GetLoans()
+    {
+        return Context.IsMainPlayer ? Data.Loans.ToList() : (_clientCache?.Loans.ToList() ?? new());
     }
 
     // ====== 操作接口 ======
@@ -166,8 +212,8 @@ public static class Bank
         if (amount <= 0 || !BankCalculator.FixedTermOptions.Contains(termDays)) return;
         if (Context.IsMainPlayer)
         {
-            if (Data.CheckingBalance < amount) return;
-            Data.CheckingBalance -= amount;
+            if (Game1.player.Money < amount) return;
+            Game1.player.Money -= amount;
             Data.FixedDeposits.Add(new FixedDeposit
             {
                 Amount = amount,
@@ -179,6 +225,8 @@ public static class Bank
         }
         else
         {
+            if (Game1.player.Money < amount) return;
+            Game1.player.Money -= amount;
             SendActionRequest("newFixed", amount, termDays);
         }
     }
@@ -206,6 +254,33 @@ public static class Bank
         else
         {
             SendActionRequest("earlyWithdraw", 0, depositIndex);
+        }
+    }
+
+    public static void ApplyLoan(int planType)
+    {
+        if (planType < 0 || planType > 2) return;
+        if (Context.IsMainPlayer)
+        {
+            ExecuteApplyLoan(planType, null);
+            BroadcastSyncData();
+        }
+        else
+        {
+            SendActionRequest("applyLoan", 0, planType);
+        }
+    }
+
+    public static void RepayLoan(int loanIndex)
+    {
+        if (Context.IsMainPlayer)
+        {
+            ExecuteRepayLoan(loanIndex, null);
+            BroadcastSyncData();
+        }
+        else
+        {
+            SendActionRequest("repayLoan", 0, loanIndex);
         }
     }
 
@@ -242,8 +317,9 @@ public static class Bank
 
     private static void ExecuteCreateFixedDeposit(int amount, int termDays, long? playerId)
     {
-        if (Data.CheckingBalance < amount) return;
-        Data.CheckingBalance -= amount;
+        var farmer = GetFarmer(playerId);
+        if (farmer == null || farmer.Money < amount) return;
+        farmer.Money -= amount;
         Data.FixedDeposits.Add(new FixedDeposit
         {
             Amount = amount,
@@ -280,6 +356,41 @@ public static class Bank
         deposit.Withdrawn = true;
     }
 
+    private static void ExecuteApplyLoan(int planType, long? playerId)
+    {
+        var farmer = GetFarmer(playerId);
+        if (farmer == null) return;
+        var playerMoney = farmer.Money;
+        var remaining = BankCalculator.GetRemainingCredit(playerMoney, Data.Loans);
+        var amount = BankCalculator.GetAvailableLoanAmount(planType, playerMoney, remaining);
+        if (amount <= 0) return;
+
+        Data.Loans.Add(new LoanAccount
+        {
+            PlanType = planType,
+            Principal = amount,
+            StartDay = (int)Game1.stats.DaysPlayed,
+            InterestAccrued = 0,
+            Repaid = false
+        });
+        farmer.Money += amount;
+    }
+
+    private static void ExecuteRepayLoan(int loanIndex, long? playerId)
+    {
+        if (loanIndex < 0 || loanIndex >= Data.Loans.Count) return;
+        var loan = Data.Loans[loanIndex];
+        if (loan.Repaid) return;
+
+        var total = loan.Principal + loan.InterestAccrued;
+        var farmer = GetFarmer(playerId);
+        if (farmer == null || farmer.Money < total) return;
+
+        farmer.Money -= total;
+        loan.Repaid = true;
+    }
+
+
     // ====== 多人同步 ======
 
     private static void SendActionRequest(string action, int amount, int param)
@@ -303,6 +414,7 @@ public static class Bank
             CheckingBalance = Data.CheckingBalance,
             InterestEarned = Data.InterestEarned,
             FixedDeposits = Data.FixedDeposits,
+            Loans = Data.Loans,
             LastInterestDay = Data.LastInterestDay
         };
         Tools.Helper.Multiplayer.SendMessage(
@@ -326,6 +438,7 @@ public static class Bank
                         CheckingBalance = syncData.CheckingBalance,
                         InterestEarned = syncData.InterestEarned,
                         FixedDeposits = syncData.FixedDeposits,
+                        Loans = syncData.Loans,
                         LastInterestDay = syncData.LastInterestDay
                     };
                 }
@@ -358,6 +471,12 @@ public static class Bank
                         break;
                     case "earlyWithdraw":
                         ExecuteEarlyWithdrawFixedDeposit(request.Param, pid);
+                        break;
+                    case "applyLoan":
+                        ExecuteApplyLoan(request.Param, pid);
+                        break;
+                    case "repayLoan":
+                        ExecuteRepayLoan(request.Param, pid);
                         break;
                 }
 
