@@ -162,6 +162,7 @@ public static class I18nKeys
     public const string Bank_CheckingTab = "Bank.CheckingTab";
     public const string Bank_CheckingBalance = "Bank.CheckingBalance";
     public const string Bank_InterestEarned = "Bank.InterestEarned";
+    public const string Bank_TodayInterest = "Bank.TodayInterest";
     public const string Bank_ClaimInterest = "Bank.ClaimInterest";
     public const string Bank_TodayRate = "Bank.TodayRate";
     public const string Bank_Deposit = "Bank.Deposit";

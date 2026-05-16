@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -13,19 +12,31 @@ public class BankCheckingMenu : IClickableMenu
     private const int ContentPadding = 24;
     private const int TopPadding = 40;
 
+    private static int BtnH() => (int)(Game1.smallFont.MeasureString("X").Y + 20);
+
+    private static int DepositBtnW() => (int)(Game1.smallFont.MeasureString(Tools.GetI18n(I18nKeys.Bank_Deposit).ToString()).X + 32);
+    private static int WithdrawBtnW() => (int)(Game1.smallFont.MeasureString(Tools.GetI18n(I18nKeys.Bank_Withdraw).ToString()).X + 32);
+
     private static int CalcWidth()
     {
         var font = Game1.smallFont;
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
-        var w = font.MeasureString(
-            Tools.GetI18n(I18nKeys.Bank_CheckingBalance).Tokens(new { amount = 9999999, gold }).ToString()
-        ).X + ContentPadding * 3 + 200;
-        return Math.Clamp((int)w, 600, Game1.uiViewport.Width - 40);
+
+        var maxW = new[]
+        {
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_CheckingBalance).Tokens(new { amount = 9999999, gold }).ToString()).X,
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_TodayInterest).Tokens(new { amount = 9999999, gold }).ToString()).X,
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_InterestEarned).Tokens(new { amount = 9999999, gold }).ToString()).X,
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_TodayRate).Tokens(new { rate = 9999.9999 }).ToString()).X,
+            DepositBtnW() + 20 + WithdrawBtnW(),
+        }.Max();
+
+        return Math.Clamp((int)(maxW + ContentPadding * 3 + 40), 400, Game1.uiViewport.Width - 40);
     }
 
     private static int CalcHeight()
     {
-        return Math.Clamp(240, 200, Game1.uiViewport.Height - 40);
+        return Math.Clamp(TopPadding + ContentPadding + 120 + BtnH() + ContentPadding * 2, 200, Game1.uiViewport.Height - 40);
     }
 
     public BankCheckingMenu()
@@ -43,20 +54,9 @@ public class BankCheckingMenu : IClickableMenu
 
         var cx = xPositionOnScreen + ContentPadding;
         var cy = yPositionOnScreen + TopPadding;
+        var bh = BtnH();
 
-        if (Bank.GetInterestEarned() > 0)
-        {
-            var claimBounds = new Rectangle(cx + 300, cy + 48, 100, 40);
-            if (claimBounds.Contains(x, y))
-            {
-                Bank.ClaimInterest();
-                Game1.playSound("coin");
-                exitThisMenu();
-                return;
-            }
-        }
-
-        var depositBounds = new Rectangle(cx, cy + 120, 120, 40);
+        var depositBounds = new Rectangle(cx, cy + 120, DepositBtnW(), bh);
         if (depositBounds.Contains(x, y))
         {
             Game1.activeClickableMenu = new NumberSelectionMenu(
@@ -77,7 +77,7 @@ public class BankCheckingMenu : IClickableMenu
             return;
         }
 
-        var withdrawBounds = new Rectangle(cx + 140, cy + 120, 120, 40);
+        var withdrawBounds = new Rectangle(cx + DepositBtnW() + 20, cy + 120, WithdrawBtnW(), bh);
         if (withdrawBounds.Contains(x, y))
         {
             Game1.activeClickableMenu = new NumberSelectionMenu(
@@ -125,7 +125,8 @@ public class BankCheckingMenu : IClickableMenu
         var cy = yPositionOnScreen + TopPadding;
 
         var balance = Bank.GetCheckingBalance();
-        var interest = Bank.GetInterestEarned();
+        var totalInterest = Bank.GetInterestEarned();
+        var todayInterest = (long)(balance * BankCalculator.GetDailyCheckingRate());
         var rate = BankCalculator.GetDailyCheckingRate();
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
 
@@ -134,26 +135,20 @@ public class BankCheckingMenu : IClickableMenu
             Game1.dialogueFont, new Vector2(cx, cy), Color.Black);
 
         Utility.drawTextWithShadow(b,
-            Tools.GetI18n(I18nKeys.Bank_InterestEarned).Tokens(new { amount = interest, gold }).ToString(),
+            Tools.GetI18n(I18nKeys.Bank_TodayInterest).Tokens(new { amount = todayInterest, gold }).ToString(),
             Game1.smallFont, new Vector2(cx, cy + 52), Color.Black);
 
-        if (interest > 0)
-        {
-            var claimBounds = new Rectangle(cx + 300, cy + 48, 100, 40);
-            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
-                claimBounds.X, claimBounds.Y, claimBounds.Width, claimBounds.Height, Color.White, 4f);
-            var claimLabel = Tools.GetI18n(I18nKeys.Bank_ClaimInterest).ToString();
-            Utility.drawTextWithShadow(b, claimLabel, Game1.smallFont,
-                new Vector2(claimBounds.X + (claimBounds.Width - Game1.smallFont.MeasureString(claimLabel).X) / 2,
-                    claimBounds.Y + 8), Game1.textColor);
-        }
+        Utility.drawTextWithShadow(b,
+            Tools.GetI18n(I18nKeys.Bank_InterestEarned).Tokens(new { amount = totalInterest, gold }).ToString(),
+            Game1.smallFont, new Vector2(cx, cy + 76), Color.Black);
 
         Utility.drawTextWithShadow(b,
             Tools.GetI18n(I18nKeys.Bank_TodayRate).Tokens(new { rate = (rate * 100).ToString("F4") }).ToString(),
-            Game1.smallFont, new Vector2(cx, cy + 90), Color.Gray);
+            Game1.smallFont, new Vector2(cx, cy + 100), Color.Gray);
 
-        DrawButton(b, cx, cy + 120, 120, 40, Tools.GetI18n(I18nKeys.Bank_Deposit).ToString());
-        DrawButton(b, cx + 140, cy + 120, 120, 40, Tools.GetI18n(I18nKeys.Bank_Withdraw).ToString());
+        var bh = BtnH();
+        DrawButton(b, cx, cy + 120, DepositBtnW(), bh, Tools.GetI18n(I18nKeys.Bank_Deposit).ToString());
+        DrawButton(b, cx + DepositBtnW() + 20, cy + 120, WithdrawBtnW(), bh, Tools.GetI18n(I18nKeys.Bank_Withdraw).ToString());
 
         base.draw(b);
         drawMouse(b);
@@ -164,6 +159,6 @@ public class BankCheckingMenu : IClickableMenu
         IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
             x, y, w, h, Color.White, 4f);
         Utility.drawTextWithShadow(b, label, Game1.smallFont,
-            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + 8), Game1.textColor);
+            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + (h - Game1.smallFont.MeasureString(label).Y) / 2), Game1.textColor);
     }
 }

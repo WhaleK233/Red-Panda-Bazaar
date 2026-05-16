@@ -15,16 +15,37 @@ public class BankLoanMenu : IClickableMenu
     private readonly List<ClickableComponent> _actionButtons = new();
     private readonly List<ClickableComponent> _loanActionButtons = new();
 
+    private static int BtnH() => (int)(Game1.smallFont.MeasureString("X").Y + 20);
+
+    private static int ApplyBtnW() => (int)(Game1.smallFont.MeasureString(Tools.GetI18n(I18nKeys.Bank_Apply).ToString()).X + 32);
+    private static int RepayBtnW() => (int)(Game1.smallFont.MeasureString(Tools.GetI18n(I18nKeys.Bank_Repay).ToString()).X + 32);
+
     private static int CalcWidth()
     {
-        return Math.Clamp(640, 600, Game1.uiViewport.Width - 40);
+        var font = Game1.smallFont;
+        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
+
+        var descKeys = new[] { I18nKeys.Bank_PlanDescA, I18nKeys.Bank_PlanDescB, I18nKeys.Bank_PlanDescC };
+        var maxDescW = descKeys.Max(k =>
+            font.MeasureString(Tools.GetI18n(k).Tokens(new { amount = 9999999, rate = 99.99, gold }).ToString()).X);
+
+        var textLines = new[]
+        {
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_CreditTotal).Tokens(new { amount = 99999999, gold }).ToString()).X,
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_CreditUsed).Tokens(new { amount = 99999999, gold }).ToString()).X,
+            font.MeasureString(Tools.GetI18n(I18nKeys.Bank_CreditRemain).Tokens(new { amount = 99999999, gold }).ToString()).X,
+            font.MeasureString($"[{Tools.GetI18n(I18nKeys.Bank_PlanA).ToString()}] {Tools.GetI18n(I18nKeys.Bank_LoanPrincipal).Tokens(new { amount = 99999999, gold })} | {Tools.GetI18n(I18nKeys.Bank_LoanInterest).Tokens(new { amount = 99999999, gold })}").X,
+            maxDescW + 20 + ApplyBtnW(),
+        };
+
+        return Math.Clamp((int)(textLines.Max() + ContentPadding * 3 + 40), 600, Game1.uiViewport.Width - 40);
     }
 
     private static int CalcHeight()
     {
         var loans = Bank.GetLoans().Count(l => !l.Repaid);
         var listH = 56 + 40 * Math.Min(loans + 1, 5) + 60;
-        var h = TopPadding + ContentPadding + 160 + listH + ContentPadding + 40;
+        var h = TopPadding + ContentPadding + 240 + listH + ContentPadding + 40;
         return Math.Clamp(h, 200, Game1.uiViewport.Height - 40);
     }
 
@@ -47,28 +68,31 @@ public class BankLoanMenu : IClickableMenu
         var cy = yPositionOnScreen + TopPadding;
 
         var allLoans = Bank.GetLoans();
+        var contentW = width - ContentPadding * 2;
+        var applyW = ApplyBtnW();
+        var repayW = RepayBtnW();
+        var bh = BtnH();
+
         for (var t = 0; t < 3; t++)
         {
             var remaining = BankCalculator.GetRemainingCredit(allLoans);
             var available = BankCalculator.GetAvailableLoanAmount(t, remaining, allLoans);
 
-            // 每种方案同时只能有一笔未还贷款
             if (allLoans.Any(l => !l.Repaid && l.PlanType == t)) continue;
             if (available <= 0) continue;
 
             _actionButtons.Add(new ClickableComponent(
-                new Rectangle(cx + 480, cy + 60 + t * 28, 60, 24), $"apply_{t}"));
+                new Rectangle(cx + contentW - applyW, cy + 90 + t * 40, applyW, (int)bh), $"apply_{t}"));
         }
 
         var loans = Bank.GetLoans();
-        var listY = cy + 170;
-        var contentW = width - ContentPadding * 2;
+        var listY = cy + 240;
         for (var i = 0; i < loans.Count; i++)
         {
             if (loans[i].Repaid) continue;
 
             _loanActionButtons.Add(new ClickableComponent(
-                new Rectangle(cx + contentW - 90, listY, 70, 36), $"repay_{i}"));
+                new Rectangle(cx + contentW - repayW, listY, repayW, (int)bh), $"repay_{i}"));
 
             listY += 40;
         }
@@ -160,13 +184,13 @@ public class BankLoanMenu : IClickableMenu
             Game1.smallFont, new Vector2(cx, cy), Color.Black);
         Utility.drawTextWithShadow(b,
             Tools.GetI18n(I18nKeys.Bank_CreditUsed).Tokens(new { amount = Math.Max(0, usedCredit), gold }).ToString(),
-            Game1.smallFont, new Vector2(cx + 260, cy), Color.DarkRed);
+            Game1.smallFont, new Vector2(cx, cy + 24), Color.DarkRed);
         Utility.drawTextWithShadow(b,
             Tools.GetI18n(I18nKeys.Bank_CreditRemain).Tokens(new { amount = Math.Max(0, remaining), gold }).ToString(),
-            Game1.smallFont, new Vector2(cx + 420, cy), Color.DarkGreen);
+            Game1.smallFont, new Vector2(cx, cy + 48), Color.DarkGreen);
 
         Utility.drawTextWithShadow(b, "── " + Tools.GetI18n(I18nKeys.Bank_LoanTab) + " ──",
-            Game1.smallFont, new Vector2(cx, cy + 32), Color.Gray);
+            Game1.smallFont, new Vector2(cx, cy + 76), Color.Gray);
 
         var planLabels = new[]
         {
@@ -186,7 +210,7 @@ public class BankLoanMenu : IClickableMenu
             var ratePercent = (BankCalculator.LoanDailyRate[t] * 100).ToString("F2");
             var avail = BankCalculator.GetAvailableLoanAmount(t,
                 BankCalculator.GetRemainingCredit(allLoans), allLoans);
-            var yPos = cy + 60 + t * 28;
+            var yPos = cy + 100 + t * 40;
 
             Utility.drawTextWithShadow(b,
                 Tools.GetI18n(planDescKeys[t])
@@ -205,7 +229,7 @@ public class BankLoanMenu : IClickableMenu
             }
         }
 
-        var listY = cy + 170;
+        var listY = cy + 240;
 
         Utility.drawTextWithShadow(b, "── " + Tools.GetI18n(I18nKeys.Bank_LoanRepayTitle) + " ──",
             Game1.smallFont, new Vector2(cx, listY - 24), Color.Gray);
@@ -255,6 +279,6 @@ public class BankLoanMenu : IClickableMenu
         IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
             x, y, w, h, Color.White, 4f);
         Utility.drawTextWithShadow(b, label, Game1.smallFont,
-            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + 8), Game1.textColor);
+            new Vector2(x + (w - Game1.smallFont.MeasureString(label).X) / 2, y + (h - Game1.smallFont.MeasureString(label).Y) / 2), Game1.textColor);
     }
 }
