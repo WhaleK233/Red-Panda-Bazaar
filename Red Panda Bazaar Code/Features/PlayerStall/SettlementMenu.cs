@@ -18,7 +18,7 @@ public class SettlementMenu : UiBaseMenu
 
     private readonly List<SoldEntry> _entries = new();
     private readonly int _totalEarnings;
-    private int[] _colWidths = Array.Empty<int>();
+    private int _tableWidth;
 
     private sealed class SoldEntry
     {
@@ -80,16 +80,17 @@ public class SettlementMenu : UiBaseMenu
     private void BuildTable()
     {
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
+        var unknownDate = Tools.GetI18n(I18nKeys.PlayerStall_DateUnknown).ToString();
 
-        // 计算列宽
+        // 列标题
         var stallH = Tools.GetI18n(I18nKeys.PlayerStall_ColHeader_Stall).ToString();
         var itemH = Tools.GetI18n(I18nKeys.PlayerStall_ColHeader_Item).ToString();
         var unitH = Tools.GetI18n(I18nKeys.PlayerStall_UnitPrice).ToString();
         var qtyH = Tools.GetI18n(I18nKeys.PlayerStall_ColHeader_Qty).ToString();
         var priceH = Tools.GetI18n(I18nKeys.PlayerStall_ColHeader_Price).ToString();
         var timeH = Tools.GetI18n(I18nKeys.PlayerStall_ColHeader_Time).ToString();
-        var unknownDate = Tools.GetI18n(I18nKeys.PlayerStall_DateUnknown).ToString();
 
+        // 计算列宽
         var stallW = CalcMaxWidth(stallH, e => e.StallName) + ColPadding;
         var qtyW = CalcMaxWidth(qtyH, e => e.Amount.ToString()) + ColPadding;
         var unitW = CalcMaxWidth(unitH, e => $"{e.UnitPrice}{gold}") + ColPadding;
@@ -100,41 +101,45 @@ public class SettlementMenu : UiBaseMenu
         var totalKnownW = stallW + qtyW + unitW + priceW + dateW + ColGap * 4;
         var itemW = Math.Max(MinItemW, _entries.Max(e =>
             (int)Game1.smallFont.MeasureString(e.ItemName).X + ColPadding));
-        // 如果总宽超出合理范围，压缩 itemW
         var maxExpectedW = (int)(Game1.uiViewport.Width * 0.55);
         var surplus = totalKnownW + itemW - maxExpectedW;
         if (surplus > 0)
             itemW = Math.Max(MinItemW, itemW - surplus);
 
-        _colWidths = new[] { stallW, itemW, unitW, qtyW, priceW, dateW };
+        _tableWidth = stallW + itemW + unitW + qtyW + priceW + dateW + ColGap * 5;
 
-        // 表头
-        Root.Add(new UiRow { Spacing = ColGap }
-            .Add(Cell(stallH, stallW))
-            .Add(Cell(itemH, itemW))
-            .Add(Cell(unitH, unitW, right: true))
-            .Add(Cell(qtyH, qtyW, right: true))
-            .Add(Cell(priceH, priceW, right: true))
-            .Add(Cell(timeH, dateW)));
+        // 表格
+        var table = new UiTable
+        {
+            Spacing = ColGap,
+            ScrollMaxHeight = ScrollMaxH,
+            ShowHeader = true,
+        };
 
-        // 数据行
-        var listColumn = new UiColumn();
+        table.Columns.Add(new() { Header = stallH, Width = stallW, Align = UiAlign.Center });
+        table.Columns.Add(new() { Header = itemH, Width = itemW, Align = UiAlign.Center });
+        table.Columns.Add(new() { Header = unitH, Width = unitW, Align = UiAlign.Center });
+        table.Columns.Add(new() { Header = qtyH, Width = qtyW, Align = UiAlign.Center });
+        table.Columns.Add(new() { Header = priceH, Width = priceW, Align = UiAlign.Center, Bold = true });
+        table.Columns.Add(new() { Header = timeH, Width = dateW, Align = UiAlign.Center, Bold = true });
+
         foreach (var entry in _entries)
         {
             var dateStr = CalcDaysSinceSold(entry.SoldDate)?.ToString() ?? unknownDate;
-            listColumn.Add(new UiRow { Spacing = ColGap }
-                .Add(Cell(entry.StallName, stallW))
-                .Add(Cell(entry.ItemName, itemW))
-                .Add(Cell($"{entry.UnitPrice}{gold}", unitW, right: true))
-                .Add(Cell(entry.Amount.ToString(), qtyW, right: true))
-                .Add(Cell($"{entry.Price}{gold}", priceW, right: true, bold: true))
-                .Add(Cell(dateStr, dateW, bold: true)));
+            table.AddRow(
+                entry.StallName,
+                entry.ItemName,
+                $"{entry.UnitPrice}{gold}",
+                entry.Amount.ToString(),
+                $"{entry.Price}{gold}",
+                dateStr
+            );
         }
-        Root.Add(new UiScrollContainer { Child = listColumn, MaxHeight = ScrollMaxH });
+
+        Root.Add(table);
 
         // 分隔线
-        var totalW = _colWidths.Sum() + ColGap * (_colWidths.Length - 1);
-        Root.Add(new UiSeparator { Width = totalW });
+        Root.Add(new UiSeparator { Width = _tableWidth });
 
         // 税收
         var taxAmount = (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate);
@@ -185,21 +190,10 @@ public class SettlementMenu : UiBaseMenu
         if (_entries.Count == 0)
             return new Point(300, 80);
 
-        var totalW = _colWidths.Sum() + ColGap * (_colWidths.Length - 1);
-        return new Point(totalW + ContentPadding * 2, 120 + ScrollMaxH);
+        return new Point(_tableWidth + ContentPadding * 2, 120 + ScrollMaxH);
     }
 
     // ---- 辅助方法 ----
-
-    private static UiText Cell(string text, int width, bool right = false, bool bold = false)
-    {
-        return new UiText(text)
-        {
-            MinWidth = width,
-            HorizontalAlignment = right ? UiAlign.Right : UiAlign.Left,
-            Color = bold ? Color.Black : Game1.textColor
-        };
-    }
 
     private int CalcMaxWidth(string header, Func<SoldEntry, string> valueFn)
     {
