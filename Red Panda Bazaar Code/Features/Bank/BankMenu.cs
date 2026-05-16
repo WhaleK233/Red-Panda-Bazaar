@@ -14,16 +14,15 @@ public class BankMenu : IClickableMenu
     private readonly string[] _tabLabels;
     private readonly List<ClickableComponent> _tabButtons = new();
 
-    // 三种按钮列表分开管理，避免同名冲突
     private readonly List<ClickableComponent> _actionButtons = new();
-    private readonly List<ClickableComponent> _loanRepayButtons = new();
     private readonly List<ClickableComponent> _fixedActionButtons = new();
 
-    private const int TabCount = 4;
+    private const int TabCount = 3;
     private const int TabHeight = 48;
+    private const int TabTopOffset = 24; // 页签距菜单顶部间距
+    private const int TabSideMargin = 24; // 页签左右距菜单边框间距
     private const int ContentPadding = 24;
     private const int TabGap = 4;
-    private const int PlanPanelHeight = 70;
 
     /// <summary>根据各页签内容计算所需宽度。</summary>
     private static int CalcWidth()
@@ -32,36 +31,27 @@ public class BankMenu : IClickableMenu
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var maxAmount = 9999999;
 
-        // 三个信用额度项并列展示，取总宽度
-        var creditW = new[]
-        {
-            Tools.GetI18n(I18nKeys.Bank_CreditTotal).Tokens(new { amount = maxAmount, gold }).ToString(),
-            Tools.GetI18n(I18nKeys.Bank_CreditUsed).Tokens(new { amount = maxAmount, gold }).ToString(),
-            Tools.GetI18n(I18nKeys.Bank_CreditRemain).Tokens(new { amount = maxAmount, gold }).ToString()
-        }.Sum(t => font.MeasureString(t).X + 20);
+        // 取各页签最大内容宽度作为菜单宽度基准
+        var checkingW = font.MeasureString(
+            Tools.GetI18n(I18nKeys.Bank_CheckingBalance).Tokens(new { amount = maxAmount, gold }).ToString()
+        ).X;
 
-        // 方案描述（最长的是方案C）
-        var maxRate = 0.12;
-        var descW = font.MeasureString(
-            Tools.GetI18n(I18nKeys.Bank_PlanDescC)
-                .Tokens(new { amount = maxAmount, gold, rate = maxRate.ToString("F2") }).ToString()
-        ).X + 140; // + apply button width
+        var fixedW = font.MeasureString(
+            $"[1] {Tools.GetI18n(I18nKeys.Bank_FixedAmount).Tokens(new { amount = maxAmount, gold })} | 112 {Tools.GetI18n(I18nKeys.Bank_Days).ToString()} | {Tools.GetI18n(I18nKeys.Bank_FixedStatusActive).ToString()}"
+        ).X + 200;
 
-        // 贷款列表行
-        var loanW = font.MeasureString(
-            $"[A] {Tools.GetI18n(I18nKeys.Bank_LoanPrincipal).Tokens(new { amount = maxAmount, gold })} | " +
-            $"{Tools.GetI18n(I18nKeys.Bank_LoanInterest).Tokens(new { amount = maxAmount, gold })} | " +
-            $"{Tools.GetI18n(I18nKeys.Bank_LoanLockDays).Tokens(new { days = 7 })})"
-        ).X + 100;
+        var taxW = font.MeasureString(
+            Tools.GetI18n(I18nKeys.Bank_TotalTax).Tokens(new { amount = maxAmount, gold }).ToString()
+        ).X;
 
-        var w = (int)Math.Max(creditW, Math.Max(descW, loanW)) + ContentPadding * 3 + 40;
+        var w = (int)Math.Max(checkingW, Math.Max(fixedW, taxW)) + ContentPadding * 3 + 40;
         return Math.Clamp(w, 600, Game1.uiViewport.Width - 40);
     }
 
     /// <summary>根据各页签内容计算所需高度。</summary>
     private static int CalcHeight()
     {
-        var baseH = 16 + TabHeight + ContentPadding; // 标题上方 + 页签 + 内容上间距
+        var baseH = TabTopOffset + TabHeight + ContentPadding; // 标题上方 + 页签 + 内容上间距
         var bottomPad = ContentPadding + 40; // 底部间距 + 关闭按钮
 
         // 活期页签：余额 + 利息 + 利率 + 按钮区
@@ -70,17 +60,10 @@ public class BankMenu : IClickableMenu
         // 定期页签：按钮 + 列表行（最多假设 5 笔）
         var fixedH = 56 + 40 * Math.Min(Bank.GetFixedDeposits().Count + 1, 5) + 60;
 
-        // 贷款页签（一般最高）：信用额度 + 3 方案面板 + 分隔 + 贷款列表
-        var planArea = 44 + 3 * (PlanPanelHeight + 20);
-        var loanCount = Bank.GetLoans().Count(l => !l.Repaid);
-        var loanListTop = planArea + 20;
-        var loanArea = loanListTop + 8 + Math.Max(loanCount, 1) * 40;
-        var loanH = loanArea + ContentPadding;
-
         // 税收页签：一行文本
         var taxH = 60;
 
-        var h = baseH + Math.Max(checkingH, Math.Max(fixedH, Math.Max(loanH, taxH))) + bottomPad;
+        var h = baseH + Math.Max(checkingH, Math.Max(fixedH, taxH)) + bottomPad;
         return Math.Clamp(h, 200, Game1.uiViewport.Height - 40);
     }
 
@@ -96,15 +79,15 @@ public class BankMenu : IClickableMenu
         {
             Tools.GetI18n(I18nKeys.Bank_CheckingTab).ToString(),
             Tools.GetI18n(I18nKeys.Bank_FixedTab).ToString(),
-            Tools.GetI18n(I18nKeys.Bank_LoanTab).ToString(),
             Tools.GetI18n(I18nKeys.Bank_TaxTab).ToString()
         };
 
-        var tabWidth = (width - TabGap * (TabCount - 1)) / TabCount;
+        var availableWidth = width - TabSideMargin * 2;
+        var tabWidth = (availableWidth - TabGap * (TabCount - 1)) / TabCount;
         for (var i = 0; i < TabCount; i++)
         {
             _tabButtons.Add(new ClickableComponent(
-                new Rectangle(xPositionOnScreen + (tabWidth + TabGap) * i, yPositionOnScreen + 16, tabWidth, TabHeight),
+                new Rectangle(xPositionOnScreen + TabSideMargin + (tabWidth + TabGap) * i, yPositionOnScreen + TabTopOffset, tabWidth, TabHeight),
                 $"tab_{i}"));
         }
 
@@ -115,11 +98,10 @@ public class BankMenu : IClickableMenu
     private void RefreshActionButtons()
     {
         _actionButtons.Clear();
-        _loanRepayButtons.Clear();
         _fixedActionButtons.Clear();
 
         var contentX = xPositionOnScreen + ContentPadding;
-        var contentY = yPositionOnScreen + 16 + TabHeight + ContentPadding;
+        var contentY = yPositionOnScreen + TabTopOffset + TabHeight + ContentPadding;
         var contentW = width - ContentPadding * 2;
 
         switch (_currentTab)
@@ -162,27 +144,6 @@ public class BankMenu : IClickableMenu
                 }
                 break;
             }
-            case 2:
-            {
-                for (var p = 0; p < 3; p++)
-                {
-                    var applyBtn = new ClickableComponent(
-                        new Rectangle(contentX + contentW - 120, contentY + 20 + p * 80, 100, 36), $"apply_{p}");
-                    _actionButtons.Add(applyBtn);
-                }
-
-                var loans = Bank.GetLoans();
-                var loanListY = contentY + 280;
-                for (var i = 0; i < loans.Count; i++)
-                {
-                    if (loans[i].Repaid) continue;
-                    var repayBtn = new ClickableComponent(
-                        new Rectangle(contentX + contentW - 100, loanListY, 80, 36), $"repay_{i}");
-                    _loanRepayButtons.Add(repayBtn);
-                    loanListY += 40;
-                }
-                break;
-            }
         }
     }
 
@@ -209,13 +170,6 @@ public class BankMenu : IClickableMenu
             return;
         }
 
-        foreach (var btn in _loanRepayButtons)
-        {
-            if (!btn.bounds.Contains(x, y)) continue;
-            HandleLoanRepay(btn.name);
-            return;
-        }
-
         foreach (var btn in _fixedActionButtons)
         {
             if (!btn.bounds.Contains(x, y)) continue;
@@ -224,7 +178,7 @@ public class BankMenu : IClickableMenu
         }
     }
 
-    /// <summary>处理页签主按钮事件：存/取/领/开/贷。</summary>
+    /// <summary>处理页签主按钮事件：存/取/领/开。</summary>
     private void HandleActionButton(string name)
     {
         switch (name)
@@ -244,7 +198,6 @@ public class BankMenu : IClickableMenu
                         {
                             Bank.Deposit(number);
                             Game1.playSound("coin");
-                            // 主机同步完成可直接刷新，客机需等主机广播
                             if (Context.IsMainPlayer)
                                 Game1.activeClickableMenu = new BankMenu();
                             else
@@ -288,22 +241,6 @@ public class BankMenu : IClickableMenu
 
             case "newFixed":
                 ShowFixedTermSelection();
-                break;
-
-            case "apply_0":
-                Bank.ApplyLoan(0);
-                Game1.playSound("coin");
-                exitThisMenu();
-                break;
-            case "apply_1":
-                Bank.ApplyLoan(1);
-                Game1.playSound("coin");
-                exitThisMenu();
-                break;
-            case "apply_2":
-                Bank.ApplyLoan(2);
-                Game1.playSound("coin");
-                exitThisMenu();
                 break;
         }
     }
@@ -357,67 +294,6 @@ public class BankMenu : IClickableMenu
             defaultNumber: Math.Min(100, Bank.GetCheckingBalance()));
     }
 
-    /// <summary>方案A弹部分还款输入框，方案B/C直接全额还，方案C需检查锁定期。</summary>
-    private void HandleLoanRepay(string name)
-    {
-        var parts = name.Split('_');
-        if (parts.Length < 2 || !int.TryParse(parts[1], out var index)) return;
-
-        var loans = Bank.GetLoans();
-        if (index < 0 || index >= loans.Count) return;
-        var loan = loans[index];
-        if (loan.Repaid) return;
-
-        if (loan.PlanType == 2)
-        {
-            var elapsed = (int)Game1.stats.DaysPlayed - loan.StartDay;
-            if (elapsed < 7)
-            {
-                Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Bank_LockedCantRepay).ToString());
-                return;
-            }
-        }
-
-        if (loan.PlanType == 0)
-        {
-            var totalDebt = loan.Principal + loan.InterestAccrued;
-            Game1.activeClickableMenu = new NumberSelectionMenu(
-                Tools.GetI18n(I18nKeys.Bank_RepayPartTitle).ToString(),
-                (number, price, who) =>
-                {
-                    if (number > 0)
-                    {
-                        Bank.RepayLoanPartial(index, number);
-                        Game1.playSound("coin");
-                        if (Context.IsMainPlayer)
-                            Game1.activeClickableMenu = new BankMenu();
-                        else
-                            Game1.exitActiveMenu();
-                    }
-                    else
-                    {
-                        Game1.activeClickableMenu = new BankMenu();
-                    }
-                },
-                price: -1,
-                minValue: 1,
-                maxValue: Math.Max(1, Math.Min(totalDebt, Game1.player.Money)),
-                defaultNumber: Math.Min(100, totalDebt));
-        }
-        else
-        {
-            var total = loan.Principal + loan.InterestAccrued;
-            if (Game1.player.Money < total)
-            {
-                Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Bank_NoMoney).ToString());
-                return;
-            }
-            Bank.RepayLoan(index);
-            Game1.playSound("coin");
-            exitThisMenu();
-        }
-    }
-
     private void HandleFixedAction(string name)
     {
         var parts = name.Split('_');
@@ -436,6 +312,29 @@ public class BankMenu : IClickableMenu
                 exitThisMenu();
                 break;
         }
+    }
+
+    public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+    {
+        base.gameWindowSizeChanged(oldBounds, newBounds);
+        width = CalcWidth();
+        height = CalcHeight();
+        xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
+        yPositionOnScreen = (Game1.uiViewport.Height - height) / 2;
+
+        initializeUpperRightCloseButton();
+
+        _tabButtons.Clear();
+        var availableWidth = width - TabSideMargin * 2;
+        var tabWidth = (availableWidth - TabGap * (TabCount - 1)) / TabCount;
+        for (var i = 0; i < TabCount; i++)
+        {
+            _tabButtons.Add(new ClickableComponent(
+                new Rectangle(xPositionOnScreen + TabSideMargin + (tabWidth + TabGap) * i, yPositionOnScreen + TabTopOffset, tabWidth, TabHeight),
+                $"tab_{i}"));
+        }
+
+        RefreshActionButtons();
     }
 
     public override void receiveRightClick(int x, int y, bool playSound = true) { }
@@ -458,10 +357,13 @@ public class BankMenu : IClickableMenu
             var bounds = _tabButtons[i].bounds;
             var isActive = i == _currentTab;
             var bgColor = isActive ? Color.White : new Color(180, 180, 180);
-            b.Draw(Game1.staminaRect, bounds, bgColor);
-            if (!isActive)
+            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18),
+                bounds.X, bounds.Y, bounds.Width, bounds.Height, bgColor, 4f);
+            if (isActive)
             {
-                b.Draw(Game1.staminaRect, new Rectangle(bounds.X, bounds.Y + bounds.Height - 2, bounds.Width, 2), Color.Gray);
+                // 覆盖选中页签底部边框，使之与内容区视觉相连
+                b.Draw(Game1.staminaRect,
+                    new Rectangle(bounds.X + 4, bounds.Y + bounds.Height - 4, bounds.Width - 8, 4), Color.White);
             }
             Utility.drawTextWithShadow(b, _tabLabels[i], Game1.smallFont,
                 new Vector2(bounds.X + (bounds.Width - Game1.smallFont.MeasureString(_tabLabels[i]).X) / 2,
@@ -470,15 +372,14 @@ public class BankMenu : IClickableMenu
         }
 
         var contentX = xPositionOnScreen + ContentPadding;
-        var contentY = yPositionOnScreen + 16 + TabHeight + ContentPadding;
+        var contentY = yPositionOnScreen + TabTopOffset + TabHeight + ContentPadding;
         var contentW = width - ContentPadding * 2;
 
         switch (_currentTab)
         {
             case 0: DrawCheckingTab(b, contentX, contentY, contentW); break;
             case 1: DrawFixedTab(b, contentX, contentY, contentW); break;
-            case 2: DrawLoanTab(b, contentX, contentY, contentW); break;
-            case 3: DrawTaxTab(b, contentX, contentY, contentW); break;
+            case 2: DrawTaxTab(b, contentX, contentY, contentW); break;
         }
 
         base.draw(b);
@@ -582,114 +483,6 @@ public class BankMenu : IClickableMenu
             }
 
             listY += 40;
-        }
-    }
-
-    private void DrawLoanTab(SpriteBatch b, int x, int y, int w)
-    {
-        var playerMoney = Game1.player.Money;
-        var totalCredit = BankCalculator.GetTotalCreditLimit(playerMoney);
-        var loans = Bank.GetLoans().Where(l => !l.Repaid).ToList();
-        var usedCredit = loans.Sum(l => l.Principal + l.InterestAccrued);
-        var remainingCredit = totalCredit - usedCredit;
-        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
-
-        Utility.drawTextWithShadow(b,
-            Tools.GetI18n(I18nKeys.Bank_CreditTotal).Tokens(new { amount = totalCredit, gold }).ToString(),
-            Game1.smallFont, new Vector2(x, y), Color.Black);
-        Utility.drawTextWithShadow(b,
-            Tools.GetI18n(I18nKeys.Bank_CreditUsed).Tokens(new { amount = usedCredit, gold }).ToString(),
-            Game1.smallFont, new Vector2(x + 220, y), Color.DarkRed);
-        Utility.drawTextWithShadow(b,
-            Tools.GetI18n(I18nKeys.Bank_CreditRemain).Tokens(new { amount = Math.Max(0, remainingCredit), gold }).ToString(),
-            Game1.smallFont, new Vector2(x + 400, y), Color.DarkGreen);
-
-        var planY = y + 44;
-        for (var p = 0; p < 3; p++)
-        {
-            var planNames = new[]
-            {
-                Tools.GetI18n(I18nKeys.Bank_PlanA),
-                Tools.GetI18n(I18nKeys.Bank_PlanB),
-                Tools.GetI18n(I18nKeys.Bank_PlanC)
-            };
-            var planDescs = new[]
-            {
-                I18nKeys.Bank_PlanDescA,
-                I18nKeys.Bank_PlanDescB,
-                I18nKeys.Bank_PlanDescC
-            };
-            var availAmount = BankCalculator.GetAvailableLoanAmount(p, playerMoney, remainingCredit);
-            var rate = BankCalculator.LoanDailyRate[p];
-
-            IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18),
-                x, planY, w, 70, Color.White * 0.9f, 4f);
-
-            Utility.drawTextWithShadow(b, planNames[p].ToString(), Game1.smallFont,
-                new Vector2(x + 12, planY + 8), Color.Black);
-            Utility.drawTextWithShadow(b,
-                Tools.GetI18n(I18nKeys.Bank_DailyRateLabel).Tokens(new { rate = (rate * 100).ToString("F2") }).ToString(),
-                Game1.smallFont, new Vector2(x + 160, planY + 8), Color.Gray);
-            Utility.drawTextWithShadow(b,
-                Tools.GetI18n(planDescs[p]).Tokens(new { amount = availAmount, gold, rate = (rate * 100).ToString("F2") }).ToString(),
-                Game1.smallFont, new Vector2(x + 12, planY + 30), Color.DarkSlateGray);
-
-            var applyBtn = _actionButtons.FirstOrDefault(a => a.name == $"apply_{p}");
-            if (applyBtn != null && availAmount > 0)
-            {
-                DrawButton(b, applyBtn, Tools.GetI18n(I18nKeys.Bank_Apply).ToString());
-            }
-
-            planY += 90;
-        }
-
-        var loanListY = planY + 20;
-        Utility.drawTextWithShadow(b, "---", Game1.smallFont,
-            new Vector2(x, loanListY), Color.Gray);
-        loanListY += 8;
-
-        var activeLoans = Bank.GetLoans().Where(l => !l.Repaid).ToList();
-        if (activeLoans.Count == 0)
-        {
-            Utility.drawTextWithShadow(b, Tools.GetI18n(I18nKeys.Bank_NoLoans).ToString(),
-                Game1.smallFont, new Vector2(x, loanListY), Color.Gray);
-            return;
-        }
-
-        var repayBtnIndex = 0;
-        for (var i = 0; i < activeLoans.Count; i++)
-        {
-            var l = activeLoans[i];
-            var planLabels = new[] { "A", "B", "C" };
-            var line = $"[{planLabels[l.PlanType]}] ";
-            line += Tools.GetI18n(I18nKeys.Bank_LoanPrincipal).Tokens(new { amount = l.Principal, gold }).ToString();
-            line += " | ";
-            line += Tools.GetI18n(I18nKeys.Bank_LoanInterest).Tokens(new { amount = l.InterestAccrued, gold }).ToString();
-
-            if (l.PlanType == 2)
-            {
-                var elapsed = (int)Game1.stats.DaysPlayed - l.StartDay;
-                var lockRemaining = 7 - elapsed;
-                if (lockRemaining > 0)
-                {
-                    line += " | ";
-                    line += Tools.GetI18n(I18nKeys.Bank_LoanLockDays).Tokens(new { days = lockRemaining }).ToString();
-                }
-            }
-
-            Utility.drawTextWithShadow(b, line, Game1.smallFont,
-                new Vector2(x, loanListY), Color.Black);
-
-            if (!(l.PlanType == 2 && (int)Game1.stats.DaysPlayed - l.StartDay < 7))
-            {
-                if (repayBtnIndex < _loanRepayButtons.Count)
-                {
-                    var repayBtn = _loanRepayButtons[repayBtnIndex++];
-                    DrawButton(b, repayBtn, Tools.GetI18n(I18nKeys.Bank_Repay).ToString());
-                }
-            }
-
-            loanListY += 40;
         }
     }
 

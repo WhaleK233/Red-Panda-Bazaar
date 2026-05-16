@@ -6,12 +6,6 @@ public static class BankCalculator
 {
     private const double BaseCheckingRate = 0.0005;
 
-    /// <summary>三种贷款方案日利率：灵活贷 / 标准贷 / 定期贷</summary>
-    public static readonly double[] LoanDailyRate = { 0.0012, 0.0010, 0.0007 };
-
-    /// <summary>三种贷款方案的可贷倍数（相对于玩家持有金币）</summary>
-    public static readonly double[] LoanMultiplier = { 0.5, 1.0, 1.5 };
-
     /// <summary>定期存款可选期限</summary>
     public static readonly int[] FixedTermOptions = { 7, 28, 112 };
 
@@ -34,26 +28,5 @@ public static class BankCalculator
         var index = Array.IndexOf(FixedTermOptions, termDays);
         var multiplier = index >= 0 ? FixedRateMultiplier[index] : 1.0;
         return dailyRate * termDays * multiplier;
-    }
-
-    public static int GetTotalCreditLimit(int playerMoney)
-    {
-        return (int)(playerMoney * 1.5);
-    }
-
-    /// <summary>剩余可用额度 = 总额度 − 所有未还贷款的（本金+利息）。</summary>
-    public static int GetRemainingCredit(int playerMoney, List<LoanAccount> loans)
-    {
-        var total = GetTotalCreditLimit(playerMoney);
-        var used = loans.Where(l => !l.Repaid).Sum(l => l.Principal + l.InterestAccrued);
-        return total - used;
-    }
-
-    /// <summary>某方案当前可贷 = min(方案上限, 剩余额度)。</summary>
-    public static int GetAvailableLoanAmount(int planType, int playerMoney, int remainingCredit)
-    {
-        if (planType < 0 || planType >= LoanMultiplier.Length) return 0;
-        var planMax = (int)(playerMoney * LoanMultiplier[planType]);
-        return Math.Min(planMax, Math.Max(0, remainingCredit));
     }
 }
