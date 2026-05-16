@@ -9,8 +9,11 @@ public static class BankCalculator
     /// <summary>三种贷款方案日利率：灵活贷 / 标准贷 / 定期贷</summary>
     public static readonly double[] LoanDailyRate = { 0.0012, 0.0010, 0.0007 };
 
-    /// <summary>三种贷款方案的可贷倍数（相对于玩家持有金币）</summary>
-    public static readonly double[] LoanMultiplier = { 0.5, 1.0, 1.5 };
+    /// <summary>三种贷款方案占信用额度的比例</summary>
+    private static readonly double[] LoanPlanFactor = { 0.1, 0.4, 0.8 };
+
+    /// <summary>三种贷款方案的最低可贷额度</summary>
+    private static readonly long[] LoanMinAmount = { 500, 8000, 20000 };
 
     /// <summary>定期存款可选期限</summary>
     public static readonly int[] FixedTermOptions = { 7, 28, 112 };
@@ -44,10 +47,13 @@ public static class BankCalculator
         return effective > 0 ? effective : 0;
     }
 
-    /// <summary>总信用额度 = 靠赚的钱 × 1.5。</summary>
+    /// <summary>总信用额度 = max(有效收入 × 0.5, 游戏天数 × 10000) + 总税收 × 0.5。</summary>
     public static long GetTotalCreditLimit(List<LoanAccount> allLoans)
     {
-        return (long)(GetEffectiveEarnings(allLoans) * 1.5);
+        var byEarnings = (long)(GetEffectiveEarnings(allLoans) * 0.5);
+        var byDays = Game1.stats.DaysPlayed * 10000L;
+        var taxBonus = (long)(PlayerStall.PlayerStall.TotalTax * 0.5);
+        return Math.Max(byEarnings, byDays) + taxBonus;
     }
 
     /// <summary>剩余可用额度 = 总额度 − 所有未还贷款的（本金+利息）。</summary>
@@ -58,11 +64,13 @@ public static class BankCalculator
         return total - used;
     }
 
-    /// <summary>某方案当前可贷 = min(方案上限, 剩余额度)。</summary>
+    /// <summary>某方案当前可贷 = max(信用额度 × 方案比例, 方案最低) 且不超过剩余额度。</summary>
     public static long GetAvailableLoanAmount(int planType, long remainingCredit, List<LoanAccount> allLoans)
     {
-        if (planType < 0 || planType >= LoanMultiplier.Length) return 0;
-        var planMax = (long)(GetEffectiveEarnings(allLoans) * LoanMultiplier[planType]);
+        if (planType < 0 || planType >= LoanPlanFactor.Length) return 0;
+        var totalCredit = GetTotalCreditLimit(allLoans);
+        var planMax = (long)(totalCredit * LoanPlanFactor[planType]);
+        planMax = Math.Max(planMax, LoanMinAmount[planType]);
         return Math.Min(planMax, Math.Max(0L, remainingCredit));
     }
 }
