@@ -2680,10 +2680,10 @@
  <tileset firstgid="8656" name="spring_RedPandaBazaar_Plants" tilewidth="16" tileheight="16" tilecount="475" columns="25">
   <image source="spring_RedPandaBazaar_Plants.png" width="400" height="304"/>
  </tileset>
- <tileset firstgid="9131" name="spring_RedPandaBazaar_Buildings" tilewidth="16" tileheight="16" tilecount="7176" columns="69">
-  <image source="spring_RedPandaBazaar_Buildings.png" width="1104" height="1664"/>
+ <tileset firstgid="9131" name="spring_RedPandaBazaar_Buildings" tilewidth="16" tileheight="16" tilecount="10281" columns="69">
+  <image source="spring_RedPandaBazaar_Buildings.png" width="1104" height="2384"/>
  </tileset>
- <tileset firstgid="16307" name="Vanilla_RedPandaBazaar_joja_furniture" tilewidth="16" tileheight="16" tilecount="260" columns="13">
+ <tileset firstgid="19412" name="Vanilla_RedPandaBazaar_joja_furniture" tilewidth="16" tileheight="16" tilecount="260" columns="13">
   <image source="Vanilla_RedPandaBazaar_joja_furniture.png" width="208" height="333"/>
  </tileset>
  <layer id="1" name="Back" width="64" height="130">

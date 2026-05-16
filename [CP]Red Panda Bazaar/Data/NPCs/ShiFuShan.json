@@ -85,6 +85,14 @@
             "Entries": {
                 "90329001/w sunny/t 900 1800/f RedPandaBazaar_ShiFuShan 1000": "libraryTheme/54 54/farmer 48 54 1 RedPandaBazaar_ShiFuShan 54 54 0 RedPandaBazaar_Passersby.10 59 55 0 RedPandaBazaar_Passersby.9 60 54 3 RedPandaBazaar_JojaEmployee.3 71 54 0/skippable/advancedMove farmer false 5 0 1 1500/pause 2000/emote RedPandaBazaar_ShiFuShan 40/pause 1000/faceDirection farmer 0/pause 500/speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.1}}\"/pause 500/speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.2}}\"/pause 500/quickQuestion #{{i18n:90329001.3}}#{{i18n:90329001.4}}#{{i18n:90329001.5}}(break)speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.6}}\"(break)speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.7}}\"(break)speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.8}}\"/pause 500/emote RedPandaBazaar_ShiFuShan 40/pause 500/speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.9}}\"/pause 1000/speak RedPandaBazaar_ShiFuShan \"{{i18n:90329001.10}}\"/pause 1000/end"
             }
+        },
+        {
+            "LogName": "Events",
+            "Action": "EditData",
+            "Target": "Data/Events/Custom_MapleBridge",
+            "Entries": {
+                "RPB.ShiFuShan.Heart.0/w sunny/t 900 1800": "none/32 57/farmer 32 52 2 RedPandaBazaar_ShiFuShan 32 57 0/skippable/advancedMove farmer false 0 3 2 1500/pause 2000/speak RedPandaBazaar_ShiFuShan \"{{i18n:Event.RedPandaBazaar.ShiFuShan.Heart.0.1.ShiFuShan}}\"/pause 2000/speak RedPandaBazaar_ShiFuShan \"{{i18n:Event.RedPandaBazaar.ShiFuShan.Heart.0.2.ShiFuShan}}\"/pause 1000/end"
+            }
         }
     ]
 }

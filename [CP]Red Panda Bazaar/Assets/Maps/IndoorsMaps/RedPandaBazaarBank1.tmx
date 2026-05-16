@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="24" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="18" nextobjectid="66">
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="24" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="18" nextobjectid="68">
  <properties>
   <property name="AmbientLight" value="95 95 95"/>
   <property name="DayTiles" value="Front 7 2 256 Front 7 3 288"/>
@@ -296,7 +296,13 @@
  </layer>
  <objectgroup id="10" name="Back"/>
  <objectgroup id="12" name="Back2"/>
- <objectgroup id="9" name="Buildings"/>
+ <objectgroup id="9" name="Buildings">
+  <object id="66" name="TileData" x="112" y="208" width="16" height="16">
+   <properties>
+    <property name="Action" value="RedPandaBazaar_BankMenu"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="8" name="Paths"/>
  <objectgroup id="7" name="Front"/>
  <objectgroup id="6" name="AlwaysFront"/>
