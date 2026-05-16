@@ -53,7 +53,9 @@ public class BankLoanMenu : UiBaseMenu
             {
                 var btn = new UiButton(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(),
                     () => HandleApply(planType));
-                Root.Add(new UiRow { Spacing = 20 }.Add(new UiText(desc)).Add(btn));
+                Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
+                    .Add(new UiText(desc))
+                    .Add(btn));
             }
         }
 
@@ -90,7 +92,9 @@ public class BankLoanMenu : UiBaseMenu
 
                 var repayBtn = new UiButton(Tools.GetI18n(I18nKeys.Bank_Repay).ToString(),
                     () => HandleRepay(idx));
-                Root.Add(new UiRow { Spacing = 20 }.Add(new UiText(line)).Add(repayBtn));
+                Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
+                    .Add(new UiText(line))
+                    .Add(repayBtn));
             }
         }
     }

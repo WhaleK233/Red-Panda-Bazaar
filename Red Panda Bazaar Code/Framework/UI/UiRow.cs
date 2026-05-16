@@ -10,6 +10,12 @@ public class UiRow : UiElement
     /// <summary>子元素垂直对齐方式。</summary>
     public UiAlign VerticalAlignment { get; set; } = UiAlign.Center;
 
+    /// <summary>是否撑满父容器宽度（仅当父容器宽度大于自然宽度时有效）。</summary>
+    public bool Stretch { get; set; }
+
+    /// <summary>子元素水平分布方式（需配合 Stretch 使用）。</summary>
+    public UiJustify JustifyContent { get; set; } = UiJustify.Start;
+
     public UiRow Add(UiElement child)
     {
         child.Parent = this;
@@ -44,22 +50,90 @@ public class UiRow : UiElement
             maxH = Math.Max(maxH, child.Height);
             totalW += child.Width + Spacing;
         }
-        Width = totalW > 0 ? totalW - Spacing : 0;
+
+        var naturalW = totalW > 0 ? totalW - Spacing : 0;
         Height = maxH;
 
-        // 第二遍：设置正确坐标后向下传播（含垂直对齐）
-        var currentX = 0;
-        foreach (var child in Children)
+        // 撑满父容器
+        if (Stretch && Parent != null && Parent.Width > naturalW)
+            Width = Parent.Width;
+        else
+            Width = naturalW;
+
+        // 第二遍：设置正确坐标后向下传播
+        var extra = Width - naturalW;
+
+        switch (JustifyContent)
         {
-            child.X = X + currentX;
-            child.Y = VerticalAlignment switch
+            case UiJustify.SpaceBetween when Children.Count > 1:
             {
-                UiAlign.Top => Y,
-                UiAlign.Bottom => Y + maxH - child.Height,
-                _ => Y + (maxH - child.Height) / 2,
-            };
-            child.Arrange(); // 子容器用正确坐标重排后代
-            currentX += child.Width + Spacing;
+                var perGap = extra / (float)(Children.Count - 1);
+                var cx = 0f;
+                foreach (var child in Children)
+                {
+                    child.X = X + (int)cx;
+                    child.Y = VerticalAlignment switch
+                    {
+                        UiAlign.Top => Y,
+                        UiAlign.Bottom => Y + maxH - child.Height,
+                        _ => Y + (maxH - child.Height) / 2,
+                    };
+                    child.Arrange();
+                    cx += child.Width + Spacing + perGap;
+                }
+                break;
+            }
+            case UiJustify.End:
+            {
+                var cx = 0;
+                foreach (var child in Children)
+                {
+                    child.X = X + (int)(extra) + cx;
+                    child.Y = VerticalAlignment switch
+                    {
+                        UiAlign.Top => Y,
+                        UiAlign.Bottom => Y + maxH - child.Height,
+                        _ => Y + (maxH - child.Height) / 2,
+                    };
+                    child.Arrange();
+                    cx += child.Width + Spacing;
+                }
+                break;
+            }
+            case UiJustify.Center:
+            {
+                var cx = 0;
+                foreach (var child in Children)
+                {
+                    child.X = X + (int)(extra / 2f) + cx;
+                    child.Y = VerticalAlignment switch
+                    {
+                        UiAlign.Top => Y,
+                        UiAlign.Bottom => Y + maxH - child.Height,
+                        _ => Y + (maxH - child.Height) / 2,
+                    };
+                    child.Arrange();
+                    cx += child.Width + Spacing;
+                }
+                break;
+            }
+            default: // Start
+            {
+                var cx = 0;
+                foreach (var child in Children)
+                {
+                    child.X = X + cx;
+                    child.Y = VerticalAlignment switch
+                    {
+                        UiAlign.Top => Y,
+                        UiAlign.Bottom => Y + maxH - child.Height,
+                        _ => Y + (maxH - child.Height) / 2,
+                    };
+                    child.Arrange();
+                    cx += child.Width + Spacing;
+                }
+                break;
+            }
         }
     }
 
