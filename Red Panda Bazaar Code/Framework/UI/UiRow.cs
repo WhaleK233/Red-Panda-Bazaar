@@ -13,25 +13,41 @@ public class UiRow : UiElement
         return this;
     }
 
+    public UiRow Add(params UiElement[] children)
+    {
+        Children.AddRange(children);
+        return this;
+    }
+
+    public UiRow Clear()
+    {
+        Children.Clear();
+        return this;
+    }
+
     public override void Arrange()
     {
-        var currentX = 0;
+        // 第一遍：测量所有子元素的尺寸
         var maxH = 0;
+        var totalW = 0;
         foreach (var child in Children)
         {
             child.Arrange();
-            child.X = X + currentX;
-            child.Y = Y;
             maxH = Math.Max(maxH, child.Height);
+            totalW += child.Width + Spacing;
+        }
+        Width = totalW > 0 ? totalW - Spacing : 0;
+        Height = maxH;
+
+        // 第二遍：设置正确坐标后向下传播（含垂直居中）
+        var currentX = 0;
+        foreach (var child in Children)
+        {
+            child.X = X + currentX;
+            child.Y = Y + (maxH - child.Height) / 2;
+            child.Arrange(); // 子容器用正确坐标重排后代
             currentX += child.Width + Spacing;
         }
-        Width = currentX > 0 ? currentX - Spacing : 0;
-
-        // 垂直居中对齐
-        foreach (var child in Children)
-            child.Y = Y + (maxH - child.Height) / 2;
-
-        Height = maxH;
     }
 
     public override void Draw(SpriteBatch b)
