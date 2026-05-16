@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Red_Panda_Bazaar_Code.Features.PlayerStall;
 
 public class StallSaveData {
