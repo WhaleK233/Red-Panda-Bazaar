@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -9,7 +10,7 @@ namespace Red_Panda_Bazaar_Code.Features.PlayerStall;
 
 /// <summary>玩家摊位系统：支持多个 Action 摊位，各自独立概率和物品。</summary>
 public static class PlayerStall {
-    private const string SaveKey = "WhaleK233.RedPandaBazaar.PlayerStall";
+    private const string SaveKey = StatsKeys.PlayerStallSave;
 
     public const int CollectPending = -2;
 
