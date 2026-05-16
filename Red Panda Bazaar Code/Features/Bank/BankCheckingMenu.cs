@@ -14,7 +14,6 @@ public class BankCheckingMenu : UiBaseMenu {
     protected override void BuildUi() {
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var balance = Bank.GetCheckingBalance();
-        var totalInterest = Bank.GetInterestEarned();
         var todayInterest = (long)(balance * BankCalculator.GetDailyCheckingRate());
         var rate = BankCalculator.GetDailyCheckingRate();
 
@@ -23,8 +22,6 @@ public class BankCheckingMenu : UiBaseMenu {
                 .Tokens(new { amount = balance, gold }).ToString(), Game1.dialogueFont),
             new UiText(Tools.GetI18n(I18nKeys.Bank_TodayInterest)
                 .Tokens(new { amount = todayInterest, gold }).ToString()),
-            new UiText(Tools.GetI18n(I18nKeys.Bank_InterestEarned)
-                .Tokens(new { amount = totalInterest, gold }).ToString()),
             new UiText(Tools.GetI18n(I18nKeys.Bank_TodayRate)
                 .Tokens(new { rate = (rate * 100).ToString("F4") }).ToString(), color: Color.Gray),
             new UiRow { Spacing = 20 }
