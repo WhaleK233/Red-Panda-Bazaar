@@ -62,18 +62,6 @@ public static class Tools {
         return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
     }
 
-    public static bool IsDayTime(GameLocation loc) {
-        return Game1.timeOfDay < Game1.getStartingToGetDarkTime(loc);
-    }
-
-    public static bool IsDuskTime(GameLocation loc) {
-        return !IsDayTime(loc) && !IsNightTime(loc);
-    }
-
-    public static bool IsNightTime(GameLocation loc) {
-        return Game1.timeOfDay > Game1.getTrulyDarkTime(loc);
-    }
-
     public static bool IsValidButtonAction(ButtonPressedEventArgs e) {
         if (!Context.IsWorldReady || Game1.player.hasMenuOpen.Value) return false;
 

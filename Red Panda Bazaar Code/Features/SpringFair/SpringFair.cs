@@ -62,7 +62,7 @@ public static class SpringFair
         if (!IsSpringFairActive) return;
         if (!e.NewLocation.IsOutdoors) return;
 
-        var critterType = Tools.IsDayTime(e.NewLocation)
+        var critterType = TimeUtils.IsDayTime(e.NewLocation)
             ? CrittersSpawner.Butterfly
             : CrittersSpawner.Firefly;
         CrittersSpawner.spawns(e.NewLocation, critterType);
