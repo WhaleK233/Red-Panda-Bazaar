@@ -24,6 +24,11 @@ public class UiText : UiElement
         if (color.HasValue) Color = color.Value;
     }
 
+    public override void Update(int mouseX, int mouseY)
+    {
+        IsHovered = Bounds.Contains(mouseX, mouseY);
+    }
+
     public override void Arrange()
     {
         var size = Font.MeasureString(Text);
