@@ -1,8 +1,9 @@
 ﻿{
   /****** Version 1.1.0 Added ******/
   /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 税率百分比 ******/
-  "Config.DebugMode": "调试模式",
-  "Config.DebugKey": "调试快捷键",
+"Config.DebugKey": "调试快捷键",
+  "Config.DebugMenuKey": "调试菜单快捷键",
+  "Config.DebugTeleportKey": "调试传送快捷键",
   "PlayerStall.StatusForSale": "在售",
   "PlayerStall.TaxLine": "税款: -{{amount}}{{gold}} ({{rate}}%)",
   "PlayerStall.UnitPrice": "单价",

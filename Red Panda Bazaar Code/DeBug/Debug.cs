@@ -7,7 +7,7 @@ using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.DeBug;
 
-public static class DebugOverlay {
+public static class Debug {
     private static bool _debugMode;
 
     public static bool IsEnabled => _debugMode;
@@ -28,6 +28,35 @@ public static class DebugOverlay {
             && e.Button == toggleBtn) {
             _debugMode = !_debugMode;
         }
+
+        if (Enum.TryParse<SButton>(Tools.ModConfig.DebugMenuKey, ignoreCase: true, out var menuBtn)
+            && e.Button == menuBtn) {
+            if (Game1.activeClickableMenu is DebugMenu) {
+                Game1.exitActiveMenu();
+            } else {
+                Game1.activeClickableMenu = new DebugMenu();
+            }
+        }
+
+        if (Enum.TryParse<SButton>(Tools.ModConfig.DebugTeleportKey, ignoreCase: true, out var tpBtn)
+            && e.Button == tpBtn) {
+            TeleportToCursor();
+        }
+    }
+
+    private static void TeleportToCursor() {
+        var tile = Game1.currentCursorTile;
+        var tileX = (int)tile.X;
+        var tileY = (int)tile.Y;
+        var loc = Game1.currentLocation;
+
+        if (loc?.Map?.Layers == null || loc.Map.Layers.Count == 0) return;
+        if (tileX < 0 || tileX >= loc.Map.Layers[0].LayerWidth) return;
+        if (tileY < 0 || tileY >= loc.Map.Layers[0].LayerHeight) return;
+
+        Game1.player.Position = new Vector2(tileX * 64f + 32f, tileY * 64f + 32f);
+        Game1.player.currentLocation = loc;
+        Game1.exitActiveMenu();
     }
 
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e) {
