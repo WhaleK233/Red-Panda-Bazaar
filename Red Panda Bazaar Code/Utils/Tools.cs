@@ -47,6 +47,18 @@ public static class Tools
         return false;
     }
 
+    /// <summary>按指定玩家扣款，支持静默失败（不弹对话）。</summary>
+    public static bool TryCharge(Farmer? farmer, int cost, bool showDialogue = true) {
+        if (farmer == null || farmer.Money < cost) {
+            if (showDialogue)
+                Game1.drawObjectDialogue(GetI18n(I18nKeys.Dialogue_MoneyNotEnough));
+            return false;
+        }
+
+        farmer.Money -= cost;
+        return true;
+    }
+
     public static bool IsGoodWeather() {
         return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
     }

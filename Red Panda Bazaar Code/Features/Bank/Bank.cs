@@ -173,15 +173,12 @@ public static class Bank
         if (amount <= 0) return;
         if (Context.IsMainPlayer)
         {
-            if (Game1.player.Money < amount) return;
-            Game1.player.Money -= amount;
+            if (!Tools.TryCharge(Game1.player, amount, false)) return;
             Data.CheckingBalance += amount;
             BroadcastSyncData();
         }
         else
         {
-            if (Game1.player.Money < amount) return;
-            Game1.player.Money -= amount;
             SendActionRequest("deposit", amount, 0);
         }
     }
@@ -207,8 +204,7 @@ public static class Bank
         if (amount <= 0 || !BankCalculator.FixedTermOptions.Contains(termDays)) return;
         if (Context.IsMainPlayer)
         {
-            if (Game1.player.Money < amount) return;
-            Game1.player.Money -= amount;
+            if (!Tools.TryCharge(Game1.player, amount, false)) return;
             Data.FixedDeposits.Add(new FixedDeposit
             {
                 Amount = amount,
@@ -220,8 +216,6 @@ public static class Bank
         }
         else
         {
-            if (Game1.player.Money < amount) return;
-            Game1.player.Money -= amount;
             SendActionRequest("newFixed", amount, termDays);
         }
     }
@@ -291,6 +285,7 @@ public static class Bank
 
     private static void ExecuteDeposit(int amount, long? playerId)
     {
+        if (!Tools.TryCharge(GetFarmer(playerId), amount, false)) return;
         Data.CheckingBalance += amount;
     }
 
@@ -304,9 +299,7 @@ public static class Bank
 
     private static void ExecuteCreateFixedDeposit(int amount, int termDays, long? playerId)
     {
-        var farmer = GetFarmer(playerId);
-        if (farmer == null || farmer.Money < amount) return;
-        farmer.Money -= amount;
+        if (!Tools.TryCharge(GetFarmer(playerId), amount, false)) return;
         Data.FixedDeposits.Add(new FixedDeposit
         {
             Amount = amount,
@@ -374,11 +367,7 @@ public static class Bank
         var loan = Data.Loans[loanIndex];
         if (loan.Repaid) return;
 
-        var total = (int)(loan.Principal + loan.InterestAccrued);
-        var farmer = GetFarmer(playerId);
-        if (farmer == null || farmer.Money < total) return;
-
-        farmer.Money -= total;
+        if (!Tools.TryCharge(GetFarmer(playerId), (int)(loan.Principal + loan.InterestAccrued), false)) return;
         loan.Repaid = true;
     }
 
