@@ -20,9 +20,10 @@ public static class BankCalculator {
     /// <summary>定期固定利率：7天/28天/112天</summary>
     private static readonly double[] FixedTermRates = { 0.1, 0.5, 2.5 };
 
-    /// <summary>每日活期利率会随当日运气和日期浮动。</summary>
+    /// <summary>每日活期利率会随当日运气微量浮动（±2倍DailyLuck）。</summary>
     public static double GetDailyCheckingRate() {
-        return BaseCheckingRate;
+        var luck = Game1.player.DailyLuck;
+        return Math.Max(0, BaseCheckingRate * (1.0 + luck * 2.0));
     }
 
     /// <summary>定期固定利率。</summary>
