@@ -64,14 +64,14 @@ public static class Critter
         if (loc is null) return;
 
         // 白天补蝴蝶，直到达到上限
-        if (Tools.IsDayTime(loc) && loc.critters.Count < ButterflyCount.Value)
+        if (TimeUtils.IsDayTime(loc) && loc.critters.Count < ButterflyCount.Value)
         {
             var tile = loc.getRandomTile();
             loc.critters.Add(CrittersSpawner.GetNewCritter(loc, tile, CrittersSpawner.Butterfly));
         }
 
         // 黄昏逐渐移除
-        if (Tools.IsDuskTime(loc) && loc.critters.Count > 0)
+        if (TimeUtils.IsDuskTime(loc) && loc.critters.Count > 0)
         {
             loc.critters.RemoveAt(loc.critters.Count - 1);
         }
@@ -102,14 +102,14 @@ public static class Critter
 
         // 检查雕像
         var hasStatue = false;
-        if (!Tools.IsDuskTime(loc))
+        if (!TimeUtils.IsDuskTime(loc))
         {
             foreach (var pair in loc.Objects.Pairs)
             {
                 var bc = pair.Value;
                 if (!bc.bigCraftable.Value || !BCs.Contains(bc.ItemId)) continue;
-                if (Tools.IsDayTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Butterfly);
-                else if (Tools.IsNightTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Firefly);
+                if (TimeUtils.IsDayTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Butterfly);
+                else if (TimeUtils.IsNightTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Firefly);
                 hasStatue = true;
                 break;
             }
@@ -122,7 +122,7 @@ public static class Critter
         IsRightLoc.Value = hasStatue || inMapList;
 
         // 夜晚且在地图列表里，额外补萤火虫
-        if (Tools.IsNightTime(loc) && inMapList)
+        if (TimeUtils.IsNightTime(loc) && inMapList)
             CrittersSpawner.spawns(loc, CrittersSpawner.Firefly);
     }
 }
