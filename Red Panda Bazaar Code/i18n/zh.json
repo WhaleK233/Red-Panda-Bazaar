@@ -90,6 +90,7 @@
   "Bank.NotEnoughBalance": "活期余额不足。",
   "Bank.LockedCantRepay": "该贷款还在锁定中，暂不能还款。",
   "Bank.NoMoney": "金币不足。",
+  "Bank.OutstandingBalance": "待还: {{amount}}{{gold}}",
   /****** Version 1.0.5 Added ******/
   /****** Delete "Config.NumberOfFirefly" ******/
   "Config.NumberOfCritterMultiplier": "粒子数量倍数",
