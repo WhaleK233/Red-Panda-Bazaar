@@ -166,7 +166,7 @@ public static class Bank
     }
 
     // ====== 操作接口 ======
-    // 主机直接操作存档数据后广播同步；客机先改本地玩家金币、再将请求发给主机验证。
+    // 主机直接操作存档数据后广播同步；客机仅发请求，由主机验证并执行金钱操作。
 
     public static void Deposit(int amount)
     {
