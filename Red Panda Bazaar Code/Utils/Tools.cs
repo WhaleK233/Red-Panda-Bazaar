@@ -6,8 +6,7 @@ using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Utils;
 
-public static class Tools
-{
+public static class Tools {
     public static IModHelper Helper { get; set; }
     public static ModConfig ModConfig { get; set; }
     public static IMonitor Monitor { get; set; }
@@ -59,12 +58,6 @@ public static class Tools
         return true;
     }
 
-    // ====== 不可复现随机数（基于 Game1.random，每次不同） ======
-    public static int RandomNext() => Game1.random.Next();
-    public static int RandomNext(int maxValue) => Game1.random.Next(maxValue);
-    public static int RandomNext(int minValue, int maxValue) => Game1.random.Next(minValue, maxValue);
-    public static double RandomDouble() => Game1.random.NextDouble();
-
     public static bool IsGoodWeather() {
         return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
     }
@@ -87,8 +80,7 @@ public static class Tools
         if (Constants.TargetPlatform == GamePlatform.Android) {
             if (e.Button != SButton.MouseLeft)
                 return false;
-        }
-        else if (!e.Button.IsActionButton()) {
+        } else if (!e.Button.IsActionButton()) {
             return false;
         }
 
@@ -100,7 +92,8 @@ public static class Tools
         if (Context.IsMainPlayer) {
             Helper.Multiplayer.SendMessage(data, messageType, modIDs: new[] { ModManifest.UniqueID });
         } else {
-            Helper.Multiplayer.SendMessage(data, messageType, modIDs: new[] { ModManifest.UniqueID }, playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+            Helper.Multiplayer.SendMessage(data, messageType, modIDs: new[] { ModManifest.UniqueID },
+                playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
         }
     }
 }

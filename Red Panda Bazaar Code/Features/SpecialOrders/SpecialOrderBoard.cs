@@ -58,7 +58,7 @@ public class SpecialOrderBoard : SpecialOrdersBoard
         }
 
         List<string> collection = new List<string>((IEnumerable<string>)stringList);
-        Random random = new RandomSeed("SpecialOrderBoard");
+        Random random = new RandomUtils.RandomSeed("SpecialOrderBoard");
         for (int index = 0; index < 2; ++index)
         {
             if (stringList.Count == 0)
