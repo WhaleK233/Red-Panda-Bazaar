@@ -165,7 +165,7 @@ public class PlayerStallMenu : MenuWithInventory {
         base.draw(b, drawUpperPortion: false, drawDescriptionArea: false);
 
         // 调试模式：顶部显示当前菜单的 Action ID
-        if (DebugOverlay.IsEnabled)
+        if (Debug.IsEnabled)
         {
             var debugText = $"Stall: {_actionId}";
             var debugSize = Game1.smallFont.MeasureString(debugText);
