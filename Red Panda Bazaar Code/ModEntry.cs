@@ -2,6 +2,7 @@ using HarmonyLib;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.DeBug;
+using Red_Panda_Bazaar_Code.Features.Bank;
 using Red_Panda_Bazaar_Code.Features.Buffs;
 using Red_Panda_Bazaar_Code.Features.ButterflyNight;
 using Red_Panda_Bazaar_Code.Features.Critters;
@@ -11,7 +12,6 @@ using Red_Panda_Bazaar_Code.Features.PlayerStall;
 using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Features.SpecialOrders;
 using Red_Panda_Bazaar_Code.Features.SpringFair;
-using Red_Panda_Bazaar_Code.Features.Bank;
 using Red_Panda_Bazaar_Code.Features.Transportation;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -37,11 +37,11 @@ public class ModEntry : Mod {
     private static void FeatureInit() {
         Bank.Init();
         Buffs.Init();
+        Debug.Init();
         Critter.Init();
         Furniture.Init();
         SpringFair.Init();
         PlayerStall.Init();
-        DebugOverlay.Init();
         PrizeMachines.Init();
         SpecialOrders.Init();
         ButterflyNight.Init();
