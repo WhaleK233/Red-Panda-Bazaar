@@ -13,6 +13,7 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private const int ChromeWidth = 24;
     private const int ChromeHeight = 40;
+    private const int FocusRingPadding = 4;
 
     private UiElement? _focusedElement;
 
@@ -61,6 +62,10 @@ public abstract class UiBaseMenu : IClickableMenu
     {
         Game1.player.isCharging = false;
         Game1.player.canMove = true;
+
+        // 关闭所有打开的下拉框
+        UiDropdown.ActiveDropdown = null;
+
         base.cleanupBeforeExit();
     }
 
@@ -115,8 +120,48 @@ public abstract class UiBaseMenu : IClickableMenu
         base.receiveLeftClick(x, y, playSound);
         if (Game1.activeClickableMenu != this) return;
 
+        // 如果下拉框打开且点击不在其内部，先交给下拉处理（可能关闭它）
+        if (UiDropdown.ActiveDropdown != null)
+        {
+            UiDropdown.ActiveDropdown.HandleClick(x, y);
+            return;
+        }
+
         UpdateFocusFromClick(x, y);
         Root.HandleClick(x, y);
+    }
+
+    public override void releaseLeftClick(int x, int y)
+    {
+        base.releaseLeftClick(x, y);
+        ReleaseDragging(Root);
+    }
+
+    public override void leftClickHeld(int x, int y)
+    {
+        base.leftClickHeld(x, y);
+        // 持续拖拽由每帧 Update 处理（滑块等）
+    }
+
+    private static void ReleaseDragging(UiElement el)
+    {
+        if (el is UiSlider slider)
+            slider.Release();
+
+        switch (el)
+        {
+            case UiRow row:
+                foreach (var child in row.Children)
+                    ReleaseDragging(child);
+                break;
+            case UiColumn col:
+                foreach (var child in col.Children)
+                    ReleaseDragging(child);
+                break;
+            case UiScrollContainer sc when sc.Child != null:
+                ReleaseDragging(sc.Child);
+                break;
+        }
     }
 
     public override void receiveScrollWheelAction(int direction)
@@ -139,10 +184,116 @@ public abstract class UiBaseMenu : IClickableMenu
         IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(384, 373, 18, 18),
             xPositionOnScreen, yPositionOnScreen, width, height, Color.White, 4f);
 
+        // 更新元素状态（悬停、焦点）
+        UpdateElementStates();
+
         Root.Draw(b);
+
+        // 绘制焦点指示器
+        DrawFocusIndicator(b);
+
+        // 绘制 Tooltip
+        DrawTooltips(b);
+
+        // 绘制下拉覆盖层（在顶层）
+        DrawDropdownOverlay(b);
 
         base.draw(b);
         drawMouse(b);
+    }
+
+    // ---- 元素状态更新 ----
+
+    private void UpdateElementStates()
+    {
+        var mx = Game1.getOldMouseX();
+        var my = Game1.getOldMouseY();
+
+        // 更新所有元素的悬停状态
+        Root.Update(mx, my);
+
+        // 清除旧焦点标记
+        ClearFocusedFlag(Root);
+
+        // 标记当前焦点元素
+        if (_focusedElement != null)
+            _focusedElement.Focused = true;
+    }
+
+    private static void ClearFocusedFlag(UiElement el)
+    {
+        el.Focused = false;
+        switch (el)
+        {
+            case UiRow row:
+                foreach (var child in row.Children)
+                    ClearFocusedFlag(child);
+                break;
+            case UiColumn col:
+                foreach (var child in col.Children)
+                    ClearFocusedFlag(child);
+                break;
+            case UiScrollContainer sc when sc.Child != null:
+                ClearFocusedFlag(sc.Child);
+                break;
+        }
+    }
+
+    // ---- 焦点指示器 ----
+
+    private void DrawFocusIndicator(SpriteBatch b)
+    {
+        if (_focusedElement == null) return;
+        if (!Game1.options.gamepadControls && !_focusedElement.IsHovered) return;
+
+        var bounds = _focusedElement.Bounds;
+        var r = new Rectangle(bounds.X - FocusRingPadding, bounds.Y - FocusRingPadding,
+            bounds.Width + FocusRingPadding * 2, bounds.Height + FocusRingPadding * 2);
+
+        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(375, 357, 3, 3),
+            r.X, r.Y, r.Width, r.Height, Color.Wheat * 0.8f, 3f);
+    }
+
+    // ---- Tooltip ----
+
+    private void DrawTooltips(SpriteBatch b)
+    {
+        var hoveredEl = FindHoveredElement(Root);
+        if (hoveredEl?.Tooltip == null) return;
+
+        var text = hoveredEl.Tooltip();
+        if (string.IsNullOrEmpty(text)) return;
+
+        IClickableMenu.drawHoverText(b, text, Game1.smallFont);
+    }
+
+    private static UiElement? FindHoveredElement(UiElement el)
+    {
+        if (!el.Visible || !el.IsHovered) return null;
+
+        // 优先检查子元素中是否还有悬停的
+        switch (el)
+        {
+            case UiRow row:
+                for (var i = row.Children.Count - 1; i >= 0; i--)
+                {
+                    var found = FindHoveredElement(row.Children[i]);
+                    if (found != null) return found;
+                }
+                break;
+            case UiColumn col:
+                for (var i = col.Children.Count - 1; i >= 0; i--)
+                {
+                    var found = FindHoveredElement(col.Children[i]);
+                    if (found != null) return found;
+                }
+                break;
+            case UiScrollContainer sc when sc.Child != null:
+                return FindHoveredElement(sc.Child);
+        }
+
+        // 子元素中没有悬停的，且当前元素有 tooltip 则返回自身
+        return el.Tooltip != null ? el : null;
     }
 
     // ---- 焦点导航辅助方法 ----
@@ -211,11 +362,9 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private void ActivateFocusedElement()
     {
-        if (_focusedElement is UiButton { Enabled: true } btn)
-        {
-            Game1.playSound("bigDeSelect");
-            btn.OnClick?.Invoke();
-        }
+        if (_focusedElement == null || !_focusedElement.Visible) return;
+        var c = _focusedElement.Bounds.Center;
+        _focusedElement.HandleClick(c.X, c.Y);
     }
 
     private void ScrollFocusedContainer(int direction)
@@ -269,6 +418,24 @@ public abstract class UiBaseMenu : IClickableMenu
                 CollectFocusable(sc.Child, result);
                 break;
         }
+    }
+
+    // ---- 下拉覆盖层 ----
+
+    private void DrawDropdownOverlay(SpriteBatch b)
+    {
+        if (UiDropdown.ActiveDropdown == null) return;
+
+        // 在 scissor 区域外绘制
+        b.End();
+        b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
+            SamplerState.PointClamp, null, null);
+
+        UiDropdown.ActiveDropdown.DrawOverlay(b);
+
+        b.End();
+        b.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
+            SamplerState.PointClamp, null, null);
     }
 
     private static UiScrollContainer? FindAncestorScrollContainer(UiElement? element)

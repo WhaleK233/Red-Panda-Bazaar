@@ -108,6 +108,12 @@ public class UiTable : UiElement
         _tree = body;
     }
 
+    public override void Update(int mouseX, int mouseY)
+    {
+        IsHovered = Bounds.Contains(mouseX, mouseY);
+        _tree?.Update(mouseX, mouseY);
+    }
+
     public override void Draw(SpriteBatch b)
     {
         _tree?.Draw(b);
