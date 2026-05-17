@@ -51,6 +51,12 @@ public class UiScrollContainer : UiElement
         _scrollY = Math.Clamp(_scrollY, 0, Math.Max(0, _contentHeight - Height));
     }
 
+    public override void Update(int mouseX, int mouseY)
+    {
+        IsHovered = Bounds.Contains(mouseX, mouseY);
+        Child?.Update(mouseX, mouseY);
+    }
+
     public override void Draw(SpriteBatch b)
     {
         if (!Visible || Child == null) return;

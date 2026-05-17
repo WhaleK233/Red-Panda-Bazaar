@@ -63,6 +63,13 @@ public class UiColumn : UiElement
         }
     }
 
+    public override void Update(int mouseX, int mouseY)
+    {
+        IsHovered = Bounds.Contains(mouseX, mouseY);
+        foreach (var child in Children)
+            child.Update(mouseX, mouseY);
+    }
+
     public override void Draw(SpriteBatch b)
     {
         if (!Visible) return;
