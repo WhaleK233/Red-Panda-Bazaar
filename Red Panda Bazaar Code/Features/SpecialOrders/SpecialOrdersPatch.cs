@@ -12,6 +12,11 @@ public static class SpecialOrdersPatch
 
     private static bool extraRewardGiven;
 
+    public static void Reset()
+    {
+        extraRewardGiven = false;
+    }
+
     public static void ApplyPatch(Harmony harmony)
     {
         Tools.LogPatch(NAME, "SpecialOrder.CheckCompletion()", PatchType.Postfix);

@@ -90,6 +90,7 @@
   "Bank.NotEnoughBalance": "Not enough balance in checking account.",
   "Bank.LockedCantRepay": "This loan is still locked and cannot be repaid yet.",
   "Bank.NoMoney": "You don't have enough gold.",
+  "Bank.OutstandingBalance": "Outstanding: {{amount}}{{gold}}",
   /****** Version 1.0.5 Added ******/
   /****** Delete "Config.NumberOfFirefly" ******/
   "Config.NumberOfCritterMultiplier": "Multiple critter count",

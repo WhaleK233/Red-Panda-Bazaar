@@ -9,7 +9,6 @@ public static class I18nKeys
     public const string Text_PelicanTown = "Text.PelicanTown";
     public const string Text_CentralStation = "Text.CentralStation";
     public const string Text_Gold = "Text.Gold";
-
     #endregion
 
     #region Config
@@ -226,6 +225,9 @@ public static class I18nKeys
     public const string Bank_NotEnoughBalance = "Bank.NotEnoughBalance";
     public const string Bank_LockedCantRepay = "Bank.LockedCantRepay";
     public const string Bank_NoMoney = "Bank.NoMoney";
+
+    // Loan display
+    public const string Bank_OutstandingBalance = "Bank.OutstandingBalance";
 
     #endregion
 }

@@ -90,7 +90,7 @@ public class BankLoanMenu : UiBaseMenu
                 line += " | ";
                 line += Tools.GetI18n(I18nKeys.Bank_LoanInterest)
                     .Tokens(new { amount = loan.InterestAccrued, gold }).ToString();
-                line += $" | 待还: {total}{gold}";
+                line += " | " + Tools.GetI18n(I18nKeys.Bank_OutstandingBalance).Tokens(new { amount = total, gold }).ToString();
 
                 var repayBtn = new UiButton(Tools.GetI18n(I18nKeys.Bank_Repay).ToString(),
                     () => HandleRepay(idx));
