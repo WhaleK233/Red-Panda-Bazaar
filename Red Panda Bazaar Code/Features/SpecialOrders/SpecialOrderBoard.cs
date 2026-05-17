@@ -58,7 +58,7 @@ public class SpecialOrderBoard : SpecialOrdersBoard
         }
 
         List<string> collection = new List<string>((IEnumerable<string>)stringList);
-        Random random = Utility.CreateRandom((double)Game1.uniqueIDForThisGame, (double)Game1.stats.DaysPlayed * 1.3);
+        Random random = new RandomSeed("SpecialOrderBoard");
         for (int index = 0; index < 2; ++index)
         {
             if (stringList.Count == 0)
