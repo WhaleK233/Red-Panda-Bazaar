@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Menus;
 using StardewValley.Minigames;
+using Red_Panda_Bazaar_Code.Utils;
 using StardewValley.Tools;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
@@ -313,17 +314,17 @@ public class FishingMiniGame : IMinigame
                     Game1.drawWithBorder(
                         Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
                             (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) * 4f *
+                        position + new Vector2((float)Tools.RandomNext(-1, 2), (float)Tools.RandomNext(-1, 2)) * 4f *
                         2f, 0.0f, 1f, 1f);
                     Game1.drawWithBorder(
                         Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
                             (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) * 4f *
+                        position + new Vector2((float)Tools.RandomNext(-1, 2), (float)Tools.RandomNext(-1, 2)) * 4f *
                         2f, 0.0f, 1f, 1f);
                     Game1.drawWithBorder(
                         Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
                             (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) * 4f *
+                        position + new Vector2((float)Tools.RandomNext(-1, 2), (float)Tools.RandomNext(-1, 2)) * 4f *
                         2f, 0.0f, 1f, 1f);
                     Game1.drawWithBorder(
                         Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",

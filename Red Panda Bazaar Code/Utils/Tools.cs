@@ -59,6 +59,12 @@ public static class Tools
         return true;
     }
 
+    // ====== 不可复现随机数（基于 Game1.random，每次不同） ======
+    public static int RandomNext() => Game1.random.Next();
+    public static int RandomNext(int maxValue) => Game1.random.Next(maxValue);
+    public static int RandomNext(int minValue, int maxValue) => Game1.random.Next(minValue, maxValue);
+    public static double RandomDouble() => Game1.random.NextDouble();
+
     public static bool IsGoodWeather() {
         return !Game1.isRaining && !Game1.isLightning && !Game1.isSnowing;
     }
