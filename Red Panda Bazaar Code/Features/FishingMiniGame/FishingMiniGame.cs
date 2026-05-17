@@ -310,25 +310,14 @@ public class FishingMiniGame : IMinigame
                 position.Y += 64f;
                 if (this.starTokensWon > 0)
                 {
+                    var label = Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
+                        this.starTokensWon);
                     float num = Math.Min(1f, (float)(this.showResultsTimer - 2000) / 4000f);
-                    Game1.drawWithBorder(
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
-                            (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)RandomUtils.Next(-1, 2), (float)RandomUtils.Next(-1, 2)) * 4f *
-                        2f, 0.0f, 1f, 1f);
-                    Game1.drawWithBorder(
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
-                            (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)RandomUtils.Next(-1, 2), (float)RandomUtils.Next(-1, 2)) * 4f *
-                        2f, 0.0f, 1f, 1f);
-                    Game1.drawWithBorder(
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
-                            (object)this.starTokensWon), Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
-                        position + new Vector2((float)RandomUtils.Next(-1, 2), (float)RandomUtils.Next(-1, 2)) * 4f *
-                        2f, 0.0f, 1f, 1f);
-                    Game1.drawWithBorder(
-                        Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12013",
-                            (object)this.starTokensWon), Game1.textColor, Color.SkyBlue, position, 0.0f, 1f, 1f);
+                    for (var i = 0; i < 3; i++)
+                        Game1.drawWithBorder(label, Game1.textColor * 0.2f * num, Color.SkyBlue * 0.3f * num,
+                            position + new Vector2(RandomUtils.Next(-1, 2), RandomUtils.Next(-1, 2)) * 8f,
+                            0.0f, 1f, 1f);
+                    Game1.drawWithBorder(label, Game1.textColor, Color.SkyBlue, position, 0.0f, 1f, 1f);
                 }
                 else
                     Game1.drawWithBorder(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingGame.cs.12021"),

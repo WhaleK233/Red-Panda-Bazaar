@@ -21,7 +21,7 @@ public class BankFixedMenu : UiBaseMenu
             var rate = BankCalculator.GetFixedTermRate(term);
             var dailyRate = rate / term;
             var t = term; // capture
-            var desc = $"{term}{days}  日利率 {(dailyRate * 100):F2}%";
+            var desc = $"{term}{days} {Tools.GetI18n(I18nKeys.Bank_DailyRateLabel).Tokens(new { rate = (dailyRate * 100).ToString("F2") })}";
             Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
                 .Add(new UiText(desc))
                 .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(), () => OpenNewFixed(t))));

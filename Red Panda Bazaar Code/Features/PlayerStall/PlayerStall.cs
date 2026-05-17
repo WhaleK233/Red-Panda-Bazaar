@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;

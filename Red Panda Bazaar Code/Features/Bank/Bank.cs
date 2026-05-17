@@ -86,13 +86,12 @@ public static class Bank
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        Data = new BankSaveData();
+        _clientCache = null;
+
         if (Context.IsMainPlayer)
         {
             Data = Tools.Helper.Data.ReadSaveData<BankSaveData>(SaveKey) ?? new BankSaveData();
-        }
-        else
-        {
-            Data = new BankSaveData();
         }
     }
 
