@@ -425,7 +425,7 @@ public static class PlayerStall {
         if (!Context.IsMainPlayer) return;
 
         // 用存档 ID + 天数做种子，同一天内所有玩家随机序列一致
-        var rnd = new RandomSeed("PlayerStall");
+        var rnd = new RandomUtils.RandomSeed("PlayerStall");
         var luckMod = 1.0 + Game1.player.DailyLuck * 2;
         var weatherMod = Tools.IsGoodWeather() ? 1.0 : 0.85;
         var factor = luckMod * weatherMod;

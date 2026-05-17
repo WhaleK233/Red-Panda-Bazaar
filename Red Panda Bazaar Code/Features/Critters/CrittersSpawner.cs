@@ -27,7 +27,7 @@ public static class CrittersSpawner
             number--;
 
             // 20% 概率在主体附近额外生成一只
-            var chance = Tools.RandomDouble();
+            var chance = RandomUtils.NextDouble();
             if (chance is >= 0.1 and < 0.3 && number >= 1)
             {
                 var nearTile = GetNearTile(loc, tile);
@@ -36,7 +36,7 @@ public static class CrittersSpawner
             }
 
             // 10% 概率在主体附近额外生成两只（独立掷骰）
-            chance = Tools.RandomDouble();
+            chance = RandomUtils.NextDouble();
             if (chance < 0.1 && number >= 2)
             {
                 var nearTile = GetNearTile(loc, tile);
@@ -72,7 +72,7 @@ public static class CrittersSpawner
 
         do
         {
-            nearTile = new Vector2(tile.X + Tools.RandomNext(-2, 3), tile.Y + Tools.RandomNext(-2, 3));
+            nearTile = new Vector2(tile.X + RandomUtils.Next(-2, 3), tile.Y + RandomUtils.Next(-2, 3));
         } while (nearTile.X < 0 || nearTile.Y < 0 || nearTile.X >= layer.LayerWidth ||
                  nearTile.Y >= layer.LayerHeight);
 

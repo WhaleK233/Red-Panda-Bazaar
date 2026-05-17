@@ -71,8 +71,8 @@ public class JojaPrizeMachineMenu : IClickableMenu
     {
         var commonList = PrizeMachines.JojaCommonPrizeList;
         var couponList = PrizeMachines.JojaCouponPrizeList;
-        var chance = Tools.RandomDouble();
-        var random = Tools.RandomNext();
+        var chance = RandomUtils.NextDouble();
+        var random = RandomUtils.Next();
         int i, amount;
         string itemId;
         Item prize;
@@ -180,8 +180,8 @@ public class JojaPrizeMachineMenu : IClickableMenu
             vector2.Y -= (this.getRewardTimer * Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier / 13f);
             vector2.Y = Math.Max(vector2.Y, 0.0f);
             // 添加抖动效果
-            vector2.X += this.getRewardTimer / GettingRewardOffset * (float)Tools.RandomNext(-1, 2);
-            vector2.Y += this.getRewardTimer / GettingRewardOffset * (float)Tools.RandomNext(-1, 2);
+            vector2.X += this.getRewardTimer / GettingRewardOffset * (float)RandomUtils.Next(-1, 2);
+            vector2.Y += this.getRewardTimer / GettingRewardOffset * (float)RandomUtils.Next(-1, 2);
             // 绘制获取的奖励的位置
             prize.drawInMenu(b, this.Position + vector2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }

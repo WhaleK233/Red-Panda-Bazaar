@@ -32,7 +32,7 @@ public static class BuffsPatch
 
             if (__instance.itemToEat.ItemId == ItemsKeys.Food.Milk_Pudding)
             {
-                var ex = Tools.RandomNext(40, 60);
+                var ex = RandomUtils.Next(40, 60);
                 Game1.player.gainExperience(SkillsKeys.Farming, ex);
             }
 
