@@ -21,9 +21,11 @@ public static class I18nKeys
 
     public const string Config_TaxRate = "Config.TaxRate";
 
-    public const string Config_DebugMode = "Config.DebugMode";
-
     public const string Config_DebugKey = "Config.DebugKey";
+
+    public const string Config_DebugMenuKey = "Config.DebugMenuKey";
+
+    public const string Config_DebugTeleportKey = "Config.DebugTeleportKey";
 
     #endregion
 

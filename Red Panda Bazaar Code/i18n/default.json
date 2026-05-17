@@ -1,8 +1,9 @@
 ﻿{
   /****** Version 1.1.0 Added ******/
   /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} tax rate percent ******/
-  "Config.DebugMode": "Debug Mode",
-  "Config.DebugKey": "Debug Key",
+"Config.DebugKey": "Debug Key",
+  "Config.DebugMenuKey": "Debug Menu Key",
+  "Config.DebugTeleportKey": "Debug Teleport Key",
   "PlayerStall.StatusForSale": "On Sale",
   "PlayerStall.TaxLine": "Tax: -{{amount}}{{gold}} ({{rate}}%)",
   "PlayerStall.UnitPrice": "Unit",

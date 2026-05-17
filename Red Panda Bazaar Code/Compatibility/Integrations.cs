@@ -2,7 +2,6 @@
 using Red_Panda_Bazaar_Code.Compatibility.ModApi;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.DeBug;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
@@ -85,20 +84,28 @@ public static class Integrations
             formatValue: value => Math.Round(value, 1) + "×"
         );
 
-        // 调试模式开关
-        configMenuApi.AddBoolOption(
-            mod: Tools.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_DebugMode),
-            getValue: () => DebugOverlay.IsEnabled,
-            setValue: value => DebugOverlay.SetEnabled(value)
-        );
-
         // 调试快捷键
         configMenuApi.AddKeybind(
             mod: Tools.ModManifest,
             name: () => Tools.GetI18n(I18nKeys.Config_DebugKey),
             getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugToggleKey, out var btn) ? btn : SButton.OemTilde,
             setValue: value => Tools.ModConfig.DebugToggleKey = value.ToString()
+        );
+
+        // 调试菜单快捷键
+        configMenuApi.AddKeybind(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_DebugMenuKey),
+            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugMenuKey, out var btn) ? btn : SButton.F12,
+            setValue: value => Tools.ModConfig.DebugMenuKey = value.ToString()
+        );
+
+        // 调试传送快捷键
+        configMenuApi.AddKeybind(
+            mod: Tools.ModManifest,
+            name: () => Tools.GetI18n(I18nKeys.Config_DebugTeleportKey),
+            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugTeleportKey, out var btn) ? btn : SButton.None,
+            setValue: value => Tools.ModConfig.DebugTeleportKey = value.ToString()
         );
     }
 
