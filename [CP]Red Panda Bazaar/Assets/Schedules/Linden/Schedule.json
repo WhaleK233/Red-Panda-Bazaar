@@ -1,0 +1,18 @@
+{
+  "Changes": [
+    {
+      "LogName": "Linden Schedule",
+      "Action": "EditData",
+      "Target": "Characters/Schedules/RedPandaBazaar_Linden",
+      "Entries": {
+        "Mon": "800 Custom_BazaarWest 32 21 0",
+        "Tue": "800 Custom_BazaarWest 32 21 0",
+        "Wed":  "800 Custom_BazaarWest 32 21 0",
+        "Thu":  "800 Custom_BazaarWest 32 21 0",
+        "Fri": "800 Custom_BazaarWest 32 21 0",
+        "Sat":  "800 Custom_BazaarWest 32 21 0",
+        "Sun":  "800 Custom_BazaarWest 32 21 0",
+      }
+    }
+  ]
+}
