@@ -1,4 +1,4 @@
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Enums;
 
 public enum UiAlign
 {

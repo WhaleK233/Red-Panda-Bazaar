@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Framework.UI;
+using Red_Panda_Bazaar_Code.Framework.UI.Components;
+using Red_Panda_Bazaar_Code.Framework.UI.Enums;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.DeBug;
