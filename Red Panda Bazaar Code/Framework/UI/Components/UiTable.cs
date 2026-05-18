@@ -15,6 +15,7 @@ public class UiTable : UiElement
     public int? ScrollMaxHeight { get; set; }
 
     private UiElement? _tree;
+    private bool _treeDirty = true;
     private readonly List<string?[]> _rows = new();
 
     public void AddRow(params string[] cells)
@@ -23,18 +24,41 @@ public class UiTable : UiElement
         for (var i = 0; i < cells.Length && i < Columns.Count; i++)
             row[i] = cells[i];
         _rows.Add(row);
+        _treeDirty = true;
     }
 
     public void ClearRows()
     {
         _rows.Clear();
+        _treeDirty = true;
         _tree = null;
+    }
+
+    public override void Measure()
+    {
+        if (Columns.Count == 0) return;
+
+        if (_treeDirty)
+            RebuildTree();
+
+        _tree!.Measure();
+        Width = _tree.Width;
+        Height = _tree.Height;
     }
 
     public override void Arrange()
     {
-        if (Columns.Count == 0) return;
+        if (_tree == null) return;
 
+        _tree.X = X;
+        _tree.Y = Y;
+        _tree.Arrange();
+        Width = _tree.Width;
+        Height = _tree.Height;
+    }
+
+    private void RebuildTree()
+    {
         // 1. 计算列宽
         var widths = new int[Columns.Count];
         for (var i = 0; i < Columns.Count; i++)
@@ -99,14 +123,8 @@ public class UiTable : UiElement
         else
             body.Add(dataColumn);
 
-        // 3. 定位
-        body.X = X;
-        body.Y = Y;
-        body.Arrange();
-
-        Width = body.Width;
-        Height = body.Height;
         _tree = body;
+        _treeDirty = false;
     }
 
     public override void Update(int mouseX, int mouseY)

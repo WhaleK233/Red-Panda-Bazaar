@@ -45,6 +45,12 @@ public abstract class UiElement
     public virtual bool HandleClick(int x, int y) => false;
     public virtual bool HandleScroll(int direction) => false;
 
+    /// <summary>计算内容尺寸（不依赖最终坐标）。</summary>
+    public virtual void Measure()
+    {
+        Arrange();
+    }
+
     /// <summary>测量内容大小并设置子元素位置。</summary>
     public virtual void Arrange() { }
 }
