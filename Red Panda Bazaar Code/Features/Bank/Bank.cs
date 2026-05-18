@@ -58,7 +58,6 @@ public static class Bank
             {
                 new("Checking", Tools.GetI18n(I18nKeys.Bank_ServiceChecking).ToString()),
                 new("Fixed", Tools.GetI18n(I18nKeys.Bank_ServiceFixed).ToString()),
-                new("Loan", Tools.GetI18n(I18nKeys.Bank_ServiceLoan).ToString()),
                 new("Tax", Tools.GetI18n(I18nKeys.Bank_ServiceTax).ToString()),
                 new("Cancel", Tools.GetI18n(I18nKeys.Bank_ServiceCancel).ToString()),
             },
@@ -74,9 +73,6 @@ public static class Bank
                 break;
             case "Fixed":
                 Game1.activeClickableMenu = new BankFixedMenu();
-                break;
-            case "Loan":
-                Game1.activeClickableMenu = new BankLoanMenu();
                 break;
             case "Tax":
                 Game1.activeClickableMenu = new BankTaxMenu();
