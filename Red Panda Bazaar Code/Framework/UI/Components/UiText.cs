@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Framework.UI.Enums;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 public class UiText : UiElement
 {
