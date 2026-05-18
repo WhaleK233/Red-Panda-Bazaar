@@ -12,6 +12,7 @@ CLAUDE.md
 bin/
 obj/
 out/
+[Nn]uGet/
 
 # OS
 .DS_Store
@@ -19,3 +20,6 @@ Thumbs.db
 
 # Runtime
 global.json
+
+# Logs
+*.log
