@@ -120,12 +120,12 @@ public class UiScrollContainer : UiElement
 
         var thumbRect = new Rectangle(X + Width - ScrollBarWidth + 2, thumbY, ScrollBarWidth - 4, thumbHeight);
 
-        // 滑块拇指底色
-        b.Draw(Game1.fadeToBlackRect, thumbRect, Color.White * 0.65f);
+        // 滑块拇指底色（原版黄绿色）
+        b.Draw(Game1.fadeToBlackRect, thumbRect, new Color(220, 180, 100));
         // 左右高亮边线
-        b.Draw(Game1.fadeToBlackRect, new Rectangle(thumbRect.X, thumbRect.Y, 1, thumbRect.Height), Color.White * 0.9f);
+        b.Draw(Game1.fadeToBlackRect, new Rectangle(thumbRect.X, thumbRect.Y, 1, thumbRect.Height), Color.White * 0.7f);
         b.Draw(Game1.fadeToBlackRect, new Rectangle(thumbRect.Right - 1, thumbRect.Y, 1, thumbRect.Height),
-            Color.Black * 0.15f);
+            Color.Black * 0.2f);
     }
 
     public void Scroll(int direction)

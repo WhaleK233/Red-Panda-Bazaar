@@ -94,7 +94,7 @@ public class UiSlider : UiElement
 
         IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
             thumbRect.X, thumbRect.Y, thumbRect.Width, thumbRect.Height,
-            _dragging ? Color.Wheat : Color.White, 3f);
+            _dragging ? new Color(220, 180, 100) : Color.White, 3f);
 
         // 值标签
         if (FormatValue != null)

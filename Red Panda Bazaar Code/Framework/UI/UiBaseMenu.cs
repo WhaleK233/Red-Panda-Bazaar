@@ -14,8 +14,6 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private const int ChromeWidth = 24;
     private const int ChromeHeight = 40;
-    private const int FocusRingPadding = 4;
-
     private UiElement? _focusedElement;
     private List<UiElement>? _focusableCache;
     private bool _focusableCacheDirty = true;
@@ -194,9 +192,6 @@ public abstract class UiBaseMenu : IClickableMenu
 
         Root.Draw(b);
 
-        // 绘制焦点指示器
-        DrawFocusIndicator(b);
-
         // 绘制 Tooltip
         DrawTooltips(b);
 
@@ -230,21 +225,6 @@ public abstract class UiBaseMenu : IClickableMenu
         el.Focused = false;
         for (var i = 0; i < el.ChildCount; i++)
             ClearFocusedFlag(el.GetChild(i)!);
-    }
-
-    // ---- 焦点指示器 ----
-
-    private void DrawFocusIndicator(SpriteBatch b)
-    {
-        if (_focusedElement == null) return;
-        if (!Game1.options.gamepadControls && !_focusedElement.IsHovered) return;
-
-        var bounds = _focusedElement.Bounds;
-        var r = new Rectangle(bounds.X - FocusRingPadding, bounds.Y - FocusRingPadding,
-            bounds.Width + FocusRingPadding * 2, bounds.Height + FocusRingPadding * 2);
-
-        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(375, 357, 3, 3),
-            r.X, r.Y, r.Width, r.Height, Color.Wheat * 0.8f, 3f);
     }
 
     // ---- Tooltip ----
@@ -349,6 +329,10 @@ public abstract class UiBaseMenu : IClickableMenu
             Game1.setMousePosition(best.Bounds.Center.X, best.Bounds.Center.Y);
             EnsureFocusedElementVisible();
         }
+        else if (direction is 0 or 2) // 无法移动焦点时（已到边缘），滚动容器
+        {
+            ScrollFocusedContainer(direction == 0 ? 1 : -1);
+        }
     }
 
     private void ActivateFocusedElement()
@@ -368,7 +352,7 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private void ScrollFocusedContainer(int direction)
     {
-        var sc = FindAncestorScrollContainer(_focusedElement);
+        var sc = FindAncestorScrollContainer(_focusedElement) ?? FindFirstScrollContainer(Root);
         sc?.Scroll(direction);
     }
 
@@ -435,6 +419,17 @@ public abstract class UiBaseMenu : IClickableMenu
         {
             if (element is UiScrollContainer sc) return sc;
             element = element.Parent;
+        }
+        return null;
+    }
+
+    private static UiScrollContainer? FindFirstScrollContainer(UiElement element)
+    {
+        if (element is UiScrollContainer sc) return sc;
+        for (var i = 0; i < element.ChildCount; i++)
+        {
+            var found = FindFirstScrollContainer(element.GetChild(i)!);
+            if (found != null) return found;
         }
         return null;
     }
