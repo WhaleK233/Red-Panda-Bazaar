@@ -11,8 +11,6 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public class BankLoanMenu : UiBaseMenu
 {
-    protected override Point CalcContentSize() => new(600, 300);
-
     protected override void BuildUi()
     {
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
@@ -32,7 +30,7 @@ public class BankLoanMenu : UiBaseMenu
         );
 
         // 方案分隔
-        Root.Add(new UiSeparator { Width = 550 });
+        Root.Add(new UiSeparator());
 
         // 三个贷款方案
         var descKeys = new[] { I18nKeys.Bank_PlanDescA, I18nKeys.Bank_PlanDescB, I18nKeys.Bank_PlanDescC };
@@ -62,7 +60,7 @@ public class BankLoanMenu : UiBaseMenu
         }
 
         // 现有贷款分隔
-        Root.Add(new UiSeparator { Width = 550 });
+        Root.Add(new UiSeparator());
 
         // 现有贷款列表
         var planNames = new[]
