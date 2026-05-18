@@ -20,14 +20,14 @@
             <SvCpFiles Include="D:\svn\RedPandaBazaar\[CP]Red Panda Bazaar\**\*"/>
         </ItemGroup>
         <Copy SourceFiles="@(SvCpFiles)"
-              DestinationFolder="$(SolutionDir)[CP]Red Panda Bazaar\%(RecursiveDir)"
+              DestinationFolder="$(ProjectDir)..\[CP]Red Panda Bazaar\%(RecursiveDir)"
               SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true"/>
         <!-- 构建前：清空并部署 CP 到 Mods 目录 -->
         <Exec Command="if exist &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot; rmdir /s /q &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot;"
               ContinueOnError="true"/>
         <ItemGroup>
-            <CpToMods Include="$(SolutionDir)[CP]Red Panda Bazaar\**\*"/>
+            <CpToMods Include="$(ProjectDir)..\[CP]Red Panda Bazaar\**\*"/>
         </ItemGroup>
         <Copy SourceFiles="@(CpToMods)"
               DestinationFolder="$(GameModsPath)\[CP]Red Panda Bazaar\%(RecursiveDir)"

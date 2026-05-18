@@ -23,12 +23,12 @@ public class ModEntry : Mod {
     public override void Entry(IModHelper helper) {
         Tools.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
-        Tools.LogInfo("Red Panda Bazaar Code Initializing...");
-
         Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e) {
+        Tools.LogInfo("Red Panda Bazaar Code Initializing...");
+
         Integrations.Init();
         FeatureInit();
         HarmonyPatch();
