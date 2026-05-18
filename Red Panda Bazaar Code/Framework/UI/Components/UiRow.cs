@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Framework.UI.Enums;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 public class UiRow : UiElement
 {
@@ -15,6 +16,9 @@ public class UiRow : UiElement
 
     /// <summary>子元素水平分布方式（需配合 Stretch 使用）。</summary>
     public UiJustify JustifyContent { get; set; } = UiJustify.Start;
+
+    public override int ChildCount => Children.Count;
+    public override UiElement? GetChild(int index) => index >= 0 && index < Children.Count ? Children[index] : null;
 
     public UiRow Add(UiElement child)
     {

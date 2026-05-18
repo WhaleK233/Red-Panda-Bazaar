@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 /// <summary>数值滑块组件。</summary>
 public class UiSlider : UiElement
@@ -135,8 +135,5 @@ public class UiSlider : UiElement
         }
     }
 
-    private int GetTrackWidth()
-    {
-        return Math.Max(MinSliderWidth, SliderTrackWidth > 0 ? SliderTrackWidth : Width - 0);
-    }
+    private int GetTrackWidth() => Math.Max(MinSliderWidth, SliderTrackWidth);
 }

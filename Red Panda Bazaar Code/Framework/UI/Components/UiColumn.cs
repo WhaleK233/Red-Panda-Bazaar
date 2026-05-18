@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework.Graphics;
+using Red_Panda_Bazaar_Code.Framework.UI.Enums;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 public class UiColumn : UiElement
 {
@@ -9,6 +10,9 @@ public class UiColumn : UiElement
 
     /// <summary>子元素水平对齐方式。</summary>
     public UiAlign HorizontalAlignment { get; set; }
+
+    public override int ChildCount => Children.Count;
+    public override UiElement? GetChild(int index) => index >= 0 && index < Children.Count ? Children[index] : null;
 
     public UiColumn Add(UiElement child)
     {
