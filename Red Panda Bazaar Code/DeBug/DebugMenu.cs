@@ -8,8 +8,6 @@ namespace Red_Panda_Bazaar_Code.DeBug;
 
 public class DebugMenu : UiBaseMenu
 {
-    protected override Point CalcContentSize() => new(420, 180);
-
     protected override void BuildUi()
     {
         Root.Add(

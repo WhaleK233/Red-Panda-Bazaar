@@ -10,8 +10,6 @@ using StardewValley.Menus;
 namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public class BankCheckingMenu : UiBaseMenu {
-    protected override Point CalcContentSize() => new(400, 200);
-
     protected override void BuildUi() {
         var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var balance = Bank.GetCheckingBalance();

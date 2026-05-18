@@ -20,7 +20,6 @@ public class SettlementMenu : UiBaseMenu
 
     private readonly List<SoldEntry> _entries = new();
     private readonly int _totalEarnings;
-    private int _tableWidth;
 
     private sealed class SoldEntry
     {
@@ -108,8 +107,6 @@ public class SettlementMenu : UiBaseMenu
         if (surplus > 0)
             itemW = Math.Max(MinItemW, itemW - surplus);
 
-        _tableWidth = stallW + itemW + unitW + qtyW + priceW + dateW + ColGap * 5;
-
         // 表格
         var table = new UiTable
         {
@@ -141,7 +138,7 @@ public class SettlementMenu : UiBaseMenu
         Root.Add(table);
 
         // 分隔线
-        Root.Add(new UiSeparator { Width = _tableWidth });
+        Root.Add(new UiSeparator());
 
         // 税收
         var taxAmount = (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate);
@@ -185,14 +182,6 @@ public class SettlementMenu : UiBaseMenu
             Game1.playSound("smallSelect");
         }
         Rebuild();
-    }
-
-    protected override Point CalcContentSize()
-    {
-        if (_entries.Count == 0)
-            return new Point(300, 80);
-
-        return new Point(_tableWidth + ContentPadding * 2, 120 + ScrollMaxH);
     }
 
     // ---- 辅助方法 ----

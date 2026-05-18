@@ -12,8 +12,6 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public class BankFixedMenu : UiBaseMenu
 {
-    protected override Point CalcContentSize() => new(600, 120);
-
     protected override void BuildUi()
     {
         // 三种定期方案，每种一行
@@ -30,7 +28,7 @@ public class BankFixedMenu : UiBaseMenu
         }
 
         // 分割线
-        Root.Add(new UiSeparator { Width = 550 });
+        Root.Add(new UiSeparator());
 
         // 现有定期列表
         var deposits = Bank.GetFixedDeposits();

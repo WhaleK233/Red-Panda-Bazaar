@@ -21,8 +21,8 @@ public abstract class UiBaseMenu : IClickableMenu
     protected UiColumn Root { get; } = new();
     protected abstract void BuildUi();
 
-    /// <summary>子类在此返回内容区域的期望宽高（不含边框）。</summary>
-    protected abstract Point CalcContentSize();
+    /// <summary>子类可在此返回内容区域的期望宽高（不含边框），默认完全由布局测量决定。</summary>
+    protected virtual Point CalcContentSize() => Point.Zero;
 
     public UiBaseMenu()
     {
@@ -46,7 +46,7 @@ public abstract class UiBaseMenu : IClickableMenu
         var w = Math.Max(content.X, Root.Width) + ContentPadding * 2;
         var h = Math.Max(content.Y, Root.Height) + ContentPadding + TopPadding;
 
-        width = Math.Clamp(w + ChromeWidth, 300, Game1.uiViewport.Width - 40);
+        width = Math.Min(w + ChromeWidth, Game1.uiViewport.Width - 40);
         height = Math.Clamp(h + ChromeHeight, 120, Game1.uiViewport.Height - 40);
 
         xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
