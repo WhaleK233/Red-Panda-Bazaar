@@ -11,6 +11,8 @@ public class UiColumn : UiElement
     /// <summary>子元素水平对齐方式。</summary>
     public UiAlign HorizontalAlignment { get; set; }
 
+    private int _measuredMaxW;
+
     public override int ChildCount => Children.Count;
     public override UiElement? GetChild(int index) => index >= 0 && index < Children.Count ? Children[index] : null;
 
@@ -37,32 +39,33 @@ public class UiColumn : UiElement
         return this;
     }
 
-    public override void Arrange()
+    public override void Measure()
     {
-        // 第一遍：测量所有子元素的高度
         var totalH = 0;
-        var maxW = 0;
+        _measuredMaxW = 0;
         foreach (var child in Children)
         {
-            child.Arrange();
-            maxW = Math.Max(maxW, child.Width);
+            child.Measure();
+            _measuredMaxW = Math.Max(_measuredMaxW, child.Width);
             totalH += child.Height + Spacing;
         }
-        Width = maxW;
+        Width = _measuredMaxW;
         Height = totalH > 0 ? totalH - Spacing : 0;
+    }
 
-        // 第二遍：设置正确坐标后向下传播
+    public override void Arrange()
+    {
         var currentY = 0;
         foreach (var child in Children)
         {
             child.X = HorizontalAlignment switch
             {
-                UiAlign.Center => X + (maxW - child.Width) / 2,
-                UiAlign.Right => X + maxW - child.Width,
+                UiAlign.Center => X + (_measuredMaxW - child.Width) / 2,
+                UiAlign.Right => X + _measuredMaxW - child.Width,
                 _ => X,
             };
             child.Y = Y + currentY;
-            child.Arrange(); // 子容器用正确坐标重排后代
+            child.Arrange();
             currentY += child.Height + Spacing;
         }
     }

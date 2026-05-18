@@ -36,6 +36,7 @@ public class UiDropdown : UiElement
 
     // 下拉选项的绘制区域
     private int _hoveredIndex = -1;
+    private int _selectedIndex = -1;
     private Rectangle _dropdownBounds;
 
     public UiDropdown(string value, string[] choices, Action<string>? onValueChanged = null)
@@ -60,6 +61,7 @@ public class UiDropdown : UiElement
                 if (itemRect.Contains(mouseX, mouseY))
                 {
                     _hoveredIndex = i;
+                    _selectedIndex = i;
                     break;
                 }
             }
@@ -185,14 +187,42 @@ public class UiDropdown : UiElement
     {
         IsOpen = true;
         ActiveDropdown = this;
+        _selectedIndex = Array.IndexOf(Choices, Value);
+        if (_selectedIndex < 0) _selectedIndex = 0;
+        _hoveredIndex = _selectedIndex;
     }
 
-    internal void Close()
+    public void Close()
     {
         IsOpen = false;
         _hoveredIndex = -1;
+        _selectedIndex = -1;
         if (ActiveDropdown == this)
             ActiveDropdown = null;
+    }
+
+    /// <summary>键盘方向键选择选项。</summary>
+    public void NavigateSelection(int direction)
+    {
+        if (!IsOpen || Choices.Length == 0) return;
+        _selectedIndex = Math.Clamp(_selectedIndex + direction, 0, Choices.Length - 1);
+        _hoveredIndex = _selectedIndex;
+    }
+
+    /// <summary>确认当前键盘选中的选项。</summary>
+    public void ConfirmSelection()
+    {
+        if (!IsOpen) return;
+        if (_selectedIndex < 0 || _selectedIndex >= Choices.Length) return;
+
+        var newValue = Choices[_selectedIndex];
+        if (newValue != Value)
+        {
+            Value = newValue;
+            Game1.playSound("smallSelect");
+            OnValueChanged?.Invoke(Value);
+        }
+        Close();
     }
 
     private string GetDisplayText(string value)

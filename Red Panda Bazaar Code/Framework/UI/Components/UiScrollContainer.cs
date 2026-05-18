@@ -35,13 +35,28 @@ public class UiScrollContainer : UiElement
 
     public bool CanScroll => MaxHeight > 0 && _contentHeight > MaxHeight;
 
-    public override void Arrange()
+    public override void Measure()
     {
         if (Child == null)
         {
             Width = Height = 0;
             return;
         }
+
+        Child.X = X;
+        Child.Y = Y - _scrollY;
+        Child.Measure();
+
+        _contentHeight = Child.Height;
+        Width = Child.Width;
+        Height = MaxHeight > 0 ? Math.Min(MaxHeight, _contentHeight) : _contentHeight;
+
+        _scrollY = Math.Clamp(_scrollY, 0, Math.Max(0, _contentHeight - Height));
+    }
+
+    public override void Arrange()
+    {
+        if (Child == null) return;
 
         Child.X = X;
         Child.Y = Y - _scrollY;
