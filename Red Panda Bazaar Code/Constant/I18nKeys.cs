@@ -153,7 +153,6 @@ public static class I18nKeys
     public const string Bank_ServiceQuestion = "Bank.ServiceQuestion";
     public const string Bank_ServiceChecking = "Bank.ServiceChecking";
     public const string Bank_ServiceFixed = "Bank.ServiceFixed";
-    public const string Bank_ServiceLoan = "Bank.ServiceLoan";
     public const string Bank_ServiceTax = "Bank.ServiceTax";
     public const string Bank_ServiceCancel = "Bank.ServiceCancel";
 
@@ -188,29 +187,9 @@ public static class I18nKeys
     public const string Bank_TaxTab = "Bank.TaxTab";
     public const string Bank_TotalTax = "Bank.TotalTax";
 
-    // Loan
-    public const string Bank_LoanTab = "Bank.LoanTab";
-    public const string Bank_CreditTotal = "Bank.CreditTotal";
-    public const string Bank_CreditUsed = "Bank.CreditUsed";
-    public const string Bank_CreditRemain = "Bank.CreditRemain";
-    public const string Bank_PlanA = "Bank.PlanA";
-    public const string Bank_PlanB = "Bank.PlanB";
-    public const string Bank_PlanC = "Bank.PlanC";
-    public const string Bank_PlanDescA = "Bank.PlanDescA";
-    public const string Bank_PlanDescB = "Bank.PlanDescB";
-    public const string Bank_PlanDescC = "Bank.PlanDescC";
     public const string Bank_DailyRateLabel = "Bank.DailyRateLabel";
     public const string Bank_Apply = "Bank.Apply";
-    public const string Bank_Repay = "Bank.Repay";
-    public const string Bank_LoanPrincipal = "Bank.LoanPrincipal";
     public const string Bank_LoanInterest = "Bank.LoanInterest";
-    public const string Bank_LoanStatus = "Bank.LoanStatus";
-    public const string Bank_LoanLockDays = "Bank.LoanLockDays";
-    public const string Bank_LoanLocked = "Bank.LoanLocked";
-    public const string Bank_LoanRepayTitle = "Bank.LoanRepayTitle";
-    public const string Bank_NoLoans = "Bank.NoLoans";
-    public const string Bank_RepayPartTitle = "Bank.RepayPartTitle";
-    public const string Bank_RepayAmount = "Bank.RepayAmount";
 
     // Messages
     public const string Bank_DepositSuccess = "Bank.DepositSuccess";
@@ -220,16 +199,9 @@ public static class I18nKeys
     public const string Bank_FixedRedeemed = "Bank.FixedRedeemed";
     public const string Bank_FixedEarlyWithdrawn = "Bank.FixedEarlyWithdrawn";
     public const string Bank_FixedMatureReminder = "Bank.FixedMatureReminder";
-    public const string Bank_LoanApplied = "Bank.LoanApplied";
-    public const string Bank_LoanRepaid = "Bank.LoanRepaid";
-    public const string Bank_CreditLimitReached = "Bank.CreditLimitReached";
     public const string Bank_InvalidAmount = "Bank.InvalidAmount";
     public const string Bank_NotEnoughBalance = "Bank.NotEnoughBalance";
-    public const string Bank_LockedCantRepay = "Bank.LockedCantRepay";
     public const string Bank_NoMoney = "Bank.NoMoney";
-
-    // Loan display
-    public const string Bank_OutstandingBalance = "Bank.OutstandingBalance";
 
     #endregion
 }
