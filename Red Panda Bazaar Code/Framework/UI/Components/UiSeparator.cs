@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 /// <summary>水平分隔线。</summary>
 public class UiSeparator : UiElement
@@ -13,6 +13,9 @@ public class UiSeparator : UiElement
     public override void Arrange()
     {
         Height = Thickness;
+        // 默认撑满父容器宽度（列布局常用），不覆盖显式设置的 Width
+        if (Width <= 0 && Parent != null)
+            Width = Parent.Width;
     }
 
     public override void Update(int mouseX, int mouseY)

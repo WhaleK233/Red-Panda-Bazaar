@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 public class UiTable : UiElement
 {
@@ -28,6 +28,7 @@ public class UiTable : UiElement
     public void ClearRows()
     {
         _rows.Clear();
+        _tree = null;
     }
 
     public override void Arrange()

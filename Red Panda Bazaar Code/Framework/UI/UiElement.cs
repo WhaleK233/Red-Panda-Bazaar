@@ -35,6 +35,12 @@ public abstract class UiElement
         IsHovered = Bounds.Contains(mouseX, mouseY);
     }
 
+    /// <summary>子元素数量，用于统一遍历（替代类型分支）。</summary>
+    public virtual int ChildCount => 0;
+
+    /// <summary>获取指定索引的子元素，索引越界返回 null。</summary>
+    public virtual UiElement? GetChild(int index) => null;
+
     public abstract void Draw(SpriteBatch b);
     public virtual bool HandleClick(int x, int y) => false;
     public virtual bool HandleScroll(int direction) => false;
