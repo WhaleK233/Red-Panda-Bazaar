@@ -34,6 +34,9 @@ public class UiTable : UiElement
         _tree = null;
     }
 
+    public override int ChildCount => _tree != null ? 1 : 0;
+    public override UiElement? GetChild(int index) => index == 0 ? _tree : null;
+
     public override void Measure()
     {
         if (Columns.Count == 0) return;
@@ -124,6 +127,7 @@ public class UiTable : UiElement
             body.Add(dataColumn);
 
         _tree = body;
+        _tree.Parent = this;
         _treeDirty = false;
     }
 
