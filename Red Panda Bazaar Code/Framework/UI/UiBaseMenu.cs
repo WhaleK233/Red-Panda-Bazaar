@@ -167,6 +167,11 @@ public abstract class UiBaseMenu : IClickableMenu
     public override void receiveScrollWheelAction(int direction)
     {
         base.receiveScrollWheelAction(direction);
+
+        // 下拉框打开时拦截滚轮，防止背景滚动
+        if (UiDropdown.ActiveDropdown != null)
+            return;
+
         Root.HandleScroll(direction);
     }
 
