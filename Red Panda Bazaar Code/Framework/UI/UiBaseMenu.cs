@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Red_Panda_Bazaar_Code.Framework.UI.Components;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -16,6 +17,8 @@ public abstract class UiBaseMenu : IClickableMenu
     private const int FocusRingPadding = 4;
 
     private UiElement? _focusedElement;
+    private List<UiElement>? _focusableCache;
+    private bool _focusableCacheDirty = true;
 
     protected UiColumn Root { get; } = new();
     protected abstract void BuildUi();
@@ -34,6 +37,7 @@ public abstract class UiBaseMenu : IClickableMenu
     protected void Rebuild()
     {
         _focusedElement = null;
+        _focusableCacheDirty = true;
         Root.Children.Clear();
         BuildUi();
         Root.Arrange();
@@ -148,20 +152,8 @@ public abstract class UiBaseMenu : IClickableMenu
         if (el is UiSlider slider)
             slider.Release();
 
-        switch (el)
-        {
-            case UiRow row:
-                foreach (var child in row.Children)
-                    ReleaseDragging(child);
-                break;
-            case UiColumn col:
-                foreach (var child in col.Children)
-                    ReleaseDragging(child);
-                break;
-            case UiScrollContainer sc when sc.Child != null:
-                ReleaseDragging(sc.Child);
-                break;
-        }
+        for (var i = 0; i < el.ChildCount; i++)
+            ReleaseDragging(el.GetChild(i)!);
     }
 
     public override void receiveScrollWheelAction(int direction)
@@ -228,20 +220,8 @@ public abstract class UiBaseMenu : IClickableMenu
     private static void ClearFocusedFlag(UiElement el)
     {
         el.Focused = false;
-        switch (el)
-        {
-            case UiRow row:
-                foreach (var child in row.Children)
-                    ClearFocusedFlag(child);
-                break;
-            case UiColumn col:
-                foreach (var child in col.Children)
-                    ClearFocusedFlag(child);
-                break;
-            case UiScrollContainer sc when sc.Child != null:
-                ClearFocusedFlag(sc.Child);
-                break;
-        }
+        for (var i = 0; i < el.ChildCount; i++)
+            ClearFocusedFlag(el.GetChild(i)!);
     }
 
     // ---- 焦点指示器 ----
@@ -276,25 +256,11 @@ public abstract class UiBaseMenu : IClickableMenu
     {
         if (!el.Visible || !el.IsHovered) return null;
 
-        // 优先检查子元素中是否还有悬停的
-        switch (el)
+        // 优先检查子元素中是否还有悬停的（倒序遍历，上层覆盖优先）
+        for (var i = el.ChildCount - 1; i >= 0; i--)
         {
-            case UiRow row:
-                for (var i = row.Children.Count - 1; i >= 0; i--)
-                {
-                    var found = FindHoveredElement(row.Children[i]);
-                    if (found != null) return found;
-                }
-                break;
-            case UiColumn col:
-                for (var i = col.Children.Count - 1; i >= 0; i--)
-                {
-                    var found = FindHoveredElement(col.Children[i]);
-                    if (found != null) return found;
-                }
-                break;
-            case UiScrollContainer sc when sc.Child != null:
-                return FindHoveredElement(sc.Child);
+            var found = FindHoveredElement(el.GetChild(i)!);
+            if (found != null) return found;
         }
 
         // 子元素中没有悬停的，且当前元素有 tooltip 则返回自身
@@ -399,9 +365,13 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private List<UiElement> GetAllFocusableElements()
     {
-        var result = new List<UiElement>();
-        CollectFocusable(Root, result);
-        return result;
+        if (_focusableCache != null && !_focusableCacheDirty)
+            return _focusableCache;
+
+        _focusableCache = new List<UiElement>();
+        CollectFocusable(Root, _focusableCache);
+        _focusableCacheDirty = false;
+        return _focusableCache;
     }
 
     private static void CollectFocusable(UiElement element, List<UiElement> result)
@@ -409,20 +379,8 @@ public abstract class UiBaseMenu : IClickableMenu
         if (!element.Visible) return;
         if (element.IsFocusable) result.Add(element);
 
-        switch (element)
-        {
-            case UiRow row:
-                foreach (var child in row.Children)
-                    CollectFocusable(child, result);
-                break;
-            case UiColumn col:
-                foreach (var child in col.Children)
-                    CollectFocusable(child, result);
-                break;
-            case UiScrollContainer sc when sc.Child != null:
-                CollectFocusable(sc.Child, result);
-                break;
-        }
+        for (var i = 0; i < element.ChildCount; i++)
+            CollectFocusable(element.GetChild(i)!, result);
     }
 
     // ---- 下拉覆盖层 ----

@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
-namespace Red_Panda_Bazaar_Code.Framework.UI;
+namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
 public class UiScrollContainer : UiElement
 {
@@ -26,6 +26,9 @@ public class UiScrollContainer : UiElement
 
     /// <summary>视口最大高度，0 表示不限制（不启用滚动）。</summary>
     public int MaxHeight { get; set; }
+
+    public override int ChildCount => Child != null ? 1 : 0;
+    public override UiElement? GetChild(int index) => index == 0 ? Child : null;
 
     private int _scrollY;
     private int _contentHeight;
@@ -141,6 +144,10 @@ public class UiScrollContainer : UiElement
     {
         if (!Visible || Child == null || !CanScroll) return false;
         if (!Bounds.Contains(Game1.getMouseX(), Game1.getMouseY())) return false;
+
+        // 先问子元素能否处理（如内部有滑块），没处理再自己滚动
+        if (Child.HandleScroll(direction))
+            return true;
 
         Scroll(direction);
         return true;
