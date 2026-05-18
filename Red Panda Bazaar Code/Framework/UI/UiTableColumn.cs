@@ -1,3 +1,5 @@
+using Red_Panda_Bazaar_Code.Framework.UI.Enums;
+
 namespace Red_Panda_Bazaar_Code.Framework.UI;
 
 public class UiTableColumn

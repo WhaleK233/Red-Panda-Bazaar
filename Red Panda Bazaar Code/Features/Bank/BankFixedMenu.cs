@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Framework.UI;
+using Red_Panda_Bazaar_Code.Framework.UI.Components;
+using Red_Panda_Bazaar_Code.Framework.UI.Enums;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewValley;
