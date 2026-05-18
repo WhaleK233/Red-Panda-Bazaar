@@ -17,6 +17,9 @@ public class UiRow : UiElement
     /// <summary>子元素水平分布方式（需配合 Stretch 使用）。</summary>
     public UiJustify JustifyContent { get; set; } = UiJustify.Start;
 
+    private int _measuredMaxH;
+    private int _measuredNaturalW;
+
     public override int ChildCount => Children.Count;
     public override UiElement? GetChild(int index) => index >= 0 && index < Children.Count ? Children[index] : null;
 
@@ -43,29 +46,32 @@ public class UiRow : UiElement
         return this;
     }
 
-    public override void Arrange()
+    public override void Measure()
     {
-        // 第一遍：测量所有子元素的尺寸
         var maxH = 0;
         var totalW = 0;
         foreach (var child in Children)
         {
-            child.Arrange();
+            child.Measure();
             maxH = Math.Max(maxH, child.Height);
             totalW += child.Width + Spacing;
         }
 
-        var naturalW = totalW > 0 ? totalW - Spacing : 0;
-        Height = maxH;
+        _measuredMaxH = maxH;
+        _measuredNaturalW = totalW > 0 ? totalW - Spacing : 0;
+        Height = _measuredMaxH;
 
-        // 撑满父容器
-        if (Stretch && Parent != null && Parent.Width > naturalW)
+        // Stretch 在此暂不生效（父容器宽度尚未确定），留到 Arrange 中处理
+        Width = _measuredNaturalW;
+    }
+
+    public override void Arrange()
+    {
+        // Stretch 在父容器宽度已确定时生效
+        if (Stretch && Parent != null && Parent.Width > _measuredNaturalW)
             Width = Parent.Width;
-        else
-            Width = naturalW;
 
-        // 第二遍：设置正确坐标后向下传播
-        var extra = Width - naturalW;
+        var extra = Width - _measuredNaturalW;
 
         switch (JustifyContent)
         {
@@ -79,8 +85,8 @@ public class UiRow : UiElement
                     child.Y = VerticalAlignment switch
                     {
                         UiAlign.Top => Y,
-                        UiAlign.Bottom => Y + maxH - child.Height,
-                        _ => Y + (maxH - child.Height) / 2,
+                        UiAlign.Bottom => Y + _measuredMaxH - child.Height,
+                        _ => Y + (_measuredMaxH - child.Height) / 2,
                     };
                     child.Arrange();
                     cx += child.Width + Spacing + perGap;
@@ -96,8 +102,8 @@ public class UiRow : UiElement
                     child.Y = VerticalAlignment switch
                     {
                         UiAlign.Top => Y,
-                        UiAlign.Bottom => Y + maxH - child.Height,
-                        _ => Y + (maxH - child.Height) / 2,
+                        UiAlign.Bottom => Y + _measuredMaxH - child.Height,
+                        _ => Y + (_measuredMaxH - child.Height) / 2,
                     };
                     child.Arrange();
                     cx += child.Width + Spacing;
@@ -113,8 +119,8 @@ public class UiRow : UiElement
                     child.Y = VerticalAlignment switch
                     {
                         UiAlign.Top => Y,
-                        UiAlign.Bottom => Y + maxH - child.Height,
-                        _ => Y + (maxH - child.Height) / 2,
+                        UiAlign.Bottom => Y + _measuredMaxH - child.Height,
+                        _ => Y + (_measuredMaxH - child.Height) / 2,
                     };
                     child.Arrange();
                     cx += child.Width + Spacing;
@@ -130,8 +136,8 @@ public class UiRow : UiElement
                     child.Y = VerticalAlignment switch
                     {
                         UiAlign.Top => Y,
-                        UiAlign.Bottom => Y + maxH - child.Height,
-                        _ => Y + (maxH - child.Height) / 2,
+                        UiAlign.Bottom => Y + _measuredMaxH - child.Height,
+                        _ => Y + (_measuredMaxH - child.Height) / 2,
                     };
                     child.Arrange();
                     cx += child.Width + Spacing;

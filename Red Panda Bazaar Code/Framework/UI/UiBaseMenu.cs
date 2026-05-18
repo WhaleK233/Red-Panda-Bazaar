@@ -40,7 +40,9 @@ public abstract class UiBaseMenu : IClickableMenu
         _focusableCacheDirty = true;
         Root.Children.Clear();
         BuildUi();
-        Root.Arrange();
+
+        // 测量阶段：计算所有元素的自然尺寸（不依赖最终坐标）
+        Root.Measure();
 
         var content = CalcContentSize();
         var w = Math.Max(content.X, Root.Width) + ContentPadding * 2;
@@ -54,6 +56,7 @@ public abstract class UiBaseMenu : IClickableMenu
 
         initializeUpperRightCloseButton();
 
+        // 布局阶段：一次性定位所有元素
         Root.X = xPositionOnScreen + ContentPadding;
         Root.Y = yPositionOnScreen + TopPadding;
         Root.Arrange();
@@ -105,6 +108,11 @@ public abstract class UiBaseMenu : IClickableMenu
                 ActivateFocusedElement();
                 return;
             case Buttons.B:
+                if (_focusedElement is UiDropdown { IsOpen: true } dd)
+                {
+                    dd.Close();
+                    return;
+                }
                 exitThisMenuNoSound();
                 return;
             case Buttons.LeftTrigger:
@@ -271,6 +279,18 @@ public abstract class UiBaseMenu : IClickableMenu
 
     private void MoveFocus(int direction)
     {
+        // 下拉框打开时，上下键切换选项
+        if (_focusedElement is UiDropdown { IsOpen: true } dd)
+        {
+            if (direction is 0 or 2) // 上/下
+            {
+                dd.NavigateSelection(direction == 0 ? -1 : 1);
+                return;
+            }
+            // 左/右关闭下拉框并移动焦点
+            dd.Close();
+        }
+
         var focusables = GetAllFocusableElements();
         if (focusables.Count == 0) return;
 
@@ -334,6 +354,14 @@ public abstract class UiBaseMenu : IClickableMenu
     private void ActivateFocusedElement()
     {
         if (_focusedElement == null || !_focusedElement.Visible) return;
+
+        // 下拉框打开时，A 键确认当前选项
+        if (_focusedElement is UiDropdown { IsOpen: true } dd)
+        {
+            dd.ConfirmSelection();
+            return;
+        }
+
         var c = _focusedElement.Bounds.Center;
         _focusedElement.HandleClick(c.X, c.Y);
     }
