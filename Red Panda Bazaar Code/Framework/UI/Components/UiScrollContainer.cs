@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace Red_Panda_Bazaar_Code.Framework.UI.Components;
 
@@ -107,6 +108,10 @@ public class UiScrollContainer : UiElement
     {
         var trackRect = new Rectangle(X + Width - ScrollBarWidth, Y, ScrollBarWidth, Height);
 
+        // 轨道：半透明黑色背景（原版风格）
+        b.Draw(Game1.fadeToBlackRect, trackRect, Color.Black * 0.35f);
+
+        // 滑块拇指尺寸
         var thumbHeight = Math.Max(MinThumbHeight, Height * Height / _contentHeight);
         var trackSpace = Height - thumbHeight;
         var scrollRange = _contentHeight - Height;
@@ -116,8 +121,9 @@ public class UiScrollContainer : UiElement
 
         var thumbRect = new Rectangle(X + Width - ScrollBarWidth + 2, thumbY, ScrollBarWidth - 4, thumbHeight);
 
-        b.Draw(Game1.fadeToBlackRect, trackRect, Color.Black * 0.35f);
-        b.Draw(Game1.fadeToBlackRect, thumbRect, new Color(180, 180, 180) * 0.7f);
+        // 滑块拇指：原版边框贴图风格
+        IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(432, 439, 9, 9),
+            thumbRect.X, thumbRect.Y, thumbRect.Width, thumbRect.Height, Color.Wheat, 1f);
     }
 
     public void Scroll(int direction)
