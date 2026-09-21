@@ -85,7 +85,7 @@ public static class Bank
         Data = new BankSaveData();
         _clientCache = null;
 
-        if (Context.IsMainPlayer)
+        if (Context.IsOnHostComputer)
         {
             Data = Tools.Helper.Data.ReadSaveData<BankSaveData>(SaveKey) ?? new BankSaveData();
         }

@@ -115,9 +115,6 @@ public static class I18nKeys
 
     #region PlayerStall
 
-    public const string PlayerStall_StatusForSale = "PlayerStall.StatusForSale";
-    public const string PlayerStall_StatusSold = "PlayerStall.StatusSold";
-    public const string PlayerStall_CollectEarnings = "PlayerStall.CollectEarnings";
     public const string PlayerStall_PriceEditTitle = "PlayerStall.PriceEditTitle";
     public const string PlayerStall_BillTitle = "PlayerStall.BillTitle";
     public const string PlayerStall_BillEmpty = "PlayerStall.BillEmpty";

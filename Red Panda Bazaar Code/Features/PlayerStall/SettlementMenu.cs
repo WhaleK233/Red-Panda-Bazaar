@@ -34,17 +34,18 @@ public class SettlementMenu : UiBaseMenu
     public SettlementMenu()
     {
         var allSold = PlayerStall.GetSoldItems();
-        for (var i = 0; i < allSold.Count; i++)
+        foreach (var item in allSold)
         {
-            var item = allSold[i];
-            var obj = ItemRegistry.Create(item.ItemId);
+            var obj = item.GetItem();
+            if (obj == null) continue; // 快照失效的记录直接跳过
+
             _entries.Add(new SoldEntry
             {
-                StallName = (i + 1).ToString(),
+                StallName = (_entries.Count + 1).ToString(),
                 ItemName = obj.DisplayName,
-                Amount = item.Amount,
+                Amount = obj.Stack,
                 UnitPrice = item.Price,
-                Price = item.Price * item.Amount,
+                Price = item.Price * obj.Stack,
                 SoldDate = item.SoldDate
             });
         }

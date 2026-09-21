@@ -27,17 +27,11 @@ public static class PlayerStall {
 
     private static readonly Dictionary<string, StallConfig> RegisteredStalls = new();
     private static StallSaveData Data { get; set; } = new();
-    public static IReadOnlyDictionary<string, StallConfig> StallConfigs => RegisteredStalls;
 
     /// <summary>摊位图块坐标缓存（进入地图时扫描 Action 属性获得）。</summary>
     private static readonly Dictionary<string, Vector2> StallTilePositions = new();
 
     private const float StallItemScale = 0.75f;
-
-    internal static IReadOnlyDictionary<string, Vector2> StallTiles => StallTilePositions;
-
-    /// <summary>摊位显示的物品图标缓存，库存变化时失效。</summary>
-    private static readonly Dictionary<string, Item> DisplayItemCache = new();
 
 
     /// <summary>注册结算账单的 Tile Action。</summary>
@@ -58,6 +52,7 @@ public static class PlayerStall {
 
     public static void Init() {
         Tools.Log("PlayerStall Initializing.");
+        ItemSerializer.WarmUp();
         RegisterAll();
         Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         Tools.Helper.Events.GameLoop.DayEnding += OnDayEnding;
@@ -95,7 +90,24 @@ public static class PlayerStall {
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e) {
+        Data = new StallSaveData();
+
+        // 存档只在主机电脑上可读写，远程客机靠 DayStarted 的同步请求获取数据
+        if (!Context.IsOnHostComputer) return;
+
         Data = Tools.Helper.Data.ReadSaveData<StallSaveData>(SaveKey) ?? new StallSaveData();
+        PurgeInvalidSnapshots();
+    }
+
+    /// <summary>丢弃快照无法还原的条目（旧存档只存了 ItemId，没有 ItemXml）。</summary>
+    private static void PurgeInvalidSnapshots() {
+        foreach (var actionId in Data.Stock.Keys.ToList()) {
+            Data.Stock[actionId].RemoveAll(i => i.GetItem() == null);
+            if (Data.Stock[actionId].Count == 0) Data.Stock.Remove(actionId);
+        }
+
+        Data.SoldRecords.RemoveAll(r => r.GetItem() == null);
+        Data.LastSoldRecords?.RemoveAll(r => r.GetItem() == null);
     }
 
     /// <summary>新的一天开始，客机向主机请求最新内存数据。</summary>
@@ -117,40 +129,36 @@ public static class PlayerStall {
         Tools.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
-    /// <summary>获取指定摊位的在售物品副本。</summary>
+    /// <summary>获取指定摊位的在售物品副本（跳过快照失效的条目）。</summary>
     public static List<StallItem> GetItems(string actionId) {
-        return Data.Stock.TryGetValue(actionId, out var list) ? list.ToList() : new();
+        if (!Data.Stock.TryGetValue(actionId, out var list)) return new();
+        return list.Where(i => i.GetItem() != null).ToList();
     }
 
-    /// <summary>上架物品到指定摊位（乐观本地更新 + 主机权威同步）。</summary>
-    public static bool AddItem(string actionId, string itemId, int amount, int price) {
-        if (amount <= 0 || price < 1 || !RegisteredStalls.ContainsKey(actionId)) return false;
-        if (Data.Stock.TryGetValue(actionId, out var existing) && existing.Count > 0 && existing[0].ItemId != itemId)
-            return false;
-        var item = new StallItem {
+    /// <summary>上架物品到指定摊位（乐观本地更新 + 主机权威同步）。数量取自物品自身的 Stack。</summary>
+    public static bool AddItem(string actionId, Item item, int price) {
+        if (item == null || item.Stack <= 0 || price < 1 || !RegisteredStalls.ContainsKey(actionId)) return false;
+
+        // 摊位已有物品时必须可叠加，canStackWith 内含品质、染色、orderData、名称比对
+        var existing = GetItems(actionId).FirstOrDefault();
+        if (existing != null) {
+            var stocked = existing.GetItem();
+            if (stocked == null || !stocked.canStackWith(item)) return false;
+        }
+
+        var xml = ItemSerializer.Serialize(item);
+        if (xml == null) return false;
+
+        var stallItem = new StallItem {
             Id = Guid.NewGuid().ToString(),
             ActionId = actionId,
-            ItemId = itemId,
-            Amount = amount,
+            ItemXml = xml,
             Price = price
         };
         if (!Data.Stock.TryGetValue(actionId, out var list))
             Data.Stock[actionId] = list = new();
-        list.Add(item);
-        DisplayItemCache.Remove(actionId);
-        Tools.SendToHostOrBroadcast(item, MPMessageType.PlayerStall_AddItem);
-        return true;
-    }
-
-    /// <summary>从摊位下架物品（乐观本地更新 + 主机权威同步）。</summary>
-    public static bool RemoveItem(string actionId, int index) {
-        if (!Data.Stock.TryGetValue(actionId, out var list)) return false;
-        if (index < 0 || index >= list.Count) return false;
-        var itemId = list[index].Id;
-        list.RemoveAt(index);
-        if (list.Count == 0) Data.Stock.Remove(actionId);
-        DisplayItemCache.Remove(actionId);
-        Tools.SendToHostOrBroadcast(itemId, MPMessageType.PlayerStall_RemoveItem);
+        list.Add(stallItem);
+        Tools.SendToHostOrBroadcast(stallItem, MPMessageType.PlayerStall_AddItem);
         return true;
     }
 
@@ -163,15 +171,16 @@ public static class PlayerStall {
         }
 
         Tools.SendToHostOrBroadcast(item.Id, MPMessageType.PlayerStall_RemoveItem);
-        DisplayItemCache.Remove(item.ActionId);
     }
 
     /// <summary>更新物品数量/价格（乐观本地更新 + 主机权威同步）。</summary>
     public static void UpdateItem(string stallItemId, int amount, int price) {
-        var item = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == stallItemId);
-        if (item == null) return;
-        item.Amount = amount;
-        item.Price = price;
+        var entry = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == stallItemId);
+        if (entry?.GetItem() is not { } stocked) return;
+
+        stocked.Stack = amount;
+        entry!.RefreshSnapshot();
+        entry.Price = price;
         Tools.SendToHostOrBroadcast(
             new ItemUpdateData { Id = stallItemId, Amount = amount, Price = price },
             MPMessageType.PlayerStall_UpdateItem);
@@ -214,7 +223,7 @@ public static class PlayerStall {
     private static int TryCollectTodayHost() {
         if (Data.CollectDay == Game1.stats.DaysPlayed) return -1;
 
-        var gross = Data.SoldRecords.Sum(r => r.Price * r.Amount);
+        var gross = Data.SoldRecords.Sum(r => r.Price * (r.GetItem()?.Stack ?? 0));
         if (gross <= 0) return -1;
 
         Data.CollectDay = (int)Game1.stats.DaysPlayed;
@@ -282,10 +291,7 @@ public static class PlayerStall {
                 if (Context.IsMainPlayer) break;
                 if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var syncData = e.ReadAs<StallSaveData>();
-                if (syncData != null) {
-                    Data = syncData;
-                    DisplayItemCache.Clear();
-                }
+                if (syncData != null) Data = syncData;
                 break;
             }
 
@@ -325,8 +331,9 @@ public static class PlayerStall {
                 var update = e.ReadAs<ItemUpdateData>();
                 if (update == null) break;
                 var target = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == update.Id);
-                if (target == null) break;
-                target.Amount = update.Amount;
+                if (target?.GetItem() is not { } stocked) break;
+                stocked.Stack = update.Amount;
+                target!.RefreshSnapshot();
                 target.Price = update.Price;
                 if (Context.IsMainPlayer) {
                     Tools.Helper.Multiplayer.SendMessage(update, MPMessageType.PlayerStall_UpdateItem,
@@ -336,14 +343,6 @@ public static class PlayerStall {
                 break;
             }
         }
-    }
-
-    /// <summary>清空所有已售记录并返回总收益（仅修改内存，由 OnSaving 写入存档）。</summary>
-    public static int ClearSoldItems() {
-        var total = Data.SoldRecords.Sum(r => r.Price * r.Amount);
-        Data.SoldRecords.Clear();
-        Data.TotalEarnings = 0;
-        return total;
     }
 
     /// <summary>进入摊位地图时扫描所有 tile，缓存 Action 对应的图块坐标。</summary>
@@ -382,17 +381,9 @@ public static class PlayerStall {
             var actionId = kv.Key;
             var tilePos = kv.Value;
 
-            var stallItem = GetItems(actionId).FirstOrDefault();
-            if (stallItem == null) {
-                DisplayItemCache.Remove(actionId);
-                continue;
-            }
-
-            if (!DisplayItemCache.TryGetValue(actionId, out var obj)) {
-                obj = ItemRegistry.Create(stallItem.ItemId, 1);
-                if (obj == null) continue;
-                DisplayItemCache[actionId] = obj;
-            }
+            if (!Data.Stock.TryGetValue(actionId, out var stock)) continue;
+            var obj = stock.Select(i => i.GetItem()).FirstOrDefault(i => i != null);
+            if (obj == null) continue;
 
             var screenPos = Game1.GlobalToLocal(Game1.viewport,
                 new Vector2(tilePos.X * 64f - 8f, tilePos.Y * 64f - 16f));
@@ -401,17 +392,6 @@ public static class PlayerStall {
             var offset = (64 - 64 * StallItemScale) / 2;
             obj.drawInMenu(b, screenPos + new Vector2(offset, offset), StallItemScale);
         }
-    }
-
-    /// <summary>收取指定摊位的已售金币（仅修改内存）。</summary>
-    public static int CollectEarnings(string actionId) {
-        var total = 0;
-        Data.SoldRecords.RemoveAll(r => {
-            if (r.ActionId != actionId) return false;
-            total += r.Price * r.Amount;
-            return true;
-        });
-        return total;
     }
 
     /// <summary>
@@ -441,13 +421,13 @@ public static class PlayerStall {
             if (!Data.Stock.TryGetValue(actionId, out var stock) || stock.Count == 0) continue;
 
             // Fisher-Yates 洗牌副本，确保每次售出物品来源均匀随机
-            var unsold = stock.ToList();
+            var unsold = stock.Where(i => i.GetItem() != null).ToList();
             for (var i = unsold.Count - 1; i > 0; i--) {
                 var j = rnd.Next(i + 1);
                 (unsold[i], unsold[j]) = (unsold[j], unsold[i]);
             }
 
-            var totalStock = unsold.Sum(i => i.Amount);
+            var totalStock = unsold.Sum(i => i.GetItem()!.Stack);
             var baseAmount = Math.Sqrt(totalStock) * 1.5;
             var targetSell = (int)(rnd.Next((int)(baseAmount * 0.5), (int)(baseAmount * 1.5)) * factor);
             var remaining = targetSell;
@@ -456,31 +436,33 @@ public static class PlayerStall {
             foreach (var item in unsold) {
                 if (remaining <= 0) break;
 
+                var source = item.GetItem()!;
+
                 // 从当前条目中扣减，不够则取全部剩余
-                var sellAmount = Math.Min(remaining, item.Amount);
-                item.Amount -= sellAmount;
-                Data.TotalEarnings += item.Price * sellAmount;
+                var sellAmount = Math.Min(remaining, source.Stack);
+                source.Stack -= sellAmount;
                 remaining -= sellAmount;
                 soldCount += sellAmount;
 
-                // 写入售出记录，供结算菜单展示
+                // 写入售出记录快照，供结算菜单展示；快照的 Stack 即本次售出数量
+                var snapshot = source.getOne();
+                snapshot.Stack = sellAmount;
                 Data.SoldRecords.Add(new SoldRecord {
                     ActionId = item.ActionId,
-                    ItemId = item.ItemId,
-                    Amount = sellAmount,
+                    ItemXml = ItemSerializer.Serialize(snapshot) ?? "",
                     Price = item.Price,
                     SoldDate = $"{Game1.seasonIndex}_{Game1.Date.DayOfMonth}_{Game1.Date.Year}"
                 });
 
-                // 原条目卖空后移除，避免 Amount=0 的空记录留在列表里
-                if (item.Amount <= 0)
+                // 原条目卖空后移除，否则把扣减后的数量写回快照
+                if (source.Stack <= 0)
                     stock.Remove(item);
+                else
+                    item.RefreshSnapshot();
             }
 
             // 摊位卖空后清理空列表
             if (stock.Count == 0) Data.Stock.Remove(actionId);
-
-            DisplayItemCache.Remove(actionId);
 
             totalSold += soldCount;
             Tools.Log($"[{actionId}] 触发销售，售出 {soldCount} 件");

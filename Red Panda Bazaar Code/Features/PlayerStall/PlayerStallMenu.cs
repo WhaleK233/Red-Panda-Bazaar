@@ -48,10 +48,8 @@ public class PlayerStallMenu : MenuWithInventory {
             invY, playerInventory: true, Game1.player.Items,
             highlightMethod: item => item is not Tool);
 
-        // 加载未售物品
-        var si = GetUnsoldItems().FirstOrDefault();
-        if (si != null)
-            _stallItem = ItemRegistry.Create(si.ItemId, si.Amount);
+        // 加载未售物品（直接用快照还原的物品，保留品质等状态）
+        _stallItem = GetUnsoldItems().FirstOrDefault()?.GetItem();
 
         // 控制器/键盘焦点导航
         _stallSlot.myID = 101;
@@ -85,21 +83,21 @@ public class PlayerStallMenu : MenuWithInventory {
             var unsoldItems = GetUnsoldItems();
             if (unsoldItems.Count > 0) {
                 var existing = unsoldItems[0];
-                if (item.ItemId != existing.ItemId) return; // 摊位有不同物品，不能放入
-                // 叠加到已有物品
-                var newAmt = existing.Amount + item.Stack;
-                PlayerStall.UpdateItem(existing.Id, newAmt, existing.Price);
+                var stocked = existing.GetItem();
+                if (stocked == null || !stocked.canStackWith(item)) return; // 摊位有不可叠加的物品
+
+                PlayerStall.UpdateItem(existing.Id, stocked.Stack + item.Stack, existing.Price);
                 Game1.player.Items[i] = null;
-                _stallItem = ItemRegistry.Create(item.ItemId, newAmt);
+                _stallItem = stocked;
                 Game1.playSound("coin");
                 return;
             }
 
             // 摊位空 → 放入
             var price = Math.Max(1, item.sellToStorePrice());
+            if (!PlayerStall.AddItem(_actionId, item, price)) return;
             Game1.player.Items[i] = null;
-            PlayerStall.AddItem(_actionId, item.ItemId, item.Stack, price);
-            _stallItem = ItemRegistry.Create(item.ItemId, item.Stack);
+            _stallItem = item;
             Game1.playSound("coin");
             return;
         }
@@ -107,26 +105,27 @@ public class PlayerStallMenu : MenuWithInventory {
         // 摊位格子
         if (_stallSlot.bounds.Contains(x, y)) {
             var items = GetUnsoldItems();
+            var stocked = items.Count > 0 ? items[0] : null;
+            var stockedItem = stocked?.GetItem();
 
             // 手上有物品
             if (heldItem != null) {
                 if (heldItem is Tool) return;
 
-                // 摊位有同类型物品 → 叠加
-                if (items.Count > 0 && heldItem.ItemId == items[0].ItemId) {
-                    var newAmt = items[0].Amount + heldItem.Stack;
-                    PlayerStall.UpdateItem(items[0].Id, newAmt, items[0].Price);
+                // 摊位有可叠加物品 → 合并
+                if (stockedItem != null && stockedItem.canStackWith(heldItem)) {
+                    PlayerStall.UpdateItem(stocked!.Id, stockedItem.Stack + heldItem.Stack, stocked.Price);
+                    _stallItem = stockedItem;
                     heldItem = null;
-                    _stallItem = ItemRegistry.Create(items[0].ItemId, newAmt);
                     Game1.playSound("coin");
                     return;
                 }
 
                 // 格子空 → 放入
-                if (_stallItem == null) {
+                if (stocked == null) {
                     var price = Math.Max(1, heldItem.sellToStorePrice());
-                    PlayerStall.AddItem(_actionId, heldItem.ItemId, heldItem.Stack, price);
-                    _stallItem = ItemRegistry.Create(heldItem.ItemId, heldItem.Stack);
+                    if (!PlayerStall.AddItem(_actionId, heldItem, price)) return;
+                    _stallItem = heldItem;
                     heldItem = null;
                     Game1.playSound("coin");
                     return;
@@ -135,12 +134,10 @@ public class PlayerStallMenu : MenuWithInventory {
             }
 
             // 没拿物品，格子有物品 → 取回背包
-            if (_stallItem != null && items.Count > 0) {
-                var si = items[0];
-                var item = ItemRegistry.Create(si.ItemId, si.Amount);
-                var leftover = Game1.player.addItemToInventory(item);
+            if (stockedItem != null) {
+                var leftover = Game1.player.addItemToInventory(stockedItem);
                 if (leftover != null) return; // 背包满
-                PlayerStall.RemoveItem(si);
+                PlayerStall.RemoveItem(stocked!);
                 _stallItem = null;
                 Game1.playSound("pickUpItem");
                 return;
@@ -229,14 +226,15 @@ public class PlayerStallMenu : MenuWithInventory {
             : base(
                 Tools.GetI18n(I18nKeys.PlayerStall_PriceEditTitle).ToString(),
                 (number, price, who) => {
-                    PlayerStall.UpdateItem(stallItem.Id, stallItem.Amount, number);
+                    var stocked = stallItem.GetItem();
+                    if (stocked != null) PlayerStall.UpdateItem(stallItem.Id, stocked.Stack, number);
                     Game1.playSound("coin");
-                    parent._stallItem = ItemRegistry.Create(stallItem.ItemId, stallItem.Amount);
+                    parent._stallItem = stocked;
                     Game1.activeClickableMenu = new PlayerStallMenu(parent._actionId);
                 },
                 price: -1,
-                minValue: Math.Max(1, (int)Math.Ceiling(ItemRegistry.Create(stallItem.ItemId).sellToStorePrice() * 0.01)),
-                maxValue: Math.Max(1, ItemRegistry.Create(stallItem.ItemId).sellToStorePrice() * 100),
+                minValue: Math.Max(1, (int)Math.Ceiling(stallItem.GetItem()!.sellToStorePrice() * 0.01)),
+                maxValue: Math.Max(1, stallItem.GetItem()!.sellToStorePrice() * 100),
                 defaultNumber: Math.Max(1, stallItem.Price)) { }
     }
 }
