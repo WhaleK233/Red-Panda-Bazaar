@@ -1,5 +1,6 @@
 ﻿{
   /****** Version 1.1.0 Added ******/
+  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings" ******/
   /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} tax rate percent ******/
 "Config.DebugKey": "Debug Key",
   "Config.DebugMenuKey": "Debug Menu Key",
