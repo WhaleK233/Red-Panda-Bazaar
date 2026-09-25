@@ -31,8 +31,8 @@ public static class Critter
     /// <summary>计数器，控制生成频率。UpdateTicked 每 30 tick（≈ 0.5 秒）执行一次。</summary>
     private static readonly PerScreen<int> Counter = new();
 
-    /// <summary>当前玩家是否在可生成生物的合法位置。</summary>
-    private static readonly PerScreen<bool> IsRightLoc = new();
+    /// <summary>最近一次判定为可生成生物的地图名；null 表示当前位置不生成。</summary>
+    private static readonly PerScreen<string?> RightLocName = new();
 
     /// <summary>当前地图蝴蝶数量上限。</summary>
     private static readonly PerScreen<int> ButterflyCount = new();
@@ -58,10 +58,15 @@ public static class Critter
         if (Counter.Value < 30) { Counter.Value++; return; }
         Counter.Value = 0;
 
-        if (!IsRightLoc.Value) return;
-
         var loc = Game1.currentLocation;
-        if (loc is null) return;
+        if (loc?.Map is null) return;
+
+        // Warped 事件比本事件晚一 tick 触发（warp 发生在两者之间的游戏更新里），
+        // 此时缓存的地图名还停留在上一张地图，不比对就会拿到未初始化 critters 的新地图
+        if (RightLocName.Value != loc.Name) return;
+
+        // 原版只对带 Outdoors 属性的地图初始化 critters，自定义地图缺该属性时列表为 null，直接访问会空引用
+        loc.instantiateCrittersList();
 
         // 白天补蝴蝶，直到达到上限
         if (TimeUtils.IsDayTime(loc) && loc.critters.Count < ButterflyCount.Value)
@@ -96,7 +101,7 @@ public static class Critter
         // 季节或天气不符 → 不生成
         if (Game1.season is Season.Winter or Season.Fall || !Tools.IsGoodWeather())
         {
-            IsRightLoc.Value = false;
+            RightLocName.Value = null;
             return;
         }
 
@@ -119,7 +124,7 @@ public static class Critter
         var inMapList = Maps.Contains(loc.Name);
 
         // 雕像或地图列表，满足其一即可
-        IsRightLoc.Value = hasStatue || inMapList;
+        RightLocName.Value = hasStatue || inMapList ? loc.Name : null;
 
         // 夜晚且在地图列表里，额外补萤火虫
         if (TimeUtils.IsNightTime(loc) && inMapList)
