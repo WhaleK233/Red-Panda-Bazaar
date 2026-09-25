@@ -84,7 +84,11 @@ public static class CrittersSpawner
     /// <param name="type"><see cref="Firefly"/> 或 <see cref="Butterfly"/>。</param>
     internal static int GetNumber(GameLocation loc, int type)
     {
-        var area = loc.Map.GetLayer("Back").LayerSize.Area;
+        // 地图尚未加载完成时没有 Back 层，此时不生成
+        var layer = loc.Map?.GetLayer("Back");
+        if (layer is null) return 0;
+
+        var area = layer.LayerSize.Area;
 
         var p = Tools.ModConfig.CritterMultiplier;
         p *= type switch
