@@ -1,14 +1,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buffs;
 
 namespace Red_Panda_Bazaar_Code.Features.Buffs;
 
-/// <summary>管理自定义食物 Buff 和 GamblerHat 常驻加速效果。</summary>
+/// <summary>管理自定义食物 Buff。赌徒帽的加速走装备效果，见 <see cref="BuffsPatch"/>。</summary>
 public static class Buffs
 {
     public static readonly Dictionary<string, Buff> BuffDict = new();
@@ -19,25 +17,9 @@ public static class Buffs
     {
         Tools.Log("Buffs Initializing.");
 
-        Tools.Helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondUpdateTicked;
         InitCustomBuffs();
 
         Tools.Log("Buffs Initialized.");
-    }
-
-    /// <summary>GamblerHat 常驻加速：每秒检查一次。</summary>
-    private static void OnOneSecondUpdateTicked(object? sender, OneSecondUpdateTickedEventArgs e)
-    {
-        if (!Context.IsWorldReady || !Context.IsGameLaunched) return;
-
-        if (Game1.player.hat?.Get()?.Name == ItemsKeys.Hats.GamblerHat)
-        {
-            Game1.player.applyBuff(new Buff(
-                id: "speed",
-                duration: 100,
-                effects: new BuffEffects { Speed = { 1 } }
-            ));
-        }
     }
 
     private static void InitCustomBuffs()
