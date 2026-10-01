@@ -15,7 +15,7 @@
 | C# 模组 | `Red Panda Bazaar Code/` | 全部玩法逻辑：银行、玩家摊位、小游戏、特殊订单、交通、抽奖机、自研 UI 框架 |
 | Content Patcher 内容包 | `[CP]Red Panda Bazaar/` | 地图 TMX、NPC、商店、节日、邮件、物品定义与全部美术资源 |
 
-C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: true`，缺失会硬报错。CP 包由他人经 SVN 维护，**本仓库只读**。
+C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: true`，缺失会硬报错。CP 包由他人经 SVN 维护，**本仓库只读**；CP 更新不随构建自动同步，需手动执行 SVN 流程（见 `Development Commands`）。
 
 技术栈：C# / `net6.0` / SMAPI 4.x / Harmony（可选 GMCM、Central Station 软依赖）。
 
@@ -31,12 +31,12 @@ flowchart TD
   T --> GL["订阅 GameLoop.GameLaunched"]
   GL --> OGL["OnGameLaunched"]
   OGL --> I["Integrations.Init<br/>GMCM + CentralStation"]
-  I --> F["FeatureInit × 12"]
+  I --> F["FeatureInit × 11"]
   F --> H["HarmonyPatch<br/>new Harmony(UniqueID)"]
 ```
 
 - `Entry` 只做 `Tools.Init` + 订阅 `GameLaunched`，**不要**在此添加逻辑。
-- `FeatureInit()`（`ModEntry.cs:29-41`）按 `Bank → Buffs → Debug → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。
+- `FeatureInit()`（`ModEntry.cs:37-49`）按 `Bank → Buffs → Debug → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。`FishingMiniGame/` 与 `TargetMiniGame/` 是例外：二者为 `IMinigame` 小游戏，没有 `Init()`，前者经 Harmony 补丁接入、后者由 SpringFair 启动。
 - `HarmonyPatch()` 依次 `FishingMiniGamePatch` → `BuffsPatch` → `SpecialOrdersPatch` → `FurniturePatch`。
 
 ### 核心机制
@@ -44,9 +44,9 @@ flowchart TD
 | 机制 | 说明 |
 |---|---|
 | **`Tools` 静态服务定位器** | `Utils/Tools.cs` 是全仓唯一的全局依赖入口：日志 `Log*`、翻译 `GetI18n`、配置 `ModConfig`、扣款 `TryCharge`、多人 `SendToHostOrBroadcast`。**不要**新增第二个服务定位器，也不要往业务类里传 `IModHelper` |
-| **Feature 自治** | `Features/<Name>/` 每个目录一个独立功能，暴露 `public static void Init()`，自行订阅事件、注册 Tile Action、持有自己的 `*Data.cs` 与菜单 |
+| **Feature 自治** | `Features/<Name>/` 每个目录一个独立功能，暴露 `public static void Init()`，自行订阅事件、注册 Tile Action、持有自己的 `*Data.cs` 与菜单（例外：`FishingMiniGame/`、`TargetMiniGame/` 是 `IMinigame` 小游戏，无 `Init()`） |
 | **主机权威多人模型** | 改世界 / 改金币 / 结算只由 `Context.IsMainPlayer` 执行；客机发请求或收广播。消息类型集中在 `Constant/MPMessageType.cs` |
-| **事件优于补丁** | 决策阶梯：`Data/` 表 → SMAPI 事件 → 已有 API → 扩展点 → Prefix/Postfix → Transpiler（最后手段）。目前全仓仅 8 处 Harmony 补丁 |
+| **事件优于补丁** | 决策阶梯：`Data/` 表 → SMAPI 事件 → 已有 API → 扩展点 → Prefix/Postfix → Transpiler（最后手段）。目前全仓仅 4 个补丁类共 9 处 Harmony 补丁 |
 | **自研 UI 框架** | `Framework/UI/` 提供声明式菜单（`UiBaseMenu` + 组件树 + Measure/Arrange 两段式布局 + 手柄焦点导航），新菜单必须使用 |
 
 ### 数据流
@@ -64,7 +64,7 @@ flowchart TD
 
 | 路径 | 用途 |
 |---|---|
-| `Red Panda Bazaar Code/ModEntry.cs` | SMAPI 入口，仅 4 个静态方法 |
+| `Red Panda Bazaar Code/ModEntry.cs` | SMAPI 入口，仅 4 个方法 |
 | `Red Panda Bazaar Code/Utils/` | `Tools`（服务定位器）、`ItemSerializer`（物品 XML 快照）、`TimeUtils`、`RandomUtils` |
 | `Red Panda Bazaar Code/Features/` | 12 个功能模块，每个自成一目录（`Bank/`、`PlayerStall/`、`SpringFair/`、`Buffs/`、`Furniture/`、`Transportation/`、`Critters/`、`SpecialOrders/`、`PrizeMachines/`、`FishingMiniGame/`、`TargetMiniGame/`、`ButterflyNight/`） |
 | `Red Panda Bazaar Code/Framework/UI/` | 自研 UI 框架：`UiBaseMenu`、`UiElement`、`Components/`（11 个）、`Enums/` |
@@ -95,15 +95,31 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 | 副作用 | 触发时机 | 说明 |
 |---|---|---|
-| `svn update D:\svn\RedPandaBazaar\[CP]Red Panda Bazaar` 并**覆写仓库内 `[CP]Red Panda Bazaar/`** | BeforeBuild | 手工改动该目录会在下次构建时被冲掉 |
 | **改写 `manifest.json` 的版本号**（`Build.N` +1） | BeforeBuild | 编译失败也会递增，工作区随之变脏 |
-| 重新部署 CP 包到 `Mods/` | BeforeBuild | 先 `rmdir /s /q` 再全量拷贝 |
-| `svn commit` 构建产物到 SVN 工作副本 | AfterBuild | 对远程仓库的真实提交 |
+| 重新部署 CP 包到 `Mods/`（`DeployCP`） | BeforeBuild | 以仓库内 `[CP]Red Panda Bazaar/` 为源，先 `rmdir /s /q` 再全量拷贝 |
 | 编译产物 → `out\` + 打包 zip | Build | zip 名绑定 `manifest` 版本，反复构建会在 `out/net6.0/` 堆积 |
 
 **`-p:EnableModDeploy=false` 拦不住任何一项自定义 Target**（它只被 ModBuildConfig 的部署任务读取）。若只想验证编译，构建后需自行 `git checkout -- "Red Panda Bazaar Code/manifest.json"` 还原版本号，并清理新增的 zip。
 
 产物路径：`Red Panda Bazaar Code/out/net6.0/Red Panda Bazaar Code.dll`。
+
+### SVN 流程（不随构建执行，由用户吩咐 agent 手动跑）
+
+构建已完全不触碰 SVN（原构建时的 `svn update` / 拷贝 / `svn commit` 自动化已移除）。以下流程需要 `svn` 在 `PATH`、存在 `D:\svn\RedPandaBazaar` 工作副本，仅在被吩咐时执行：
+
+**① 拉取 CP 更新**（CP 包作者更新 SVN 后执行；把 SVN 最新内容覆盖到仓库 `[CP]Red Panda Bazaar/`，变更随后随 git 提交入库）：
+
+```bash
+svn update "D:\svn\RedPandaBazaar\[CP]Red Panda Bazaar"
+cp -rf "D:/svn/RedPandaBazaar/[CP]Red Panda Bazaar/." "[CP]Red Panda Bazaar/"
+```
+
+**② 提交构建产物**（先完成一次常规构建，产物已部署到游戏 Mods 后执行）：
+
+```bash
+cp -rf "E:/Steam/steamapps/common/Stardew Valley/Mods/Red Panda Bazaar Code/." "D:/svn/RedPandaBazaar/Red Panda Bazaar Code/"
+svn commit "D:\svn\RedPandaBazaar\Red Panda Bazaar Code" -m "Auto sync build output"
+```
 
 **提交：** 每次提交需包含所有已跟踪文件。
 
@@ -113,26 +129,13 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 ### 硬性规则
 
-- **K&R 大括号风格**（左大括号在行尾，不换行），**禁止 Allman**（左大括号单独一行）。
-  *现状提示：`Bank/`、`Furniture/`、`Framework/UI/`、`Compatibility/`、`Config/`、`PrizeMachines/` 等目录目前仍是 Allman（历史遗留）。新文件按 K&R 写；修改既有文件时保持该文件自身风格统一，不要制造单文件混排。*
 - **优先复用 `Utils/` 中的工具类**，避免重复造轮子。
 - **菜单界面必须使用项目自带的 UI 框架**（`Framework/UI/`），包括 `UiBaseMenu`、`UiButton`、`UiText`、`UiTable`、`UiRow`/`UiColumn` 等组件；**禁止**直接使用星露谷原版的 `IClickableMenu` 或自行绘制。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
-- **禁止修改 `[CP]Red Panda Bazaar/` 下的任何文件**（Content Patcher 内容包）。除了它由他人维护，构建时的 `svn update` 也会覆盖本地改动。
+- **禁止修改 `[CP]Red Panda Bazaar/` 下的任何文件**（Content Patcher 内容包）。它由他人维护，手动 SVN 拉取流程会整目录覆盖本地改动。
 - **新的 i18n 条目必须放在对应的版本注释下**，不能直接追加到文件末尾。
 - 每次提交时，需提交所有已跟踪文件（即未被 `.gitignore` 标注的文件）。
-
-### 命名与风格
-
-| 维度 | 规则 | 示例 |
-|---|---|---|
-| 命名空间 | file-scoped，与文件夹路径对应 | `namespace Red_Panda_Bazaar_Code.Features.Bank;` |
-| 私有字段 | `_camelCase` | `_clientCache`、`_focusedElement` |
-| `private const` | PascalCase | `SaveKey`、`NAME` |
-| i18n 常量 | 键名 `.` → `_` | `Bank.ServiceChecking` ↔ `Bank_ServiceChecking` |
-| 注释 | 中文，解释**为什么**与约束，不解释代码字面 | 见 `StallData.cs` 中「为何用方法而非属性」 |
-| 可空 | 全项目 `Nullable=enable`，显式标注 `object? sender` / `Item?` | — |
 
 ### 新增功能的标准姿势
 
@@ -170,7 +173,7 @@ public static class XxxPatch {
 ```
 
 - 方法命名 `Prefix_{Type}_{method}` / `Postfix_{Type}_{method}`，补丁方法一律 `private static`。
-- 被重写遮蔽时改补父类，并写注释说明（见 `FurniturePatch.cs:26-32`）。
+- 被重写遮蔽时改补父类，并写注释说明（见 `FurniturePatch.cs:21-33`，`clicked` 补 `Furniture` 基类、`canBeRemoved` 补 `StorageFurniture` 基类）。
 - 补丁参数名必须与原方法**完全一致**；用 `AccessTools.Method(type, name, new[] { typeof(...) })` 精确定位重载。
 
 ### 多人同步
@@ -237,18 +240,18 @@ public class MyMenu : UiBaseMenu {
 // i18n/default.json 与 i18n/zh.json —— 同键、同序、占位符同名
 {
   /****** Version 1.2.0 Added ******/
-  "Bank.LoanRepaid": "Loan repaid: {{amount}}{{gold}}",
+  "PlayerStall.TotalTax": "Total Tax: {{amount}}{{gold}}",
 ```
 
 ```json
   /****** Version 1.2.0 Added ******/
-  "Bank.LoanRepaid": "贷款已还清: {{amount}}{{gold}}",
+  "PlayerStall.TotalTax": "历史总税收: {{amount}}{{gold}}",
 ```
 
 ```csharp
-public const string Bank_LoanRepaid = "Bank.LoanRepaid";          // Constant/I18nKeys.cs
-var msg = Tools.GetI18n(I18nKeys.Bank_LoanRepaid)
-    .Tokens(new { amount = repaid, gold }).ToString();
+public const string PlayerStall_TotalTax = "PlayerStall.TotalTax";   // Constant/I18nKeys.cs
+var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
+    .Tokens(new { amount = totalTax, gold }).ToString();
 ```
 
 - 文件顶部是**倒序版本块**（最新在上），新键挂进对应版本块；无新增时新建一块置于最上方。
@@ -269,7 +272,7 @@ var msg = Tools.GetI18n(I18nKeys.Bank_LoanRepaid)
 | `Red Panda Bazaar Code/Compatibility/Integrations.cs` | GMCM 配置注册与 Central Station 集成，可选依赖的统一入口 |
 | `Red Panda Bazaar Code/Constant/MPMessageType.cs` | 多人消息类型常量 |
 | `Red Panda Bazaar Code/Constant/StatsKeys.cs` | 存档 key 与游戏统计 key |
-| `Red Panda Bazaar Code/Red Panda Bazaar Code.csproj` | 三个自定义 Target 全在这里，改动前先读 `Development Commands` |
+| `Red Panda Bazaar Code/Red Panda Bazaar Code.csproj` | 两个自定义 Target（`DeployCP`、`UpdateModVersion`）全在这里，改动前先读 `Development Commands` |
 | `Red Panda Bazaar Code/manifest.json` | 唯一的版本号来源；构建会自动改写 |
 | `Red Panda Bazaar Code/scripts/UpdateVersion.py` | 版本递增逻辑；仅当版本串含 `.Build.` 才递增 |
 | `Red Panda Bazaar Code/i18n/default.json` | 翻译基准，结构即规范 |
@@ -285,7 +288,7 @@ var msg = Tools.GetI18n(I18nKeys.Bank_LoanRepaid)
 | 构建工具 | `dotnet` CLI 或 Rider / Visual Studio |
 | 构建助手 | `Pathoschild.Stardew.ModBuildConfig` 4.4.0（唯一 NuGet 依赖），自动探测游戏目录并引用游戏与 SMAPI 程序集，含 `0Harmony.dll`（因 `EnableHarmony=true`） |
 | **`python`** | 必须在 `PATH`（构建前调 `UpdateVersion.py`）；缺失会导致**构建硬失败** |
-| **`svn`** | 必须在 `PATH`，且存在 `D:\svn\RedPandaBazaar` 工作副本；否则相关步骤静默失败或产物写错位置 |
+| **`svn`** | 构建本身不再依赖；仅手动执行「SVN 流程」时需要（`svn` 在 `PATH`，且存在 `D:\svn\RedPandaBazaar` 工作副本） |
 | 游戏安装 | 必须能被 ModBuildConfig 自动探测到（注册表 / 常见路径），否则构建报错 |
 | 外部源 | NuGet 需可还原 `Pathoschild.Stardew.ModBuildConfig`；离线时首次构建可能失败 |
 
@@ -316,6 +319,6 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 **已知的仓库卫生问题**（改动时顺带注意，不要扩散）：
 
-- `README.md` 与代码有多处不一致：功能列表缺 `Bank/`、版本号格式描述过时、未提及构建的 SVN/python 副作用、称 CP 包仅为「美术资源」。
-- `out/net6.0/` 累积了 300+ 个历史 zip（已 gitignore，仅占本地磁盘）。
-- 项目曾名为 `Red Panda Bazaar`（TFM 一度为 net8.0），`out/`、`obj/` 与 SVN 工作副本中仍有旧名残留文件。
+- `README.md` 与代码有多处不一致：功能列表缺 `Bank/`、版本号格式描述过时、未提及构建副作用（版本号自动递增、CP 部署等）、称 CP 包仅为「美术资源」。（2026-10 重写精简后仍如此）
+- `out/net6.0/` 的历史 zip 随构建持续堆积（已 gitignore，当前约 10 个），定期清理。
+- 项目曾名为 `Red Panda Bazaar`（TFM 一度为 net8.0），`obj/`（如 `obj/Red Panda Bazaar.csproj.nuget.*`、`obj/Debug/net8.0`）与 SVN 工作副本中仍有旧名残留文件。
