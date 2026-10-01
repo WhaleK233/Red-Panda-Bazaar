@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Constant;
@@ -18,7 +19,7 @@ public static class Transportation
         // 没装 CentralStation 时用按钮交互进集市
         if (!Integrations.Installed.CentralStation)
         {
-            Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+            ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         }
 
         RegisterActions();
@@ -135,7 +136,7 @@ public static class Transportation
 
         if (tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
         {
-            Tools.Helper.Input.Suppress(e.Button);
+            ModInfo.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_EntranceQuestion),
                 new Response[]
                 {

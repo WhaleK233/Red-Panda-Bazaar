@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using HarmonyLib;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
@@ -20,9 +21,9 @@ namespace Red_Panda_Bazaar_Code;
 
 public class ModEntry : Mod {
     public override void Entry(IModHelper helper) {
-        Tools.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
+        ModInfo.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
-        Tools.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        ModInfo.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e) {
@@ -47,7 +48,7 @@ public class ModEntry : Mod {
     }
 
     private static void HarmonyPatch() {
-        var harmony = new Harmony(Tools.ModManifest.UniqueID);
+        var harmony = new Harmony(ModInfo.ModManifest.UniqueID);
         FishingMiniGamePatch.ApplyPatch(harmony);
         BuffsPatch.ApplyPatch(harmony);
         SpecialOrdersPatch.ApplyPatch(harmony);

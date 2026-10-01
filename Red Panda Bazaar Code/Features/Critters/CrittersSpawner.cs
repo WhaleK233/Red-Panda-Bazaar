@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
@@ -90,7 +91,7 @@ public static class CrittersSpawner
 
         var area = layer.LayerSize.Area;
 
-        var p = Tools.ModConfig.CritterMultiplier;
+        var p = ModInfo.ModConfig.CritterMultiplier;
         p *= type switch
         {
             0 => 0.03f,

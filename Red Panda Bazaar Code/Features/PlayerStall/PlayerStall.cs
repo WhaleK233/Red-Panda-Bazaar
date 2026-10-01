@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -54,14 +55,14 @@ public static class PlayerStall {
         Tools.Log("PlayerStall Initializing.");
         ItemSerializer.WarmUp();
         RegisterAll();
-        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-        Tools.Helper.Events.GameLoop.DayEnding += OnDayEnding;
-        Tools.Helper.Events.GameLoop.Saving += OnSaving;
-        Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
-        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
-        Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
-        Tools.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        ModInfo.Helper.Events.GameLoop.DayEnding += OnDayEnding;
+        ModInfo.Helper.Events.GameLoop.Saving += OnSaving;
+        ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
+        ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+        ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
         Tools.Log("PlayerStall Initialized.");
     }
 
@@ -86,7 +87,7 @@ public static class PlayerStall {
         if (action == null || !action.StartsWith("RedPandaBazaar_PlayerStall_")) return;
 
         Game1.activeClickableMenu = new PlayerStallMenu(action);
-        Tools.Helper.Input.Suppress(e.Button);
+        ModInfo.Helper.Input.Suppress(e.Button);
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e) {
@@ -95,7 +96,7 @@ public static class PlayerStall {
         // 存档只在主机电脑上可读写，远程客机靠 DayStarted 的同步请求获取数据
         if (!Context.IsOnHostComputer) return;
 
-        Data = Tools.Helper.Data.ReadSaveData<StallSaveData>(SaveKey) ?? new StallSaveData();
+        Data = ModInfo.Helper.Data.ReadSaveData<StallSaveData>(SaveKey) ?? new StallSaveData();
         PurgeInvalidSnapshots();
     }
 
@@ -113,9 +114,9 @@ public static class PlayerStall {
     /// <summary>新的一天开始，客机向主机请求最新内存数据。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e) {
         if (!Context.IsMainPlayer) {
-            Tools.Helper.Multiplayer.SendMessage(
+            ModInfo.Helper.Multiplayer.SendMessage(
                 true, MPMessageType.PlayerStall_SyncRequest,
-                modIDs: new[] { Tools.ModManifest.UniqueID },
+                modIDs: new[] { ModInfo.ModManifest.UniqueID },
                 playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
         }
     }
@@ -126,7 +127,7 @@ public static class PlayerStall {
 
     /// <summary>立即写入存档。</summary>
     public static void WriteSaveData() {
-        Tools.Helper.Data.WriteSaveData(SaveKey, Data);
+        ModInfo.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
     /// <summary>获取指定摊位的在售物品副本（跳过快照失效的条目）。</summary>
@@ -210,9 +211,9 @@ public static class PlayerStall {
     /// <summary>尝试收取今日账单。主机结算并广播，客机仅发送请求。</summary>
     public static int TryCollectToday() {
         if (!Context.IsMainPlayer) {
-            Tools.Helper.Multiplayer.SendMessage(
+            ModInfo.Helper.Multiplayer.SendMessage(
                 true, MPMessageType.PlayerStall_CollectRequest,
-                modIDs: new[] { Tools.ModManifest.UniqueID },
+                modIDs: new[] { ModInfo.ModManifest.UniqueID },
                 playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
             return CollectPending;
         }
@@ -233,14 +234,14 @@ public static class PlayerStall {
         // 通过 SMAPI 多人消息通知其他玩家
         Tools.SendToHostOrBroadcast(Data.CollectDay, MPMessageType.PlayerStall_Collect);
 
-        var tax = (int)Math.Round(gross * Tools.ModConfig.TaxRate);
+        var tax = (int)Math.Round(gross * ModInfo.ModConfig.TaxRate);
         Data.TotalTax += tax;
         return gross - tax;
     }
 
     /// <summary>接收其他玩家的同步消息。主机负责接收客机请求并转发给所有客机；客机直接应用主机广播。</summary>
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e) {
-        if (e.FromModID != Tools.ModManifest.UniqueID) return;
+        if (e.FromModID != ModInfo.ModManifest.UniqueID) return;
 
         switch (e.Type) {
             case MPMessageType.PlayerStall_Collect:
@@ -259,9 +260,9 @@ public static class PlayerStall {
                     NetEarnings = net,
                     CollectDay = Data.CollectDay
                 };
-                Tools.Helper.Multiplayer.SendMessage(
+                ModInfo.Helper.Multiplayer.SendMessage(
                     result, MPMessageType.PlayerStall_CollectResult,
-                    modIDs: new[] { Tools.ModManifest.UniqueID },
+                    modIDs: new[] { ModInfo.ModManifest.UniqueID },
                     playerIDs: new[] { e.FromPlayerID });
                 break;
             }
@@ -280,9 +281,9 @@ public static class PlayerStall {
 
             case MPMessageType.PlayerStall_SyncRequest: {
                 if (!Context.IsMainPlayer) break;
-                Tools.Helper.Multiplayer.SendMessage(
+                ModInfo.Helper.Multiplayer.SendMessage(
                     Data, MPMessageType.PlayerStall_SyncData,
-                    modIDs: new[] { Tools.ModManifest.UniqueID },
+                    modIDs: new[] { ModInfo.ModManifest.UniqueID },
                     playerIDs: new[] { e.FromPlayerID });
                 break;
             }
@@ -304,8 +305,8 @@ public static class PlayerStall {
                     list.Add(newItem);
 
                 if (Context.IsMainPlayer) {
-                    Tools.Helper.Multiplayer.SendMessage(newItem, MPMessageType.PlayerStall_AddItem,
-                        modIDs: new[] { Tools.ModManifest.UniqueID });
+                    ModInfo.Helper.Multiplayer.SendMessage(newItem, MPMessageType.PlayerStall_AddItem,
+                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
                 }
 
                 break;
@@ -320,8 +321,8 @@ public static class PlayerStall {
                 foreach (var key in emptyKeys) Data.Stock.Remove(key);
 
                 if (Context.IsMainPlayer) {
-                    Tools.Helper.Multiplayer.SendMessage(removeId, MPMessageType.PlayerStall_RemoveItem,
-                        modIDs: new[] { Tools.ModManifest.UniqueID });
+                    ModInfo.Helper.Multiplayer.SendMessage(removeId, MPMessageType.PlayerStall_RemoveItem,
+                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
                 }
 
                 break;
@@ -336,8 +337,8 @@ public static class PlayerStall {
                 target!.RefreshSnapshot();
                 target.Price = update.Price;
                 if (Context.IsMainPlayer) {
-                    Tools.Helper.Multiplayer.SendMessage(update, MPMessageType.PlayerStall_UpdateItem,
-                        modIDs: new[] { Tools.ModManifest.UniqueID });
+                    ModInfo.Helper.Multiplayer.SendMessage(update, MPMessageType.PlayerStall_UpdateItem,
+                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
                 }
 
                 break;

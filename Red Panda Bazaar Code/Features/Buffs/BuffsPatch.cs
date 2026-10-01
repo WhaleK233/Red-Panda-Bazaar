@@ -1,4 +1,5 @@
 ﻿﻿using HarmonyLib;
+using WhaleK.Common;
 using Red_Panda_Bazaar_Code.Constant;
 
 using Red_Panda_Bazaar_Code.Utils;

@@ -1,7 +1,8 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.Framework.UI;
-using Red_Panda_Bazaar_Code.Framework.UI.Components;
+using WhaleK.Common.UI;
+using WhaleK.Common.UI.Components;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 

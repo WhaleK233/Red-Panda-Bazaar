@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -24,7 +25,7 @@ public static class Buffs
 
     private static void InitCustomBuffs()
     {
-        _buffIconTexture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png");
+        _buffIconTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png");
 
         var index = 0;
         BuffDict[ItemsKeys.Food.Golden_Delight] = CreateBuff(

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WhaleK.Common;
+using WhaleK.Common.Integrations;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility.ModApi;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;
@@ -20,12 +22,12 @@ public static class Integrations
     /// <summary>调试通用功能拆分到了独立模组 Dev Debug Kit，这里取它的 API 供 Debug.IsEnabled 查询；未安装时保持 null（视为关闭）。</summary>
     private static void InitDevDebugKit()
     {
-        Installed.DevDebugKitApi = Tools.Helper.ModRegistry.GetApi<IDevDebugKitApi>(ID.DevDebugKit);
+        Installed.DevDebugKitApi = ModInfo.Helper.ModRegistry.GetApi<IDevDebugKitApi>(ID.DevDebugKit);
     }
 
     private static void AddCentralStationDestination()
     {
-        var centralStationApi = Tools.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);
+        var centralStationApi = ModInfo.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);
         if (centralStationApi == null) return;
 
         Installed.CentralStation = true;
@@ -45,24 +47,24 @@ public static class Integrations
     private static void InitializeGenericModConfigMenu()
     {
         // 获取通用模组配置菜单的API
-        var configMenuApi = Tools.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ID.GenericModConfigMenu);
+        var configMenuApi = ModInfo.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ID.GenericModConfigMenu);
         if (configMenuApi == null) return;
 
         Installed.GenericModConfigMenu = true;
 
         // 注册模组
         configMenuApi.Register(
-            mod: Tools.ModManifest,
-            reset: () => Tools.ModConfig = new ModConfig(),
-            save: () => Tools.Helper.WriteConfig(Tools.ModConfig)
+            mod: ModInfo.ModManifest,
+            reset: () => ModInfo.ModConfig = new ModConfig(),
+            save: () => ModInfo.Helper.WriteConfig(ModInfo.ModConfig)
         );
 
         // 税率
         configMenuApi.AddNumberOption(
-            mod: Tools.ModManifest,
+            mod: ModInfo.ModManifest,
             name: () => Tools.GetI18n(I18nKeys.Config_TaxRate),
-            getValue: () => Tools.ModConfig.TaxRate,
-            setValue: value => Tools.ModConfig.TaxRate = value,
+            getValue: () => ModInfo.ModConfig.TaxRate,
+            setValue: value => ModInfo.ModConfig.TaxRate = value,
             min: 0.0f,
             max: 1.0f,
             interval: 0.01f,
@@ -71,10 +73,10 @@ public static class Integrations
 
         // 萤火虫数量
         configMenuApi.AddNumberOption(
-            mod: Tools.ModManifest,
+            mod: ModInfo.ModManifest,
             name: () => Tools.GetI18n(I18nKeys.Config_NumberOfCritterMultiplier),
-            getValue: () => Tools.ModConfig.CritterMultiplier,
-            setValue: value => Tools.ModConfig.CritterMultiplier = (float)Math.Round(value, 1),
+            getValue: () => ModInfo.ModConfig.CritterMultiplier,
+            setValue: value => ModInfo.ModConfig.CritterMultiplier = (float)Math.Round(value, 1),
             min: 0.5f,
             max: 2.0f,
             formatValue: value => Math.Round(value, 1) + "×"
@@ -82,10 +84,10 @@ public static class Integrations
 
         //动画速度
         configMenuApi.AddNumberOption(
-            mod: Tools.ModManifest,
+            mod: ModInfo.ModManifest,
             name: () => Tools.GetI18n(I18nKeys.Config_AnimeSpeed_PrizeMenu),
-            getValue: () => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier,
-            setValue: value => Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier = (float)Math.Round(value, 1),
+            getValue: () => ModInfo.ModConfig.AnimationSpeed_PrizeMenu_Multiplier,
+            setValue: value => ModInfo.ModConfig.AnimationSpeed_PrizeMenu_Multiplier = (float)Math.Round(value, 1),
             min: 0.5f,
             max: 5.0f,
             formatValue: value => Math.Round(value, 1) + "×"
