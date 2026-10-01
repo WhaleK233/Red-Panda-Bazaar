@@ -7,10 +7,4 @@ public class ModConfig
     public float AnimationSpeed_PrizeMenu_Multiplier { get; set; } = 1.0f;
 
     public float TaxRate { get; set; } = 0.1f;
-
-    public string DebugToggleKey { get; set; } = "OemTilde";
-
-    public string DebugMenuKey { get; set; } = "F12";
-
-    public string DebugTeleportKey { get; set; } = "None";
 }

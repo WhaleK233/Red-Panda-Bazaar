@@ -12,8 +12,15 @@ public static class Integrations
 {
     public static void Init()
     {
+        InitDevDebugKit();
         InitializeGenericModConfigMenu();
         AddCentralStationDestination();
+    }
+
+    /// <summary>调试通用功能拆分到了独立模组 Dev Debug Kit，这里取它的 API 供 Debug.IsEnabled 查询；未安装时保持 null（视为关闭）。</summary>
+    private static void InitDevDebugKit()
+    {
+        Installed.DevDebugKitApi = Tools.Helper.ModRegistry.GetApi<IDevDebugKitApi>(ID.DevDebugKit);
     }
 
     private static void AddCentralStationDestination()
@@ -83,41 +90,21 @@ public static class Integrations
             max: 5.0f,
             formatValue: value => Math.Round(value, 1) + "×"
         );
-
-        // 调试快捷键
-        configMenuApi.AddKeybind(
-            mod: Tools.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_DebugKey),
-            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugToggleKey, out var btn) ? btn : SButton.OemTilde,
-            setValue: value => Tools.ModConfig.DebugToggleKey = value.ToString()
-        );
-
-        // 调试菜单快捷键
-        configMenuApi.AddKeybind(
-            mod: Tools.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_DebugMenuKey),
-            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugMenuKey, out var btn) ? btn : SButton.F12,
-            setValue: value => Tools.ModConfig.DebugMenuKey = value.ToString()
-        );
-
-        // 调试传送快捷键
-        configMenuApi.AddKeybind(
-            mod: Tools.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_DebugTeleportKey),
-            getValue: () => Enum.TryParse<SButton>(Tools.ModConfig.DebugTeleportKey, out var btn) ? btn : SButton.None,
-            setValue: value => Tools.ModConfig.DebugTeleportKey = value.ToString()
-        );
     }
 
     public static class Installed
     {
         public static bool GenericModConfigMenu { get; set; } = false;
         public static bool CentralStation { get; set; } = false;
+
+        /// <summary>Dev Debug Kit 的调试状态 API，未安装该模组时为 null。</summary>
+        public static IDevDebugKitApi? DevDebugKitApi { get; set; }
     }
 
     private static class ID
     {
         public const string GenericModConfigMenu = "spacechase0.GenericModConfigMenu";
         public const string CentralStation = "Pathoschild.CentralStation";
+        public const string DevDebugKit = "WhaleK233.DevDebugKit";
     }
 }

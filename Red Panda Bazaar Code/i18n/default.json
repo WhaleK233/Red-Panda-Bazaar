@@ -1,11 +1,8 @@
 ﻿{
   /****** Version 1.1.2 Added ******/
-  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings" ******/
+  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey" ******/
   /****** Version 1.1.0 Added ******/
   /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} tax rate percent ******/
-"Config.DebugKey": "Debug Key",
-  "Config.DebugMenuKey": "Debug Menu Key",
-  "Config.DebugTeleportKey": "Debug Teleport Key",
   "PlayerStall.TaxLine": "Tax: -{{amount}}{{gold}} ({{rate}}%)",
   "PlayerStall.UnitPrice": "Unit",
   "PlayerStall.DateUnknown": "Unknown",

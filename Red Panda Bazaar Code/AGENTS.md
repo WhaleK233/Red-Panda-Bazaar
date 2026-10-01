@@ -17,7 +17,7 @@
 
 C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: true`，缺失会硬报错。CP 包由他人经 SVN 维护，**本仓库只读**；CP 更新不随构建自动同步，需手动执行 SVN 流程（见 `Development Commands`）。
 
-技术栈：C# / `net6.0` / SMAPI 4.x / Harmony（可选 GMCM、Central Station 软依赖）。
+技术栈：C# / `net6.0` / SMAPI 4.x / Harmony（可选 GMCM、Central Station、Dev Debug Kit 软依赖）。
 
 ---
 
@@ -31,12 +31,12 @@ flowchart TD
   T --> GL["订阅 GameLoop.GameLaunched"]
   GL --> OGL["OnGameLaunched"]
   OGL --> I["Integrations.Init<br/>GMCM + CentralStation"]
-  I --> F["FeatureInit × 11"]
+  I --> F["FeatureInit × 10"]
   F --> H["HarmonyPatch<br/>new Harmony(UniqueID)"]
 ```
 
 - `Entry` 只做 `Tools.Init` + 订阅 `GameLaunched`，**不要**在此添加逻辑。
-- `FeatureInit()`（`ModEntry.cs:37-49`）按 `Bank → Buffs → Debug → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。`FishingMiniGame/` 与 `TargetMiniGame/` 是例外：二者为 `IMinigame` 小游戏，没有 `Init()`，前者经 Harmony 补丁接入、后者由 SpringFair 启动。
+- `FeatureInit()`（`ModEntry.cs:36-47`）按 `Bank → Buffs → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。`FishingMiniGame/` 与 `TargetMiniGame/` 是例外：二者为 `IMinigame` 小游戏，没有 `Init()`，前者经 Harmony 补丁接入、后者由 SpringFair 启动。
 - `HarmonyPatch()` 依次 `FishingMiniGamePatch` → `BuffsPatch` → `SpecialOrdersPatch` → `FurniturePatch`。
 
 ### 核心机制
@@ -70,11 +70,10 @@ flowchart TD
 | `Red Panda Bazaar Code/Framework/UI/` | 自研 UI 框架：`UiBaseMenu`、`UiElement`、`Components/`（11 个）、`Enums/` |
 | `Red Panda Bazaar Code/Compatibility/` | 可选集成：`Integrations.cs`（GMCM + Central Station）、`ModApi/`（第三方 API 接口声明） |
 | `Red Panda Bazaar Code/Constant/` | `I18nKeys`、`ItemsKeys`、`MPMessageType`、`StatsKeys`、`QuestsKeys`、`SkillsKeys`、`DataKeys`、`PatchType` |
-| `Red Panda Bazaar Code/Config/` | `ModConfig.cs`（6 个配置项） |
+| `Red Panda Bazaar Code/Config/` | `ModConfig.cs`（3 个配置项） |
 | `Red Panda Bazaar Code/i18n/` | `default.json`（英文）+ `zh.json`（中文），**必须同步维护** |
 | `Red Panda Bazaar Code/assets/` | C# 侧纹理（5 个 PNG），用 `ModContent.Load` 加载 |
 | `Red Panda Bazaar Code/scripts/` | `UpdateVersion.py`，构建前被 csproj 调用 |
-| `Red Panda Bazaar Code/DeBug/` | 调试模式与调试菜单 |
 | `[CP]Red Panda Bazaar/` | **只读**：地图、NPC、商店、节日、物品定义、美术资源 |
 
 ---
@@ -309,13 +308,7 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 改动完成后，交付前至少要保证编译通过；涉及游戏内行为的部分，需**列出可执行的验证清单**交给开发者在游戏内确认，而不是声称已验证。
 
-**调试设施**（`DeBug/`，`ModConfig` 中可改键位）：
-
-| 热键 | 默认 | 作用 |
-|---|---|---|
-| `DebugToggleKey` | `~`（`OemTilde`） | 开关调试可视化：高亮 `Buildings` 层所有带 `Action` 属性的 tile，鼠标悬停显示 Action ID |
-| `DebugMenuKey` | `F12` | 打开调试菜单（`DebugMenu : UiBaseMenu`） |
-| `DebugTeleportKey` | `None`（禁用） | 传送到光标所在 tile |
+**调试设施**：通用调试功能（可视化开关、Tile Action 高亮、调试菜单、光标传送）已拆分到独立模组 **Dev Debug Kit**（`WhaleK233.DevDebugKit`，位于本仓库之外 `MySDVMods/Dev Debug Kit/`），键位在其 GMCM 中配置。本模组仅保留专属调试 UI（摊位菜单的 Action ID 叠层），经 `Integrations.Installed.DevDebugKitApi` 读取其开关状态（未安装时自动关闭），自己不再有任何调试配置项。
 
 **已知的仓库卫生问题**（改动时顺带注意，不要扩散）：
 
