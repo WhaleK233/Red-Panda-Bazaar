@@ -1,7 +1,6 @@
 using HarmonyLib;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
-using Red_Panda_Bazaar_Code.DeBug;
 using Red_Panda_Bazaar_Code.Features.Bank;
 using Red_Panda_Bazaar_Code.Features.Buffs;
 using Red_Panda_Bazaar_Code.Features.ButterflyNight;
@@ -37,7 +36,6 @@ public class ModEntry : Mod {
     private static void FeatureInit() {
         Bank.Init();
         Buffs.Init();
-        Debug.Init();
         Critter.Init();
         Furniture.Init();
         SpringFair.Init();
