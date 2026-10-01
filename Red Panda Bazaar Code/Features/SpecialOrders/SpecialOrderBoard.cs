@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WhaleK.Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -14,8 +15,8 @@ public class SpecialOrderBoard : SpecialOrdersBoard
 {
     public SpecialOrderBoard(string board_type = "") : base(board_type)
     {
-        Tools.Helper.Reflection.GetField<Texture2D>(this, "billboardTexture")
-            .SetValue(Tools.Helper.ModContent.Load<Texture2D>("assets/RPB_SpecialOrderBoard.png"));
+        ModInfo.Helper.Reflection.GetField<Texture2D>(this, "billboardTexture")
+            .SetValue(ModInfo.Helper.ModContent.Load<Texture2D>("assets/RPB_SpecialOrderBoard.png"));
     }
 
     public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)

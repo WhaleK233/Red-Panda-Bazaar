@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
@@ -17,11 +18,11 @@ public static class SpecialOrders
     {
         Tools.Log("Quests Initializing.");
 
-        _itemsTexture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Items.png");
-        Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
-        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-        Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+        _itemsTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Items.png");
+        ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
         GameLocation.RegisterTileAction("RedPandaBazaar_SpecialOrdersBoard", (_, _, _, _) =>
         {
             Game1.activeClickableMenu = new SpecialOrderBoard(QuestsKeys.CXM_OrderType);

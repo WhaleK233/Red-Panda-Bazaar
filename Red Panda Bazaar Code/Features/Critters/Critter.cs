@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -45,8 +46,8 @@ public static class Critter
     {
         Tools.Log("CritterEffects Initializing.");
 
-        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
-        Tools.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+        ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
+        ModInfo.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
         Tools.Log("CritterEffects Initialized.");
     }

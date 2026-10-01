@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Red_Panda_Bazaar_Code.Features.Critters;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -12,8 +13,8 @@ public static class ButterflyNight
     {
         Tools.Log("Butterfly Night Initializing.");
 
-        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
-        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+        ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
         Tools.Log("Butterfly Night Initialized.");
     }

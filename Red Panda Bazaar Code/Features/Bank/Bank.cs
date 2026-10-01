@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -21,11 +22,11 @@ public static class Bank
     {
         Tools.Log("Bank Initializing.");
         GameLocation.RegisterTileAction("RedPandaBazaar_BankMenu", OnTileAction);
-        Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        Tools.Helper.Events.GameLoop.Saving += OnSaving;
-        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
-        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-        Tools.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        ModInfo.Helper.Events.GameLoop.Saving += OnSaving;
+        ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
         Tools.Log("Bank Initialized.");
     }
 
@@ -46,7 +47,7 @@ public static class Bank
         if (action != "RedPandaBazaar_BankMenu") return;
 
         ShowBankServiceDialogue(Game1.currentLocation);
-        Tools.Helper.Input.Suppress(e.Button);
+        ModInfo.Helper.Input.Suppress(e.Button);
     }
 
     /// <summary>弹出业务选择对话框。</summary>
@@ -87,7 +88,7 @@ public static class Bank
 
         if (Context.IsOnHostComputer)
         {
-            Data = Tools.Helper.Data.ReadSaveData<BankSaveData>(SaveKey) ?? new BankSaveData();
+            Data = ModInfo.Helper.Data.ReadSaveData<BankSaveData>(SaveKey) ?? new BankSaveData();
         }
     }
 
@@ -98,7 +99,7 @@ public static class Bank
 
     public static void WriteSaveData()
     {
-        Tools.Helper.Data.WriteSaveData(SaveKey, Data);
+        ModInfo.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
     /// <summary>每日利息结算及到期提醒（仅主机执行）。</summary>
@@ -377,9 +378,9 @@ public static class Bank
             Amount = amount,
             Param = param
         };
-        Tools.Helper.Multiplayer.SendMessage(
+        ModInfo.Helper.Multiplayer.SendMessage(
             data, MPMessageType.Bank_ActionRequest,
-            modIDs: new[] { Tools.ModManifest.UniqueID },
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
             playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
     }
 
@@ -392,14 +393,14 @@ public static class Bank
             Loans = Data.Loans,
             LastInterestDay = Data.LastInterestDay
         };
-        Tools.Helper.Multiplayer.SendMessage(
+        ModInfo.Helper.Multiplayer.SendMessage(
             syncData, MPMessageType.Bank_SyncData,
-            modIDs: new[] { Tools.ModManifest.UniqueID });
+            modIDs: new[] { ModInfo.ModManifest.UniqueID });
     }
 
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
     {
-        if (e.FromModID != Tools.ModManifest.UniqueID) return;
+        if (e.FromModID != ModInfo.ModManifest.UniqueID) return;
 
         switch (e.Type)
         {

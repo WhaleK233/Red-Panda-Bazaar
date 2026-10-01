@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WhaleK.Common;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -16,8 +17,8 @@ public static class Furniture
     {
         Tools.Log("Furniture Initializing.");
 
-        Tools.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
-        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+        ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
         Tools.Log("Furniture Initialized.");
     }

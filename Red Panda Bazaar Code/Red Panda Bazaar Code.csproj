@@ -31,4 +31,7 @@
         <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 
+    <!-- 公共源码（UI 框架/物品序列化/随机与时间工具/GMCM 接口），见 MySDVMods/Common -->
+    <Import Project="..\..\Common\WhaleK.Common.projitems" Label="Shared"/>
+
 </Project>

@@ -1,3 +1,4 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
@@ -31,10 +32,10 @@ public static class SpringFair
     {
         Tools.Log("Spring Fair Initializing.");
 
-        Tools.Helper.Events.GameLoop.DayStarted += OnDayStarted;
-        Tools.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-        Tools.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
-        Tools.Helper.Events.Player.Warped += OnPlayerWarped;
+        ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
+        ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
+        ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+        ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
         Tools.Log("Spring Fair Initialized.");
     }
@@ -213,7 +214,7 @@ public static class SpringFair
                             Game1.player.increaseBackpackSize(12);
                             Game1.player.holdUpItemThenMessage(new SpecialItem(99,
                                 Game1.content.LoadString("Strings\\StringsFromCSFiles:GameLocation.cs.8708")));
-                            Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                            ModInfo.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
                                 .globalChatInfoMessage("BackpackLarge", Game1.player.Name);
                         }
                     }
@@ -238,7 +239,7 @@ public static class SpringFair
                                     Game1.player.Items.Add(null);
                             }
 
-                            Tools.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
+                            ModInfo.Helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue()
                                 .globalChatInfoMessage("BackpackDeluxe", Game1.player.Name);
                         }
                     }

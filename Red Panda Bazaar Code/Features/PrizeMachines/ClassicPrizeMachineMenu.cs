@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WhaleK.Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 
@@ -26,15 +27,15 @@ public class ClassicPrizeMachineMenu : IClickableMenu
         : base((int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).X,
             (int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).Y, 464, 376, true)
     {
-        this.texture = Tools.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_1.png");
+        this.texture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_1.png");
         //this.texture = Game1.content.Load<Texture2D>("LooseSprites\\PrizeTicketMenu");
         this.mainButton = new ClickableTextureComponent(
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,
             new Rectangle(150, 29, 23, 22), 4f);
         Game1.playSound("machine_bell");
 
-        GettingRewardTime = 2000f / Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
-        GettingRewardOffset = 1000f / Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
+        GettingRewardTime = 2000f / ModInfo.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
+        GettingRewardOffset = 1000f / ModInfo.ModConfig.AnimationSpeed_PrizeMenu_Multiplier;
 
         prize = newPrizeItem();
 
@@ -174,7 +175,7 @@ public class ClassicPrizeMachineMenu : IClickableMenu
         if (this.gettingReward) // 如果正在获奖
         {
             Vector2 vector2 = new Vector2(52f, 21f) * 4f; // 获取位置
-            vector2.Y -= (this.getRewardTimer * Tools.ModConfig.AnimationSpeed_PrizeMenu_Multiplier / 13f);
+            vector2.Y -= (this.getRewardTimer * ModInfo.ModConfig.AnimationSpeed_PrizeMenu_Multiplier / 13f);
             vector2.Y = Math.Max(vector2.Y, 0.0f);
             // 添加抖动效果
             vector2.X += this.getRewardTimer / GettingRewardOffset * (float)RandomUtils.Next(-1, 2);

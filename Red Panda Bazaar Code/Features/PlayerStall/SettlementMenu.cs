@@ -1,9 +1,10 @@
+﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
-using Red_Panda_Bazaar_Code.Framework.UI;
-using Red_Panda_Bazaar_Code.Framework.UI.Components;
-using Red_Panda_Bazaar_Code.Framework.UI.Enums;
+using WhaleK.Common.UI;
+using WhaleK.Common.UI.Components;
+using WhaleK.Common.UI.Enums;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 
@@ -142,8 +143,8 @@ public class SettlementMenu : UiBaseMenu
         Root.Add(new UiSeparator());
 
         // 税收
-        var taxAmount = (int)Math.Round(_totalEarnings * Tools.ModConfig.TaxRate);
-        var taxPct = (int)(Tools.ModConfig.TaxRate * 100);
+        var taxAmount = (int)Math.Round(_totalEarnings * ModInfo.ModConfig.TaxRate);
+        var taxPct = (int)(ModInfo.ModConfig.TaxRate * 100);
         var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
             .Tokens(new { amount = taxAmount, gold, rate = taxPct }).ToString();
         Root.Add(new UiText(taxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Red });

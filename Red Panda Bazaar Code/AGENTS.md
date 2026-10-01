@@ -19,6 +19,8 @@ C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: 
 
 技术栈：C# / `net6.0` / SMAPI 4.x / Harmony（可选 GMCM、Central Station、Dev Debug Kit 软依赖）。
 
+公共源码（自研 UI 框架、`ItemSerializer`、`RandomUtils`、`TimeUtils`、`PatchType`、GMCM 接口声明、通用 `Tools` 函数）在仓库之外的共享项目 **`MySDVMods/Common`**（命名空间 `WhaleK.Common`，MSBuild Shared Project 编译期注入，csproj 经 `<Import>` 引用）；该目录缺失时本仓库无法编译。mod 专属信息（Helper/配置/Monitor 等）在 `Utils/ModInfo.cs`，启动时经 `ModInfo.Init` 注入公共运行时。
+
 ---
 
 ## Architecture & Data Flow
@@ -43,17 +45,17 @@ flowchart TD
 
 | 机制 | 说明 |
 |---|---|
-| **`Tools` 静态服务定位器** | `Utils/Tools.cs` 是全仓唯一的全局依赖入口：日志 `Log*`、翻译 `GetI18n`、配置 `ModConfig`、扣款 `TryCharge`、多人 `SendToHostOrBroadcast`。**不要**新增第二个服务定位器，也不要往业务类里传 `IModHelper` |
+| **`ModInfo` + `WhaleK.Common.Tools`** | `Utils/ModInfo.cs` 存本 mod 专属信息（Helper/ModConfig/Monitor/I18n/ModManifest），启动时注入公共运行时；通用函数（日志 `Log*`、翻译 `GetI18n`、扣款 `TryCharge`、多人 `SendToHostOrBroadcast`、`IsGoodWeather`/`IsValidButtonAction`）在共享项目的 `WhaleK.Common.Tools`。**不要**新增第二个服务定位器，也不要往业务类里传 `IModHelper` |
 | **Feature 自治** | `Features/<Name>/` 每个目录一个独立功能，暴露 `public static void Init()`，自行订阅事件、注册 Tile Action、持有自己的 `*Data.cs` 与菜单（例外：`FishingMiniGame/`、`TargetMiniGame/` 是 `IMinigame` 小游戏，无 `Init()`） |
 | **主机权威多人模型** | 改世界 / 改金币 / 结算只由 `Context.IsMainPlayer` 执行；客机发请求或收广播。消息类型集中在 `Constant/MPMessageType.cs` |
 | **事件优于补丁** | 决策阶梯：`Data/` 表 → SMAPI 事件 → 已有 API → 扩展点 → Prefix/Postfix → Transpiler（最后手段）。目前全仓仅 4 个补丁类共 9 处 Harmony 补丁 |
-| **自研 UI 框架** | `Framework/UI/` 提供声明式菜单（`UiBaseMenu` + 组件树 + Measure/Arrange 两段式布局 + 手柄焦点导航），新菜单必须使用 |
+| **自研 UI 框架** | `WhaleK.Common.UI`（共享项目 `MySDVMods/Common`）提供声明式菜单（`UiBaseMenu` + 组件树 + Measure/Arrange 两段式布局 + 手柄焦点导航），新菜单必须使用 |
 
 ### 数据流
 
 ```
 玩家交互 → SMAPI 事件 / Tile Action → Feature 静态类
-  → 修改内存状态（Tools.Helper.Data.ReadSaveData 得到的内存对象）
+  → 修改内存状态（ModInfo.Helper.Data.ReadSaveData 得到的内存对象）
   → GameLoop.Saving 时落盘（仅主机）
   → 变更如需同步，Tools.SendToHostOrBroadcast 广播 / 定向发送
 ```
@@ -65,11 +67,11 @@ flowchart TD
 | 路径 | 用途 |
 |---|---|
 | `Red Panda Bazaar Code/ModEntry.cs` | SMAPI 入口，仅 4 个方法 |
-| `Red Panda Bazaar Code/Utils/` | `Tools`（服务定位器）、`ItemSerializer`（物品 XML 快照）、`TimeUtils`、`RandomUtils` |
+| `Red Panda Bazaar Code/Utils/` | `ModInfo.cs`（mod 专属信息）；物品序列化、随机、时间工具与通用函数已移至共享项目 `MySDVMods/Common` |
 | `Red Panda Bazaar Code/Features/` | 12 个功能模块，每个自成一目录（`Bank/`、`PlayerStall/`、`SpringFair/`、`Buffs/`、`Furniture/`、`Transportation/`、`Critters/`、`SpecialOrders/`、`PrizeMachines/`、`FishingMiniGame/`、`TargetMiniGame/`、`ButterflyNight/`） |
-| `Red Panda Bazaar Code/Framework/UI/` | 自研 UI 框架：`UiBaseMenu`、`UiElement`、`Components/`（11 个）、`Enums/` |
-| `Red Panda Bazaar Code/Compatibility/` | 可选集成：`Integrations.cs`（GMCM + Central Station）、`ModApi/`（第三方 API 接口声明） |
-| `Red Panda Bazaar Code/Constant/` | `I18nKeys`、`ItemsKeys`、`MPMessageType`、`StatsKeys`、`QuestsKeys`、`SkillsKeys`、`DataKeys`、`PatchType` |
+| `MySDVMods/Common/`（仓库外） | 共享源码项目：`WhaleK.Common.UI`（`UiBaseMenu` + 11 组件 + 枚举）、`ItemSerializer`、`RandomUtils`、`TimeUtils`、`PatchType`、GMCM 接口声明 |
+| `Red Panda Bazaar Code/Compatibility/` | 可选集成：`Integrations.cs`（GMCM + Central Station + Dev Debug Kit）、`ModApi/`（第三方 API 接口声明） |
+| `Red Panda Bazaar Code/Constant/` | `I18nKeys`、`ItemsKeys`、`MPMessageType`、`StatsKeys`、`QuestsKeys`、`SkillsKeys`、`DataKeys` |
 | `Red Panda Bazaar Code/Config/` | `ModConfig.cs`（3 个配置项） |
 | `Red Panda Bazaar Code/i18n/` | `default.json`（英文）+ `zh.json`（中文），**必须同步维护** |
 | `Red Panda Bazaar Code/assets/` | C# 侧纹理（5 个 PNG），用 `ModContent.Load` 加载 |
@@ -129,7 +131,7 @@ svn commit "D:\svn\RedPandaBazaar\Red Panda Bazaar Code" -m "Auto sync build out
 ### 硬性规则
 
 - **优先复用 `Utils/` 中的工具类**，避免重复造轮子。
-- **菜单界面必须使用项目自带的 UI 框架**（`Framework/UI/`），包括 `UiBaseMenu`、`UiButton`、`UiText`、`UiTable`、`UiRow`/`UiColumn` 等组件；**禁止**直接使用星露谷原版的 `IClickableMenu` 或自行绘制。
+- **菜单界面必须使用自研 UI 框架**（`WhaleK.Common.UI`，共享项目 `MySDVMods/Common`），包括 `UiBaseMenu`、`UiButton`、`UiText`、`UiTable`、`UiRow`/`UiColumn` 等组件；**禁止**直接使用星露谷原版的 `IClickableMenu` 或自行绘制。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
 - **禁止修改 `[CP]Red Panda Bazaar/` 下的任何文件**（Content Patcher 内容包）。它由他人维护，手动 SVN 拉取流程会整目录覆盖本地改动。
@@ -208,7 +210,7 @@ private static void OnModMessageReceived(object? sender, ModMessageReceivedEvent
 - 判据区别：`IsMainPlayer` = 屏幕 0 上的权威玩家；`IsOnHostComputer` = 存档在本机（分屏第二玩家为真）。**访问存档 API 必须用后者** —— SMAPI 的 `ReadSaveData`/`WriteSaveData` 内部就是按 `IsOnHostComputer` 校验，用错会抛 `InvalidOperationException`。
 - 存档 key 常量集中在 `Constant/StatsKeys.cs`，前缀 `WhaleK233.RedPandaBazaar.`。
 - `OnSaveLoaded` 中先 `Data = new T()` 重置跨存档状态，再按判据读取。
-- **跨存档 / 跨网络传物品一律走 `Utils/ItemSerializer` 的 XML 快照**（`ItemSnapshot` 模式），数量以快照的 `Item.Stack` 为准，不要另存数量字段；惰性访问器写成**方法**（`GetItem()`）而非属性，否则会被 JSON 序列化器写回存档。
+- **跨存档 / 跨网络传物品一律走 `WhaleK.Common.ItemSerializer` 的 XML 快照**（`ItemSnapshot` 模式），数量以快照的 `Item.Stack` 为准，不要另存数量字段；惰性访问器写成**方法**（`GetItem()`）而非属性，否则会被 JSON 序列化器写回存档。
 
 ### UI 框架
 
@@ -265,9 +267,9 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | 文件 | 为什么重要 |
 |---|---|
 | `Red Panda Bazaar Code/ModEntry.cs` | 唯一入口；启动链与补丁注册点 |
-| `Red Panda Bazaar Code/Utils/Tools.cs` | 全局服务定位器 + 通用工具，几乎所有代码都依赖它 |
-| `Red Panda Bazaar Code/Utils/ItemSerializer.cs` | 物品 XML 快照；跨存档/网络传物品的唯一正确途径 |
-| `Red Panda Bazaar Code/Framework/UI/UiBaseMenu.cs` | 所有菜单的基类，布局与焦点模型都在这里 |
+| `Red Panda Bazaar Code/Utils/ModInfo.cs` | 本 mod 专属信息（Helper/配置/Monitor/翻译/清单），启动时注入 `WhaleK.Common.Tools` |
+| `MySDVMods/Common/UI/UiBaseMenu.cs`（仓库外） | 所有菜单的基类，布局与焦点模型都在这里 |
+| `MySDVMods/Common/ItemSerializer.cs`（仓库外） | 物品 XML 快照；跨存档/网络传物品的唯一正确途径 |
 | `Red Panda Bazaar Code/Compatibility/Integrations.cs` | GMCM 配置注册与 Central Station 集成，可选依赖的统一入口 |
 | `Red Panda Bazaar Code/Constant/MPMessageType.cs` | 多人消息类型常量 |
 | `Red Panda Bazaar Code/Constant/StatsKeys.cs` | 存档 key 与游戏统计 key |
@@ -288,6 +290,7 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | 构建助手 | `Pathoschild.Stardew.ModBuildConfig` 4.4.0（唯一 NuGet 依赖），自动探测游戏目录并引用游戏与 SMAPI 程序集，含 `0Harmony.dll`（因 `EnableHarmony=true`） |
 | **`python`** | 必须在 `PATH`（构建前调 `UpdateVersion.py`）；缺失会导致**构建硬失败** |
 | **`svn`** | 构建本身不再依赖；仅手动执行「SVN 流程」时需要（`svn` 在 `PATH`，且存在 `D:\svn\RedPandaBazaar` 工作副本） |
+| **`MySDVMods/Common`** | 共享源码项目，必须位于本仓库的兄弟目录（csproj 以 `..\..\Common\...` 相对引用）；修改公共代码后需编译所有接入 mod |
 | 游戏安装 | 必须能被 ModBuildConfig 自动探测到（注册表 / 常见路径），否则构建报错 |
 | 外部源 | NuGet 需可还原 `Pathoschild.Stardew.ModBuildConfig`；离线时首次构建可能失败 |
 
