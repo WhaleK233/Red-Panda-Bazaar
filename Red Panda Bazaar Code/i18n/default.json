@@ -1,6 +1,17 @@
 ﻿{
   /****** Version 1.1.2 Added ******/
-  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey" ******/
+  "Bank.ServiceInvestment": "Project Investment",
+  "Bank.InvestmentTitle": "Project Investment",
+  "Bank.InvestmentTaxPool": "Tax Pool: {{amount}}{{gold}}",
+  "Bank.InvestmentBike": "Shared Bikes",
+  "Bank.InvestmentBikeDesc": "Rent shared bikes at Maple Bridge",
+  "Bank.InvestmentStatusUnlocked": "Unlocked",
+  "Bank.InvestmentStatusLocked": "Not Unlocked",
+  "Bank.InvestmentUnlock": "Unlock ({{amount}}{{gold}})",
+  "SharedBikes.UnlockSuccess": "Shared bikes project unlocked! Grab a ride at Maple Bridge!",
+  "SharedBikes.TaxNotEnough": "Not enough funds in the tax pool",
+  "PlayerStall.TaxRemaining": "Remaining Tax: {{amount}}{{gold}}",
+  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey", "Bank.ServiceTax", "Bank.TaxTab", "Bank.TotalTax", "PlayerStall.TotalTax" ******/
   /****** Version 1.1.0 Added ******/
   /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} tax rate percent ******/
   "PlayerStall.TaxLine": "Tax: -{{amount}}{{gold}} ({{rate}}%)",
@@ -16,14 +27,12 @@
   "PlayerStall.ColHeader.Qty": "Qty",
   "PlayerStall.ColHeader.Price": "Price",
   "PlayerStall.Total": "Total: {{amount}}{{gold}}",
-  "PlayerStall.TotalTax": "Total Tax: {{amount}}{{gold}}",
   "PlayerStall.CollectAll": "Collect All",
   "PlayerStall.Collected": "Collected",
   "Bank.Title": "Red Panda Bazaar Bank",
   "Bank.ServiceQuestion": "Welcome to the Red Panda Bazaar Bank. What business would you like to handle?",
   "Bank.ServiceChecking": "Checking Account",
   "Bank.ServiceFixed": "Fixed Deposit",
-  "Bank.ServiceTax": "Tax Inquiry",
   "Bank.ServiceCancel": "Cancel",
   "Bank.CheckingTab": "Checking",
   "Bank.CheckingBalance": "Balance: {{amount}}{{gold}}",
@@ -48,8 +57,6 @@
   "Bank.FixedEmpty": "No fixed deposits yet.",
   "Bank.FixedEarlyWithdrawTip": "Tip: Early withdrawal gives half interest",
   "Bank.NewFixedAmountTitle": "Deposit Amount",
-  "Bank.TaxTab": "Tax",
-  "Bank.TotalTax": "Total Tax Paid: {{amount}}{{gold}}",
   "Bank.DailyRateLabel": "Daily Rate: {{rate}}%",
   "Bank.Apply": "Apply",
   "Bank.LoanInterest": "Interest: {{amount}}{{gold}}",

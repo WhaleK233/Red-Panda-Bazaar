@@ -1,6 +1,17 @@
 ﻿{
   /****** Version 1.1.2 Added ******/
-  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey" ******/
+  "Bank.ServiceInvestment": "项目投资",
+  "Bank.InvestmentTitle": "项目投资",
+  "Bank.InvestmentTaxPool": "税款池: {{amount}}{{gold}}",
+  "Bank.InvestmentBike": "共享单车",
+  "Bank.InvestmentBikeDesc": "在枫叶桥租用共享单车出行",
+  "Bank.InvestmentStatusUnlocked": "已开通",
+  "Bank.InvestmentStatusLocked": "未开通",
+  "Bank.InvestmentUnlock": "开通 ({{amount}}{{gold}})",
+  "SharedBikes.UnlockSuccess": "共享单车项目开通成功！去枫叶桥骑车吧！",
+  "SharedBikes.TaxNotEnough": "税款池资金不足",
+  "PlayerStall.TaxRemaining": "剩余税款: {{amount}}{{gold}}",
+  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey", "Bank.ServiceTax", "Bank.TaxTab", "Bank.TotalTax", "PlayerStall.TotalTax" ******/
   /****** Version 1.1.0 Added ******/
   /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 税率百分比 ******/
   "PlayerStall.TaxLine": "税款: -{{amount}}{{gold}} ({{rate}}%)",
@@ -16,14 +27,12 @@
   "PlayerStall.ColHeader.Qty": "数量",
   "PlayerStall.ColHeader.Price": "金额",
   "PlayerStall.Total": "合计: {{amount}}{{gold}}",
-  "PlayerStall.TotalTax": "历史总税收: {{amount}}{{gold}}",
   "PlayerStall.CollectAll": "全部收取",
   "PlayerStall.Collected": "已收取",
   "Bank.Title": "小熊猫集市银行",
   "Bank.ServiceQuestion": "欢迎光临小熊猫集市银行，请问您要办理什么业务？",
   "Bank.ServiceChecking": "活期存款",
   "Bank.ServiceFixed": "定期存款",
-  "Bank.ServiceTax": "税收查询",
   "Bank.ServiceCancel": "取消",
   "Bank.CheckingTab": "活期",
   "Bank.CheckingBalance": "余额: {{amount}}{{gold}}",
@@ -48,8 +57,6 @@
   "Bank.FixedEmpty": "暂无定期存款。",
   "Bank.FixedEarlyWithdrawTip": "提示：提前支取利息减半",
   "Bank.NewFixedAmountTitle": "存款金额",
-  "Bank.TaxTab": "税收",
-  "Bank.TotalTax": "累计缴税: {{amount}}{{gold}}",
   "Bank.DailyRateLabel": "日利率: {{rate}}%",
   "Bank.Apply": "申请",
   "Bank.LoanInterest": "利息: {{amount}}{{gold}}",

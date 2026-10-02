@@ -75,8 +75,8 @@ public class SettlementMenu : UiBaseMenu
         var emptyMsg = Tools.GetI18n(I18nKeys.PlayerStall_BillEmpty).ToString();
         Root.Add(new UiText(emptyMsg) { Color = Game1.textColor * 0.6f });
 
-        var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
-            .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
+        var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxRemaining)
+            .Tokens(new { amount = PlayerStall.Tax, gold }).ToString();
         Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
     }
 
@@ -163,10 +163,10 @@ public class SettlementMenu : UiBaseMenu
         Root.Add(new UiButton(btnText, OnCollect) { Enabled = !collected });
 
         // 累计已交税额
-        if (PlayerStall.TotalTax > 0)
+        if (PlayerStall.Tax > 0)
         {
-            var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
-                .Tokens(new { amount = PlayerStall.TotalTax, gold }).ToString();
+            var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxRemaining)
+                .Tokens(new { amount = PlayerStall.Tax, gold }).ToString();
             Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
         }
     }
