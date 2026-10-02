@@ -18,7 +18,7 @@ public static class SpecialOrders
     {
         Tools.Log("Quests Initializing.");
 
-        _itemsTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Items.png");
+        _itemsTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RedPandaBazaar_Items.png");
         ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;

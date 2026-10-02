@@ -27,7 +27,7 @@ public class ClassicPrizeMachineMenu : IClickableMenu
         : base((int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).X,
             (int)Utility.getTopLeftPositionForCenteringOnScreen(464, 376).Y, 464, 376, true)
     {
-        this.texture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_PrizeTicketMenu_1.png");
+        this.texture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RedPandaBazaar_PrizeTicketMenu_1.png");
         //this.texture = Game1.content.Load<Texture2D>("LooseSprites\\PrizeTicketMenu");
         this.mainButton = new ClickableTextureComponent(
             new Rectangle(this.xPositionOnScreen + 192, this.yPositionOnScreen + 216, 92, 88), this.texture,

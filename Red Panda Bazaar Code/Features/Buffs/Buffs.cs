@@ -25,7 +25,7 @@ public static class Buffs
 
     private static void InitCustomBuffs()
     {
-        _buffIconTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/RedPandaBazaar_Buffs.png");
+        _buffIconTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RedPandaBazaar_Buffs.png");
 
         var index = 0;
         BuffDict[ItemsKeys.Food.Golden_Delight] = CreateBuff(
