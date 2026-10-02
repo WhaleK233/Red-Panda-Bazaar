@@ -121,7 +121,7 @@ public static class I18nKeys
     public const string PlayerStall_DateUnknown = "PlayerStall.DateUnknown";
     public const string PlayerStall_ColHeader_Time = "PlayerStall.ColHeader.Time";
     public const string PlayerStall_Total = "PlayerStall.Total";
-    public const string PlayerStall_TotalTax = "PlayerStall.TotalTax";
+    public const string PlayerStall_TaxRemaining = "PlayerStall.TaxRemaining";
     public const string PlayerStall_CollectAll = "PlayerStall.CollectAll";
     public const string PlayerStall_Collected = "PlayerStall.Collected";
 
@@ -144,7 +144,7 @@ public static class I18nKeys
     public const string Bank_ServiceQuestion = "Bank.ServiceQuestion";
     public const string Bank_ServiceChecking = "Bank.ServiceChecking";
     public const string Bank_ServiceFixed = "Bank.ServiceFixed";
-    public const string Bank_ServiceTax = "Bank.ServiceTax";
+    public const string Bank_ServiceInvestment = "Bank.ServiceInvestment";
     public const string Bank_ServiceCancel = "Bank.ServiceCancel";
 
     // Checking
@@ -174,9 +174,14 @@ public static class I18nKeys
     public const string Bank_NewFixedAmountTitle = "Bank.NewFixedAmountTitle";
     public const string Bank_FixedEarlyWithdrawTip = "Bank.FixedEarlyWithdrawTip";
 
-    // Tax
-    public const string Bank_TaxTab = "Bank.TaxTab";
-    public const string Bank_TotalTax = "Bank.TotalTax";
+    // Investment
+    public const string Bank_InvestmentTitle = "Bank.InvestmentTitle";
+    public const string Bank_InvestmentTaxPool = "Bank.InvestmentTaxPool";
+    public const string Bank_InvestmentBike = "Bank.InvestmentBike";
+    public const string Bank_InvestmentBikeDesc = "Bank.InvestmentBikeDesc";
+    public const string Bank_InvestmentStatusUnlocked = "Bank.InvestmentStatusUnlocked";
+    public const string Bank_InvestmentStatusLocked = "Bank.InvestmentStatusLocked";
+    public const string Bank_InvestmentUnlock = "Bank.InvestmentUnlock";
 
     public const string Bank_DailyRateLabel = "Bank.DailyRateLabel";
     public const string Bank_Apply = "Bank.Apply";
@@ -193,6 +198,13 @@ public static class I18nKeys
     public const string Bank_InvalidAmount = "Bank.InvalidAmount";
     public const string Bank_NotEnoughBalance = "Bank.NotEnoughBalance";
     public const string Bank_NoMoney = "Bank.NoMoney";
+
+    #endregion
+
+    #region SharedBikes
+
+    public const string SharedBikes_UnlockSuccess = "SharedBikes.UnlockSuccess";
+    public const string SharedBikes_TaxNotEnough = "SharedBikes.TaxNotEnough";
 
     #endregion
 }

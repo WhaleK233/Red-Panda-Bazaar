@@ -42,7 +42,7 @@ public static class BankCalculator {
     /// <summary>总信用额度 = max(有效收入 × 0.5, 游戏天数 × 10000) + 总税收 × 0.5。</summary>
     public static long GetTotalCreditLimit(List<LoanAccount> allLoans) {
         var byEarnings = (long)(GetEffectiveEarnings(allLoans) * 0.5);
-        var taxBonus = (long)(PlayerStall.PlayerStall.TotalTax * 0.5);
+        var taxBonus = (long)(PlayerStall.PlayerStall.Tax * 0.5);
         return Math.Max(byEarnings, 10000) + taxBonus;
     }
 

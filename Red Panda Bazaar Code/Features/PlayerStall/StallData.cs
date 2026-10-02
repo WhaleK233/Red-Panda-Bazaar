@@ -14,6 +14,7 @@ public class StallSaveData {
     /// <summary>最近一次已领取的售出记录副本，收取后当天仍可查看账单明细。</summary>
     public List<SoldRecord>? LastSoldRecords { get; set; }
 
+    /// <summary>剩余税款（税款池）：摊位结算时入账，公共项目投资时支出。字段名沿用旧存档键以保持兼容。</summary>
     public int TotalTax { get; set; }
     public int CollectDay { get; set; } = -1;
 }

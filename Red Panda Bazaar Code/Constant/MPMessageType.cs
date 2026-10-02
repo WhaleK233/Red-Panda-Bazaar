@@ -10,9 +10,15 @@ public static class MPMessageType {
     public const string PlayerStall_AddItem = "PlayerStallAddItem";
     public const string PlayerStall_RemoveItem = "PlayerStallRemoveItem";
     public const string PlayerStall_UpdateItem = "PlayerStallUpdateItem";
+    public const string PlayerStall_TaxSpent = "PlayerStallTaxSpent";
 
     // Bank
     public const string Bank_SyncData = "BankSyncData";
     public const string Bank_ActionRequest = "BankActionRequest";
     public const string Bank_ActionResult = "BankActionResult";
+
+    // SharedBikes
+    public const string SharedBikes_SyncData = "SharedBikesSyncData";
+    public const string SharedBikes_ActionRequest = "SharedBikesActionRequest";
+    public const string SharedBikes_ActionResult = "SharedBikesActionResult";
 }
