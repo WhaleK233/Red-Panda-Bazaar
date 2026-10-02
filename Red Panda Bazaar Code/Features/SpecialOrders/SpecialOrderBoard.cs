@@ -16,7 +16,7 @@ public class SpecialOrderBoard : SpecialOrdersBoard
     public SpecialOrderBoard(string board_type = "") : base(board_type)
     {
         ModInfo.Helper.Reflection.GetField<Texture2D>(this, "billboardTexture")
-            .SetValue(ModInfo.Helper.ModContent.Load<Texture2D>("assets/RPB_SpecialOrderBoard.png"));
+            .SetValue(ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RPB_SpecialOrderBoard.png"));
     }
 
     public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)

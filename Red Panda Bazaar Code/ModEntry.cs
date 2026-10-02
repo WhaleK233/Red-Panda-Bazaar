@@ -12,6 +12,7 @@ using Red_Panda_Bazaar_Code.Features.PlayerStall;
 using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Features.SpecialOrders;
 using Red_Panda_Bazaar_Code.Features.SpringFair;
+using Red_Panda_Bazaar_Code.Features.SharedBikes;
 using Red_Panda_Bazaar_Code.Features.Transportation;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -22,6 +23,9 @@ namespace Red_Panda_Bazaar_Code;
 public class ModEntry : Mod {
     public override void Entry(IModHelper helper) {
         ModInfo.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
+
+        // 内容注册必须在游戏启动加载资产前就位（Data/AudioChanges 启动早期即被缓存）
+        SharedBikes.RegisterContent();
 
         ModInfo.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
@@ -45,6 +49,7 @@ public class ModEntry : Mod {
         SpecialOrders.Init();
         ButterflyNight.Init();
         Transportation.Init();
+        SharedBikes.Init();
     }
 
     private static void HarmonyPatch() {
@@ -53,5 +58,6 @@ public class ModEntry : Mod {
         BuffsPatch.ApplyPatch(harmony);
         SpecialOrdersPatch.ApplyPatch(harmony);
         FurniturePatch.ApplyPatch(harmony);
+        SharedBikesPatch.ApplyPatch(harmony);
     }
 }
