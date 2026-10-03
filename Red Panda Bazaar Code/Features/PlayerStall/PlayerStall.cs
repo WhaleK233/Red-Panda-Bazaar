@@ -127,6 +127,10 @@ public static class PlayerStall {
 
     /// <summary>立即写入存档。</summary>
     public static void WriteSaveData() {
+        // 存档只写 ItemXml 字符串：落盘前统一把内存里的物品重拍快照，
+        // 否则任何漏拍路径（如部分取回被原版原地改小的条目）都会把旧数量写进存档
+        foreach (var entry in Data.Stock.Values.SelectMany(list => list))
+            entry.RefreshSnapshot();
         ModInfo.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
