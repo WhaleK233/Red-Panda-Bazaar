@@ -249,7 +249,7 @@ public class PlayerStallMenu : MenuWithInventory {
                 },
                 price: -1,
                 minValue: Math.Max(1, (int)Math.Ceiling(stallItem.GetItem()!.sellToStorePrice() * 0.01)),
-                maxValue: Math.Max(1, stallItem.GetItem()!.sellToStorePrice() * 100),
+                maxValue: Math.Max(1, stallItem.GetItem()!.sellToStorePrice() * 3),
                 defaultNumber: Math.Max(1, stallItem.Price)) { }
     }
 }
