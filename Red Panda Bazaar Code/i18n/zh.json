@@ -1,4 +1,17 @@
 ﻿{
+  /****** Version 1.2.0 Added ******/
+  "Tetris.Score": "分数",
+  "Tetris.Lines": "消行",
+  "Tetris.Level": "等级",
+  "Tetris.Next": "下一块",
+  "Tetris.Pause": "暂停",
+  "Tetris.Resume": "继续",
+  "Tetris.Restart": "重新开始",
+  "Tetris.Exit": "退出",
+  "Tetris.Paused": "已暂停",
+  "Tetris.GameOver": "游戏结束",
+  "Tetris.Help1": "旋转:上键   硬降:空格",
+  "Tetris.Help2": "移动/软降:移动键",
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "项目投资",
   "Bank.InvestmentTitle": "项目投资",

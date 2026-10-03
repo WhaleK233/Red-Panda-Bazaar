@@ -13,6 +13,7 @@ using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Features.SpecialOrders;
 using Red_Panda_Bazaar_Code.Features.SpringFair;
 using Red_Panda_Bazaar_Code.Features.SharedBikes;
+using Red_Panda_Bazaar_Code.Features.Tetris;
 using Red_Panda_Bazaar_Code.Features.Transportation;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -50,6 +51,7 @@ public class ModEntry : Mod {
         ButterflyNight.Init();
         Transportation.Init();
         SharedBikes.Init();
+        TetrisFeature.Init();
     }
 
     private static void HarmonyPatch() {
