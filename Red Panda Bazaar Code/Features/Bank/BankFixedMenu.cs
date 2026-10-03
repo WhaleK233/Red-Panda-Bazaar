@@ -23,7 +23,8 @@ public class BankFixedMenu : UiBaseMenu
             var dailyRate = rate / term;
             var t = term; // capture
             var desc = $"{term}{days} {Tools.GetI18n(I18nKeys.Bank_DailyRateLabel).Tokens(new { rate = (dailyRate * 100).ToString("F2") })}";
-            Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
+            // 交叉轴 Stretch 仅在 Arrange 撑满父宽；用 Stretch 属性（=Width=Fill）会在 Measure 索要全部可用宽，把窗口撑满屏幕
+            Root.Add(new UiRow { HorizontalAlignment = UiAlign.Stretch, JustifyContent = UiJustify.SpaceBetween }
                 .Add(new UiText(desc))
                 .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(), () => OpenNewFixed(t))));
         }
@@ -70,7 +71,7 @@ public class BankFixedMenu : UiBaseMenu
                     ? (Action)(() => HandleRedeem(idx))
                     : () => HandleEarly(idx);
 
-                Root.Add(new UiRow { Stretch = true, JustifyContent = UiJustify.SpaceBetween }
+                Root.Add(new UiRow { HorizontalAlignment = UiAlign.Stretch, JustifyContent = UiJustify.SpaceBetween }
                     .Add(new UiText(line))
                     .Add(new UiButton(btnLabel, action)));
             }
