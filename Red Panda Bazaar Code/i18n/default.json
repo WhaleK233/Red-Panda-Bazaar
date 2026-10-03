@@ -1,4 +1,17 @@
 ﻿{
+  /****** Version 1.2.0 Added ******/
+  "Tetris.Score": "Score",
+  "Tetris.Lines": "Lines",
+  "Tetris.Level": "Level",
+  "Tetris.Next": "Next",
+  "Tetris.Pause": "Pause",
+  "Tetris.Resume": "Resume",
+  "Tetris.Restart": "Restart",
+  "Tetris.Exit": "Exit",
+  "Tetris.Paused": "Paused",
+  "Tetris.GameOver": "Game Over",
+  "Tetris.Help1": "Rotate: Up key   Hard Drop: Space",
+  "Tetris.Help2": "Move / Soft Drop: movement keys",
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "Project Investment",
   "Bank.InvestmentTitle": "Project Investment",
