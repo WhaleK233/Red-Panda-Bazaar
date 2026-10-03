@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using WhaleK.Common.UI;
 using WhaleK.Common.UI.Components;
-using WhaleK.Common.UI.Enums;
+using WhaleK.Common.UI.Controls;
+using WhaleK.Common.UI.Layout;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 
