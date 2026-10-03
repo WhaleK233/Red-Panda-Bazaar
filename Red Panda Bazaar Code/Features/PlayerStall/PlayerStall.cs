@@ -431,14 +431,19 @@ public static class PlayerStall {
         var totalSold = 0;
 
         foreach (var (actionId, config) in RegisteredStalls) {
-            // 概率 = 基础概率 × 运气系数 × 天气系数
-            var chance = config.BaseSellChance * luckMod * weatherMod;
+            if (!Data.Stock.TryGetValue(actionId, out var stock) || stock.Count == 0) continue;
+
+            // 定价因子 = 原版售价/现价，开张率与夜销销量同乘（均负相关）：
+            // 定价是周转率旋钮——高价单件利厚但出货慢（吞吐 ∝ 1/定价²），低价快速清仓单件薄利；
+            // 开张率约在 0.3× 定价以下封顶 100%，销量始终受当日库存封顶
+            var first = stock.FirstOrDefault(i => i.GetItem() != null);
+            if (first == null) continue;
+            var priceFactor = (double)Math.Max(1, first.GetItem()!.sellToStorePrice()) / first.Price;
+            var chance = config.BaseSellChance * luckMod * weatherMod * priceFactor;
             chance = Math.Clamp(chance, 0, 1);
 
             // 随机值 >= 概率则该摊位今晚不开张
             if (rnd.NextDouble() >= chance) continue;
-
-            if (!Data.Stock.TryGetValue(actionId, out var stock) || stock.Count == 0) continue;
 
             // Fisher-Yates 洗牌副本，确保每次售出物品来源均匀随机
             var unsold = stock.Where(i => i.GetItem() != null).ToList();
@@ -449,7 +454,8 @@ public static class PlayerStall {
 
             var totalStock = unsold.Sum(i => i.GetItem()!.Stack);
             var baseAmount = Math.Sqrt(totalStock) * 1.5;
-            var targetSell = (int)(rnd.Next((int)(baseAmount * 0.5), (int)(baseAmount * 1.5)) * factor);
+            // 夜销销量同样乘定价因子（负相关），实际售出受当日库存封顶（清仓式销售）
+            var targetSell = (int)(rnd.Next((int)(baseAmount * 0.5), (int)(baseAmount * 1.5)) * factor * priceFactor);
             var remaining = targetSell;
             var soldCount = 0;
 
