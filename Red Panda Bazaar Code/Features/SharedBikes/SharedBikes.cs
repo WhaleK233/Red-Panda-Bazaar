@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using WhaleK.Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -36,11 +37,15 @@ public static class SharedBikes
     /// <summary>单车贴图在 mod 目录内的相对路径。</summary>
     private const string BikeTexturePath = "assets/Textures/RedPandaBazaar_SharedBike.png";
 
-    /// <summary>骑行脚步声 cue：经 Data/AudioChanges 注册，替代马蹄声。</summary>
-    private const string BikeStepCueId = "RedPandaBazaar_SharedBikeStep";
+    /// <summary>骑行起步音 cue：经 Data/AudioChanges 注册，骑上单车的瞬间播放一次。</summary>
+    private const string BikeStartCueId = "RedPandaBazaar_SharedBikeStart";
 
-    /// <summary>骑行脚步声 wav 在 mod 目录内的相对路径。</summary>
-    private const string BikeStepSoundPath = "assets/Audio/RedPandaBazaar_SharedBike_Step.wav";
+    /// <summary>骑行移动音 cue：经 Data/AudioChanges 注册，骑行移动期间循环播放。</summary>
+    private const string BikeMoveCueId = "RedPandaBazaar_SharedBikeMove";
+
+    /// <summary>两个骑行音效在 mod 目录内的相对路径（均为 Ogg Vorbis，游戏仅支持该编码的 ogg）。</summary>
+    private const string BikeStartSoundPath = "assets/Audio/SharedBike-start.ogg";
+    private const string BikeMoveSoundPath = "assets/Audio/SharedBike-mv.ogg";
 
     /// <summary>项目开通费用。</summary>
     public const int UnlockPrice = 10000;
@@ -55,6 +60,12 @@ public static class SharedBikes
 
     /// <summary>客机不读写存档，靠主机广播保持同步。</summary>
     private static bool? _clientUnlocked;
+
+    /// <summary>上一帧本地玩家骑乘的共享单车（null 表示未骑共享单车），用于捕捉「刚骑上」的瞬间。</summary>
+    private static Horse? _riddenBike;
+
+    /// <summary>正在循环播放的骑行移动音句柄（非 null 表示该音正在播）。</summary>
+    private static ICue? _moveCue;
 
     /// <summary>
     /// 注册内容资产（贴图 + 音效 cue）。必须在 <see cref="ModEntry"/> 的 Entry 阶段调用：
@@ -74,6 +85,7 @@ public static class SharedBikes
         ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         ModInfo.Helper.Events.GameLoop.Saving += OnSaving;
         ModInfo.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+        ModInfo.Helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         ModInfo.Helper.Events.World.NpcListChanged += OnNpcListChanged;
         ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
         Tools.Log("SharedBikes Inited.");
@@ -85,8 +97,10 @@ public static class SharedBikes
     /// </summary>
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (Game1.currentLocation == null)
+        if (!Context.IsWorldReady)
             return;
+
+        UpdateRideSounds();
 
         foreach (NPC npc in Game1.currentLocation.characters)
         {
@@ -155,6 +169,8 @@ public static class SharedBikes
     {
         Data = new SharedBikesSaveData();
         _clientUnlocked = null;
+        StopMoveCue();
+        _riddenBike = null;
         if (Context.IsOnHostComputer)
             Data = ModInfo.Helper.Data.ReadSaveData<SharedBikesSaveData>(SaveKey) ?? new SharedBikesSaveData();
     }
@@ -163,6 +179,13 @@ public static class SharedBikes
     {
         if (Context.IsMainPlayer)
             ModInfo.Helper.Data.WriteSaveData(SaveKey, Data);
+    }
+
+    /// <summary>回到标题界面：清掉本地残留的骑行循环音。</summary>
+    private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
+    {
+        StopMoveCue();
+        _riddenBike = null;
     }
 
     /// <summary>主机广播开通状态给全部玩家。</summary>
@@ -238,14 +261,26 @@ public static class SharedBikes
         {
             e.Edit(editor =>
             {
-                editor.AsDictionary<string, AudioCueData>().Data[BikeStepCueId] = new AudioCueData
-                {
-                    Id = BikeStepCueId,
-                    Category = "Footsteps",
-                    FilePaths = new List<string> { Path.Combine(ModInfo.Helper.DirectoryPath, "assets", Path.GetFileName(BikeStepSoundPath)) }
-                };
+                var cues = editor.AsDictionary<string, AudioCueData>().Data;
+                cues[BikeStartCueId] = CreateBikeCue(BikeStartCueId, BikeStartSoundPath, looped: false);
+                cues[BikeMoveCueId] = CreateBikeCue(BikeMoveCueId, BikeMoveSoundPath, looped: true);
             });
         }
+    }
+
+    /// <summary>
+    /// 构造单车音效的 cue 定义。FilePath 用绝对路径：游戏的 AudioCueModificationManager 会再拼一次 Content 根目录，
+    /// 绝对路径在 Path.Combine 中会直接胜出，从而指向 mod 目录内的音频。
+    /// </summary>
+    private static AudioCueData CreateBikeCue(string cueId, string relativePath, bool looped)
+    {
+        return new AudioCueData
+        {
+            Id = cueId,
+            Category = "Footsteps",
+            FilePaths = new List<string> { Path.Combine(ModInfo.Helper.DirectoryPath, relativePath) },
+            Looped = looped
+        };
     }
 
     /// <summary>客机端收到 netcode 同步来的单车实体时，构造函数只会挂默认马贴图，这里补换。</summary>
@@ -332,8 +367,8 @@ public static class SharedBikes
             bike.currentLocation = loc;
             loc.characters.Add(bike);
             ApplyBikeSprite(bike);
-            // onFootstepAction 是原版公开扩展点（Horse.cs:41），直接换掉马蹄声，零补丁
-            bike.onFootstepAction = _ => PerformBikeFootstep(bike);
+            // onFootstepAction 是原版公开扩展点（Horse.cs:41）：屏蔽马蹄声，只保留手柄震动（音效由骑行循环音承担）
+            bike.onFootstepAction = stepType => PerformBikeFootstep(bike, stepType);
         }
         Tools.LogInfo($"SharedBikes: 已在 Custom_MapleBridge 生成 {TestTiles.Length} 匹验证坐骑。");
     }
@@ -352,19 +387,67 @@ public static class SharedBikes
         return found;
     }
 
-    /// <summary>骑行脚步声：原版按脚下材质播马蹄声，这里统一换成自行车棘轮声。</summary>
-    private static void PerformBikeFootstep(Horse bike)
+    /// <summary>
+    /// 骑乘脚踏回调：原版按脚下材质播马蹄声，共享单车不该有蹄声（音效由起步音与骑行循环音承担），
+    /// 这里只保留本地骑手的手柄震动，与原版骑马的触感反馈一致。
+    /// </summary>
+    private static void PerformBikeFootstep(Horse bike, string stepType)
     {
-        try
+        // 震动只有本地骑手感受得到，原版同样只对 Game1.player 触发
+        if (bike.rider != Game1.player)
+            return;
+
+        Rumble.rumble(stepType is "Stone" or "Wood" ? 0.1f : 0.3f, 50f);
+    }
+
+    /// <summary>
+    /// 维护本地玩家的骑行音效：刚骑上时播一次起步音，骑行移动期间循环播移动音，停下或下马立即停。
+    /// 骑行音效是骑乘者自己的听觉反馈，只处理本地玩家的坐骑（其他玩家的车由各自客户端处理）。
+    /// </summary>
+    private static void UpdateRideSounds()
+    {
+        Farmer? rider = Game1.player;
+        Horse? bike = rider?.mount;
+        if (rider == null || bike == null || !bike.modData.ContainsKey(BikeMarkerKey))
         {
-            Farmer? rider = bike.rider;
-            if (rider == null || !rider.ShouldHandleAnimationSound())
-                return;
-            rider.currentLocation.localSound(BikeStepCueId, bike.Tile);
+            StopMoveCue();
+            _riddenBike = null;
+            return;
         }
-        catch (Exception ex)
-        {
-            Tools.LogErr($"SharedBikes: 播放骑行音效失败：{ex}");
-        }
+
+        // 上一帧还没骑这辆车，说明这一帧刚骑上：播一次起步音
+        if (!ReferenceEquals(_riddenBike, bike))
+            Game1.playSound(BikeStartCueId);
+
+        if (IsRiderMoving(rider))
+            StartMoveCue();
+        else
+            StopMoveCue();
+
+        _riddenBike = bike;
+    }
+
+    /// <summary>骑手是否正在骑行移动：按住方向键且不在上/下车动作中。</summary>
+    private static bool IsRiderMoving(Farmer rider)
+        => rider.movementDirections.Count > 0 && !rider.isAnimatingMount;
+
+    /// <summary>开始循环骑行移动音（已在播则跳过）。</summary>
+    private static void StartMoveCue()
+    {
+        if (_moveCue != null)
+            return;
+
+        Game1.playSound(BikeMoveCueId, out ICue cue);
+        _moveCue = cue;
+    }
+
+    /// <summary>停止骑行移动音（未在播则跳过）。</summary>
+    private static void StopMoveCue()
+    {
+        if (_moveCue == null)
+            return;
+
+        _moveCue.Stop(AudioStopOptions.AsAuthored);
+        _moveCue = null;
     }
 }
