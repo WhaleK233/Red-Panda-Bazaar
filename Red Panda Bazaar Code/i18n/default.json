@@ -12,26 +12,23 @@
   "Tetris.GameOver": "Game Over",
   "Tetris.Help1": "Rotate: Up key   Hard Drop: Space",
   "Tetris.Help2": "Move / Soft Drop: movement keys",
+  "SharedBikes.NotEnoughGold": "Not enough gold",
+  /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "Project Investment",
   "Bank.InvestmentTitle": "Project Investment",
-  "Bank.InvestmentTaxPool": "Tax Pool: {{amount}}{{gold}}",
   "Bank.InvestmentBike": "Shared Bikes",
   "Bank.InvestmentBikeDesc": "Rent shared bikes at Maple Bridge",
   "Bank.InvestmentStatusUnlocked": "Unlocked",
   "Bank.InvestmentStatusLocked": "Not Unlocked",
   "Bank.InvestmentUnlock": "Unlock ({{amount}}{{gold}})",
   "SharedBikes.UnlockSuccess": "Shared bikes project unlocked! Grab a ride at Maple Bridge!",
-  "SharedBikes.TaxNotEnough": "Not enough funds in the tax pool",
-  "PlayerStall.TaxRemaining": "Remaining Tax: {{amount}}{{gold}}",
   /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey", "Bank.ServiceTax", "Bank.TaxTab", "Bank.TotalTax", "PlayerStall.TotalTax" ******/
   /****** Version 1.1.0 Added ******/
-  /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} tax rate percent ******/
-  "PlayerStall.TaxLine": "Tax: -{{amount}}{{gold}} ({{rate}}%)",
+  /****** Placeholder notes: {{amount}} amount, {{gold}} currency unit, {{rate}} percent ******/
   "PlayerStall.UnitPrice": "Unit",
   "PlayerStall.DateUnknown": "Unknown",
   "PlayerStall.ColHeader.Time": "Time",
-  "Config.TaxRate": "Tax Rate",
   "PlayerStall.PriceEditTitle": "Edit Price",
   "PlayerStall.BillTitle": "Yesterday's Bill",
   "PlayerStall.BillEmpty": "No items were sold yesterday.",

@@ -19,8 +19,6 @@ public static class I18nKeys
 
     public const string Config_AnimeSpeed_PrizeMenu = "Config.AnimationSpeed.PrizeMenu";
 
-    public const string Config_TaxRate = "Config.TaxRate";
-
     #endregion
 
     #region Dialogue
@@ -116,12 +114,10 @@ public static class I18nKeys
     public const string PlayerStall_ColHeader_Item = "PlayerStall.ColHeader.Item";
     public const string PlayerStall_ColHeader_Qty = "PlayerStall.ColHeader.Qty";
     public const string PlayerStall_ColHeader_Price = "PlayerStall.ColHeader.Price";
-    public const string PlayerStall_TaxLine = "PlayerStall.TaxLine";
     public const string PlayerStall_UnitPrice = "PlayerStall.UnitPrice";
     public const string PlayerStall_DateUnknown = "PlayerStall.DateUnknown";
     public const string PlayerStall_ColHeader_Time = "PlayerStall.ColHeader.Time";
     public const string PlayerStall_Total = "PlayerStall.Total";
-    public const string PlayerStall_TaxRemaining = "PlayerStall.TaxRemaining";
     public const string PlayerStall_CollectAll = "PlayerStall.CollectAll";
     public const string PlayerStall_Collected = "PlayerStall.Collected";
 
@@ -176,7 +172,6 @@ public static class I18nKeys
 
     // Investment
     public const string Bank_InvestmentTitle = "Bank.InvestmentTitle";
-    public const string Bank_InvestmentTaxPool = "Bank.InvestmentTaxPool";
     public const string Bank_InvestmentBike = "Bank.InvestmentBike";
     public const string Bank_InvestmentBikeDesc = "Bank.InvestmentBikeDesc";
     public const string Bank_InvestmentStatusUnlocked = "Bank.InvestmentStatusUnlocked";
@@ -204,7 +199,7 @@ public static class I18nKeys
     #region SharedBikes
 
     public const string SharedBikes_UnlockSuccess = "SharedBikes.UnlockSuccess";
-    public const string SharedBikes_TaxNotEnough = "SharedBikes.TaxNotEnough";
+    public const string SharedBikes_NotEnoughGold = "SharedBikes.NotEnoughGold";
 
     #endregion
 

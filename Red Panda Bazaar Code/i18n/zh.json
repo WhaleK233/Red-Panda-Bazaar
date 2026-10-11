@@ -12,26 +12,23 @@
   "Tetris.GameOver": "游戏结束",
   "Tetris.Help1": "旋转:上键   硬降:空格",
   "Tetris.Help2": "移动/软降:移动键",
+  "SharedBikes.NotEnoughGold": "金币不足",
+  /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "项目投资",
   "Bank.InvestmentTitle": "项目投资",
-  "Bank.InvestmentTaxPool": "税款池: {{amount}}{{gold}}",
   "Bank.InvestmentBike": "共享单车",
   "Bank.InvestmentBikeDesc": "在枫叶桥租用共享单车出行",
   "Bank.InvestmentStatusUnlocked": "已开通",
   "Bank.InvestmentStatusLocked": "未开通",
   "Bank.InvestmentUnlock": "开通 ({{amount}}{{gold}})",
   "SharedBikes.UnlockSuccess": "共享单车项目开通成功！去枫叶桥骑车吧！",
-  "SharedBikes.TaxNotEnough": "税款池资金不足",
-  "PlayerStall.TaxRemaining": "剩余税款: {{amount}}{{gold}}",
   /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey", "Bank.ServiceTax", "Bank.TaxTab", "Bank.TotalTax", "PlayerStall.TotalTax" ******/
   /****** Version 1.1.0 Added ******/
-  /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 税率百分比 ******/
-  "PlayerStall.TaxLine": "税款: -{{amount}}{{gold}} ({{rate}}%)",
+  /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 百分比 ******/
   "PlayerStall.UnitPrice": "单价",
   "PlayerStall.DateUnknown": "未知",
   "PlayerStall.ColHeader.Time": "时间",
-  "Config.TaxRate": "税率",
   "PlayerStall.PriceEditTitle": "修改价格",
   "PlayerStall.BillTitle": "昨日账单",
   "PlayerStall.BillEmpty": "昨日没有物品售出。",

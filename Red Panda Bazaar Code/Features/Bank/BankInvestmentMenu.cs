@@ -19,8 +19,6 @@ public class BankInvestmentMenu : UiBaseMenu
 
         Root.Add(
             new UiText(Tools.GetI18n(I18nKeys.Bank_InvestmentTitle).ToString(), Game1.dialogueFont),
-            new UiText(Tools.GetI18n(I18nKeys.Bank_InvestmentTaxPool)
-                .Tokens(new { amount = PlayerStall.PlayerStall.Tax, gold }).ToString()),
             new UiText(Tools.GetI18n(I18nKeys.Bank_InvestmentBike).ToString()),
             new UiText(Tools.GetI18n(I18nKeys.Bank_InvestmentBikeDesc).ToString(), color: Color.Gray),
             SharedBikesFeature.IsUnlocked()

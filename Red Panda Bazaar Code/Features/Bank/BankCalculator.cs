@@ -39,11 +39,10 @@ public static class BankCalculator {
         return effective > 0 ? effective : 0;
     }
 
-    /// <summary>总信用额度 = max(有效收入 × 0.5, 游戏天数 × 10000) + 总税收 × 0.5。</summary>
+    /// <summary>总信用额度 = max(有效收入 × 0.5, 10000)。</summary>
     public static long GetTotalCreditLimit(List<LoanAccount> allLoans) {
         var byEarnings = (long)(GetEffectiveEarnings(allLoans) * 0.5);
-        var taxBonus = (long)(PlayerStall.PlayerStall.Tax * 0.5);
-        return Math.Max(byEarnings, 10000) + taxBonus;
+        return Math.Max(byEarnings, 10000);
     }
 
     /// <summary>剩余可用额度 = 总额度 − 所有未还贷款的（本金+利息）。</summary>

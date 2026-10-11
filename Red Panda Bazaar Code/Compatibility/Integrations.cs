@@ -59,18 +59,6 @@ public static class Integrations
             save: () => ModInfo.Helper.WriteConfig(ModInfo.ModConfig)
         );
 
-        // 税率
-        configMenuApi.AddNumberOption(
-            mod: ModInfo.ModManifest,
-            name: () => Tools.GetI18n(I18nKeys.Config_TaxRate),
-            getValue: () => ModInfo.ModConfig.TaxRate,
-            setValue: value => ModInfo.ModConfig.TaxRate = value,
-            min: 0.0f,
-            max: 1.0f,
-            interval: 0.01f,
-            formatValue: value => (int)Math.Round(value * 100) + "%"
-        );
-
         // 萤火虫数量
         configMenuApi.AddNumberOption(
             mod: ModInfo.ModManifest,
