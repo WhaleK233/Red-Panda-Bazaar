@@ -5,6 +5,4 @@ public class ModConfig
     public float CritterMultiplier { get; set; } = 1.0f;
 
     public float AnimationSpeed_PrizeMenu_Multiplier { get; set; } = 1.0f;
-
-    public float TaxRate { get; set; } = 0.1f;
 }

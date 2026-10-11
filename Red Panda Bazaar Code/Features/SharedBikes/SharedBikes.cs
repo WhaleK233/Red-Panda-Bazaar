@@ -119,7 +119,7 @@ public static class SharedBikes
     public static bool IsUnlocked() => Context.IsMainPlayer ? Data.Unlocked : (_clientUnlocked ?? false);
 
     /// <summary>
-    /// 开通共享单车项目：主机直接扣税款执行，客机发请求由主机代扣。
+    /// 开通共享单车项目：主机直接扣操作者金币执行，客机发请求由主机代扣。
     /// 供银行投资菜单调用；跨存档状态由本 Feature 自治管理。
     /// </summary>
     public static void TryUnlock()
@@ -129,7 +129,7 @@ public static class SharedBikes
             if (ExecuteUnlock(Game1.player.UniqueMultiplayerID))
                 BroadcastSyncData();
             else
-                NotifyTaxNotEnough();
+                NotifyNotEnoughGold();
         }
         else
         {
@@ -141,13 +141,13 @@ public static class SharedBikes
         }
     }
 
-    /// <summary>主机执行开通：从税款池支出、置位并立即生成单车（幂等：已开通直接返回成功）。</summary>
+    /// <summary>主机执行开通：扣操作者金币、置位并立即生成单车（幂等：已开通直接返回成功）。</summary>
     private static bool ExecuteUnlock(long playerId)
     {
         if (Data.Unlocked) return true;
 
-        // 开通费是公共支出：从玩家商店的税款池扣，不动操作者个人金币
-        if (!PlayerStall.PlayerStall.TrySpendTax(UnlockPrice))
+        // 开通费由操作者个人金币支付：主机本地扣自己，客机请求时扣发起者的钱
+        if (!Tools.TryCharge(Game1.GetPlayer(playerId), UnlockPrice, showDialogue: false))
             return false;
 
         Data.Unlocked = true;
@@ -158,11 +158,11 @@ public static class SharedBikes
         return true;
     }
 
-    /// <summary>税款池余额不足提示（本地 HUD）。</summary>
-    private static void NotifyTaxNotEnough()
+    /// <summary>金币不足提示（本地 HUD）。</summary>
+    private static void NotifyNotEnoughGold()
     {
         Game1.addHUDMessage(new HUDMessage(
-            Tools.GetI18n(I18nKeys.SharedBikes_TaxNotEnough).ToString(), HUDMessage.error_type));
+            Tools.GetI18n(I18nKeys.SharedBikes_NotEnoughGold).ToString(), HUDMessage.error_type));
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
@@ -230,7 +230,7 @@ public static class SharedBikes
                         }
                         else
                         {
-                            // 扣款失败（税款池不足）单独回执给请求方，状态广播不带失败语义
+                            // 扣款失败（金币不足）单独回执给请求方，状态广播不带失败语义
                             ModInfo.Helper.Multiplayer.SendMessage(
                                 new SharedBikesActionResultData { Success = false },
                                 MPMessageType.SharedBikes_ActionResult,
@@ -245,7 +245,7 @@ public static class SharedBikes
                 if (Context.IsMainPlayer) break;
                 var result = e.ReadAs<SharedBikesActionResultData>();
                 if (result is { Success: false })
-                    NotifyTaxNotEnough();
+                    NotifyNotEnoughGold();
                 break;
         }
     }

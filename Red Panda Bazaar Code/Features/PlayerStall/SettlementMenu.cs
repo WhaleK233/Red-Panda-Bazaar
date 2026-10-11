@@ -1,12 +1,10 @@
 ﻿using WhaleK.Common;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using WhaleK.Common.UI;
 using WhaleK.Common.UI.Components;
 using WhaleK.Common.UI.Controls;
 using WhaleK.Common.UI.Layout;
-using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Features.PlayerStall;
@@ -72,13 +70,8 @@ public class SettlementMenu : UiBaseMenu
 
     private void BuildEmptyState()
     {
-        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var emptyMsg = Tools.GetI18n(I18nKeys.PlayerStall_BillEmpty).ToString();
         Root.Add(new UiText(emptyMsg) { Color = Game1.textColor * 0.6f });
-
-        var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxRemaining)
-            .Tokens(new { amount = PlayerStall.Tax, gold }).ToString();
-        Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
     }
 
     private void BuildTable()
@@ -143,17 +136,9 @@ public class SettlementMenu : UiBaseMenu
         // 分隔线
         Root.Add(new UiSeparator());
 
-        // 税收
-        var taxAmount = (int)Math.Round(_totalEarnings * ModInfo.ModConfig.TaxRate);
-        var taxPct = (int)(ModInfo.ModConfig.TaxRate * 100);
-        var taxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxLine)
-            .Tokens(new { amount = taxAmount, gold, rate = taxPct }).ToString();
-        Root.Add(new UiText(taxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Red });
-
         // 合计
-        var net = _totalEarnings - taxAmount;
         var totalText = Tools.GetI18n(I18nKeys.PlayerStall_Total)
-            .Tokens(new { amount = net, gold }).ToString();
+            .Tokens(new { amount = _totalEarnings, gold }).ToString();
         Root.Add(new UiText(totalText, Game1.dialogueFont) { HorizontalAlignment = UiAlign.Right });
 
         // 按钮
@@ -162,14 +147,6 @@ public class SettlementMenu : UiBaseMenu
             ? Tools.GetI18n(I18nKeys.PlayerStall_Collected).ToString()
             : Tools.GetI18n(I18nKeys.PlayerStall_CollectAll).ToString();
         Root.Add(new UiButton(btnText, OnCollect) { Enabled = !collected });
-
-        // 累计已交税额
-        if (PlayerStall.Tax > 0)
-        {
-            var totalTaxText = Tools.GetI18n(I18nKeys.PlayerStall_TaxRemaining)
-                .Tokens(new { amount = PlayerStall.Tax, gold }).ToString();
-            Root.Add(new UiText(totalTaxText) { HorizontalAlignment = UiAlign.Right, Color = Color.Black });
-        }
     }
 
     private void OnCollect()

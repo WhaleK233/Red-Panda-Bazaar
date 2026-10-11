@@ -201,22 +201,6 @@ public static class PlayerStall {
         return new();
     }
 
-    /// <summary>剩余税款（税款池余额）：结算入账、项目投资支出。</summary>
-    public static int Tax => Data?.TotalTax ?? 0;
-
-    /// <summary>追加税收到税款池。</summary>
-    public static void AddTax(int amount) {
-        if (amount > 0) Data.TotalTax += amount;
-    }
-
-    /// <summary>从税款池支出（仅主机调用；成功后广播最新余额）。余额不足返回 false。</summary>
-    public static bool TrySpendTax(int amount) {
-        if (amount <= 0 || Data.TotalTax < amount) return false;
-        Data.TotalTax -= amount;
-        Tools.SendToHostOrBroadcast(Data.TotalTax, MPMessageType.PlayerStall_TaxSpent);
-        return true;
-    }
-
     /// <summary>今日账单是否已收取。</summary>
     public static bool IsCollectedToday => Data?.CollectDay == Game1.stats.DaysPlayed;
 
@@ -246,9 +230,7 @@ public static class PlayerStall {
         // 通过 SMAPI 多人消息通知其他玩家
         Tools.SendToHostOrBroadcast(Data.CollectDay, MPMessageType.PlayerStall_Collect);
 
-        var tax = (int)Math.Round(gross * ModInfo.ModConfig.TaxRate);
-        Data.TotalTax += tax;
-        return gross - tax;
+        return gross;
     }
 
     /// <summary>接收其他玩家的同步消息。主机负责接收客机请求并转发给所有客机；客机直接应用主机广播。</summary>
@@ -262,13 +244,6 @@ public static class PlayerStall {
                 Data.CollectDay = e.ReadAs<int>();
                 Data.LastSoldRecords = Data.SoldRecords.ToList();
                 Data.SoldRecords.Clear();
-                break;
-
-            case MPMessageType.PlayerStall_TaxSpent:
-                // 主机广播最新税款余额（项目投资支出后）
-                if (!Context.IsMainPlayer && e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID)
-                    break;
-                Data.TotalTax = e.ReadAs<int>();
                 break;
 
             case MPMessageType.PlayerStall_CollectRequest: {
