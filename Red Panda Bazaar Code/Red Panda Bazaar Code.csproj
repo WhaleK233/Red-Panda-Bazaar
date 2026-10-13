@@ -14,7 +14,7 @@
         <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
     </ItemGroup>
 
-    <!-- CP 以仓库内副本为源部署到 Mods；SVN 同步不随构建执行，由 agent 按 AGENTS.md「SVN 流程」手动跑 -->
+    <!-- CP 以仓库内副本为源部署到 Mods；CP 包更新不随构建同步，需手动处理 -->
     <Target Name="DeployCP" BeforeTargets="BeforeBuild">
         <Exec Command="if exist &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot; rmdir /s /q &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot;"
               ContinueOnError="true"/>
