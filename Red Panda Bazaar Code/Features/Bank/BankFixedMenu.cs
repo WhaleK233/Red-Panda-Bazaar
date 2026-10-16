@@ -3,6 +3,7 @@ using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewUI;
 using StardewUI.Graphics;
+using StardewUI.Layout;
 using StardewUI.Widgets;
 using StardewValley;
 using StardewValley.Menus;
@@ -13,7 +14,17 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 /// <summary>银行定期理财菜单：列出三档存期与已有定期存款的支取入口。</summary>
 public class BankFixedMenu : ViewMenu
 {
+    private const float HoldingsMinHeight = 160;
+    private const float HoldingsMaxHeight = 340;
     private Lane? _content;
+
+    /// <summary>为列表预留高度后，标题、方案、提示和窗口边距仍能留在外层窗口内。</summary>
+    private static float HoldingsHeight =>
+        Math.Clamp(
+            Math.Min(MenuUi.ContentHeight - 360f, Game1.uiViewport.Height - 640f),
+            HoldingsMinHeight,
+            HoldingsMaxHeight
+        );
 
     protected override IView CreateView()
     {
@@ -77,8 +88,8 @@ public class BankFixedMenu : ViewMenu
         return plans;
     }
 
-    /// <summary>已有定期：每笔以"金额 + 利息"为主行（右侧支取/赎回），存期与状态作为次行弱化显示。</summary>
-    private Lane BuildHoldings(string gold, string days)
+    /// <summary>已有定期：每笔以"金额 + 利息"为主行（右侧支取 / 赎回），存期与状态作为次行弱化显示。</summary>
+    private IView BuildHoldings(string gold, string days)
     {
         var holdings = MenuUi.Column();
         var deposits = Bank.GetFixedDeposits();
@@ -138,7 +149,14 @@ public class BankFixedMenu : ViewMenu
             );
             first = false;
         }
-        return holdings;
+
+        // 列表必须有固定视口；否则大量存款会把 Card 内容撑出 Window 的最大高度。
+        return new ScrollableView
+        {
+            Layout = new() { Width = Length.Stretch(), Height = Length.Px(HoldingsHeight) },
+            Content = holdings,
+            Peeking = MenuUi.RowGap,
+        };
     }
 
     private void OpenNewFixed(int termDays)
