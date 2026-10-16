@@ -35,8 +35,9 @@
         <Using Alias="Trace" Include="StardewUI.Diagnostics.Trace" />
     </ItemGroup>
 
-    <!-- CP 以仓库内副本为源部署到 Mods；CP 包更新不随构建同步，需手动处理 -->
-    <Target Name="DeployCP" BeforeTargets="BeforeBuild">
+    <!-- CP 以仓库内副本为源部署到 Mods；CP 包更新不随构建同步，需手动处理。
+         EnableModDeploy=false 时跳过，使「仅编译检查」真正无副作用。 -->
+    <Target Name="DeployCP" BeforeTargets="BeforeBuild" Condition="'$(EnableModDeploy)' != 'false'">
         <Exec Command="if exist &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot; rmdir /s /q &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot;"
               ContinueOnError="true"/>
         <ItemGroup>
@@ -48,7 +49,8 @@
               OverwriteReadOnlyFiles="true"/>
     </Target>
 
-    <Target Name="UpdateModVersion" BeforeTargets="BeforeBuild">
+    <!-- 版本递增同样只在真实构建时执行，避免编译检查改写 manifest.json -->
+    <Target Name="UpdateModVersion" BeforeTargets="BeforeBuild" Condition="'$(EnableModDeploy)' != 'false'">
         <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 

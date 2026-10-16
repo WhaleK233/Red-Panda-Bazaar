@@ -16,10 +16,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# 说明：这里没有编译任务。公共源码 MySDVMods/Common 位于本仓库之外，
-# 且构建需要本机安装的星露谷程序集，GitHub 托管 runner 两者皆无。
-# 编译验证仍需按 AGENTS.md「Testing & QA」在本地完成；
-# 本 workflow 只负责拦截不需要游戏即可判定的仓库一致性问题。
 jobs:
   validate:
     name: 仓库一致性校验
@@ -44,3 +40,44 @@ jobs:
           # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
           ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
         run: python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
+
+  build:
+    name: 编译检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      # StardewUI.Core 用到 C# 13/14 语法，net6.0 默认的 C# 10 编译不过；
+      # 因此不用 Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment——
+      # 它会把 SDK 固定回 6.0，只借用它的参考程序集步骤。
+      - name: 准备 .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # 游戏与 SMAPI 的公开 API 空壳（无实现），克隆到指定目录；
+      # 下面用 -p:GamePath 显式指过去，不依赖 ModBuildConfig 的自动探测顺序
+      - name: 准备游戏参考程序集
+        uses: Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1
+        with:
+          path: ${{ github.workspace }}/_game
+
+      # UI 框架是本 mod 的编译期共享源码项目，路径由 StardewUICorePath 指定
+      - name: 检出 StardewUI
+        uses: actions/checkout@v4
+        with:
+          repository: Mushymato/StardewUI
+          ref: dev-unofficial
+          path: _stardewui
+
+      # EnableModDeploy=false 同时关闭 CP 部署与版本号递增，因此不改动工作区；
+      # EnableModZip=false 避免产出与版本号绑定的发布 zip。
+      # GamePath 指向参考程序集目录（Linux 上绝对路径）
+      - name: 编译模组
+        run: >
+          dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+          -p:GamePath="$GITHUB_WORKSPACE/_game"
+          -p:EnableModDeploy=false
+          -p:EnableModZip=false
+          -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
