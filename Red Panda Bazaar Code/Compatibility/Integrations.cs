@@ -1,6 +1,4 @@
-﻿using WhaleK.Common;
-using WhaleK.Common.Integrations;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility.ModApi;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;

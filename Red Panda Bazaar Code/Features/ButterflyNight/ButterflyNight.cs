@@ -1,5 +1,4 @@
-﻿using WhaleK.Common;
-using Red_Panda_Bazaar_Code.Features.Critters;
+﻿using Red_Panda_Bazaar_Code.Features.Critters;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;

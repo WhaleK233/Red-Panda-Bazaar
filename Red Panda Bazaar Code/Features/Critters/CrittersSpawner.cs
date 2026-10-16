@@ -1,5 +1,4 @@
-﻿using WhaleK.Common;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
