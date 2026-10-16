@@ -10,8 +10,6 @@ using StardewValley.Minigames;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley.Tools;
 using xTile.Dimensions;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Red_Panda_Bazaar_Code.Features.FishingMiniGame;
 
@@ -39,8 +37,8 @@ public class FishingMiniGame : IMinigame
 
         Tool tool = ItemRegistry.Create<Tool>("(T)BambooPole");
         tool.AttachmentSlotsCount = 2;
-        tool.attachments[0] = ItemRegistry.Create<Object>("(O)690", 99);
-        tool.attachments[1] = ItemRegistry.Create<Object>("(O)687");
+        tool.attachments[0] = ItemRegistry.Create<SObject>("(O)690", 99);
+        tool.attachments[1] = ItemRegistry.Create<SObject>("(O)687");
         this.content = Game1.content.CreateTemporary();
         this.location = new GameLocation("Maps\\FishingGame", "fishingGame");
         this.location.isStructure.Value = true;
