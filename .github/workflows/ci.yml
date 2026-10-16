@@ -1,0 +1,46 @@
+name: CI
+
+# 触发：主干分支的推送 / PR，以及手动运行
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 同一分支上后一次运行取消前一次
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 说明：这里没有编译任务。公共源码 MySDVMods/Common 位于本仓库之外，
+# 且构建需要本机安装的星露谷程序集，GitHub 托管 runner 两者皆无。
+# 编译验证仍需按 AGENTS.md「Testing & QA」在本地完成；
+# 本 workflow 只负责拦截不需要游戏即可判定的仓库一致性问题。
+jobs:
+  validate:
+    name: 仓库一致性校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          # PR 需要与基线提交比对 [CP] 目录的改动，必须拉取完整历史
+          fetch-depth: 0
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 运行校验脚本
+        env:
+          PYTHONUTF8: '1'
+          # PR 事件下为基线提交，其他事件为空（脚本会跳过 CP 只读检查）
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
+          ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
+        run: python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
