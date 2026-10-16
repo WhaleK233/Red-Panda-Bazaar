@@ -117,6 +117,10 @@ jobs:
           # 缺失说明构建未产出，直接失败而不是发旧包
           test -f "$zip" || { echo "未找到发布包：$zip" >&2; exit 1; }
 
+          # tag（rc）强制指向本次构建的提交：gh release create 不指定 target 时会
+          # 拿仓库默认分支（main）当 target，导致 tag 与产物不同源、无法回溯。
+          git push --force origin "$GITHUB_SHA:refs/tags/rc"
+
           # release 与 tag（rc）固定复用，永不删除：已存在就原地更新标题、说明与产物，
           # 这样玩家手里的下载链接不会中断。不使用 --generate-notes，说明见上方 NOTES。
           if gh release view rc >/dev/null 2>&1; then
@@ -127,5 +131,6 @@ jobs:
             done
             gh release upload rc "$zip"
           else
-            gh release create rc "$zip" --title "RC ${VERSION}" --notes "$NOTES" --prerelease
+            # --verify-tag 复用上面已指好的 tag，阻止 gh 自行拿默认分支当 target
+            gh release create rc "$zip" --verify-tag --title "RC ${VERSION}" --notes "$NOTES" --prerelease
           fi
