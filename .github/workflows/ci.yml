@@ -48,28 +48,8 @@ jobs:
       - name: 检出仓库
         uses: actions/checkout@v4
 
-      # StardewUI.Core 用到 C# 13/14 语法，net6.0 默认的 C# 10 编译不过；
-      # 因此不用 Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment——
-      # 它会把 SDK 固定回 6.0，只借用它的参考程序集步骤。
-      - name: 准备 .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      # 游戏与 SMAPI 的公开 API 空壳（无实现），克隆到指定目录；
-      # 下面用 -p:GamePath 显式指过去，不依赖 ModBuildConfig 的自动探测顺序
-      - name: 准备游戏参考程序集
-        uses: Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1
-        with:
-          path: ${{ github.workspace }}/_game
-
-      # UI 框架是本 mod 的编译期共享源码项目，路径由 StardewUICorePath 指定
-      - name: 检出 StardewUI
-        uses: actions/checkout@v4
-        with:
-          repository: Mushymato/StardewUI
-          ref: dev-unofficial
-          path: _stardewui
+      - name: 准备构建环境
+        uses: ./.github/actions/setup-build
 
       # EnableModDeploy=false 同时关闭 CP 部署与版本号递增，因此不改动工作区；
       # EnableModZip=false 避免产出与版本号绑定的发布 zip。
@@ -81,3 +61,71 @@ jobs:
           -p:EnableModDeploy=false
           -p:EnableModZip=false
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
+
+  # CD：仓库校验与编译检查都通过后，构建 RC 包并刷新同一条 release。
+  # 版本号 x.y.z-rc.Build.c（c = 提交次数）只在检出副本上生成，不提交回仓库。
+  release:
+    name: 发布 RC
+    needs: [validate, build]
+    # RC 是开发预览版，只在 develop 的推送后发布：
+    # PR 上分叉仓库拿不到写权限，main 的推送代表稳定版，不该被 RC 覆盖
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          # Build.c 取提交总数，浅克隆会得到错误的 c
+          fetch-depth: 0
+
+      # runner 上的 python 命令依赖 setup-python，不能假定已存在
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 准备构建环境
+        uses: ./.github/actions/setup-build
+
+      - name: 生成 RC 版本号
+        id: version
+        run: echo "value=$(python "Red Panda Bazaar Code/scripts/MakeRcVersion.py")" >> "$GITHUB_OUTPUT"
+
+      - name: 构建发布包
+        run: >
+          dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+          -p:GamePath="$GITHUB_WORKSPACE/_game"
+          -p:EnableModDeploy=false
+          -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
+
+      - name: 刷新 RC Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+          # 同一条 release 的说明里记录来源提交，便于回溯
+          NOTES: |
+            自动构建的开发预览版，每次 develop 构建后被最新产物覆盖。
+
+            - 版本号：${{ steps.version.outputs.value }}
+            - 来源提交：${{ github.sha }}
+            - 工作流运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # 产物名绑定 manifest 版本号，即步骤「生成 RC 版本号」写入的值
+          zip="Red Panda Bazaar Code/out/net6.0/Red Panda Bazaar Code ${VERSION}.zip"
+          # 缺失说明构建未产出，直接失败而不是发旧包
+          test -f "$zip" || { echo "未找到发布包：$zip" >&2; exit 1; }
+
+          # release 与 tag（rc）固定复用，永不删除：已存在就原地更新标题、说明与产物，
+          # 这样玩家手里的下载链接不会中断。不使用 --generate-notes，说明见上方 NOTES。
+          if gh release view rc >/dev/null 2>&1; then
+            gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --prerelease
+            # 清掉上一轮的产物，避免资产在 release 内堆积
+            gh release view rc --json assets --jq '.assets[].name' | while read -r name; do
+              [ -n "$name" ] && gh release delete-asset rc "$name" --yes || true
+            done
+            gh release upload rc "$zip"
+          else
+            gh release create rc "$zip" --title "RC ${VERSION}" --notes "$NOTES" --prerelease
+          fi
