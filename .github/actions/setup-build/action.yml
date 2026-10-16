@@ -1,0 +1,30 @@
+name: 准备构建环境
+description: |
+  安装编译本模组所需的 .NET SDK、游戏参考程序集与 StardewUI 源码。
+  CI 的编译检查与 CD 的 RC 发布共用本动作，确保两处编译条件完全一致。
+
+runs:
+  using: composite
+  steps:
+    # StardewUI.Core 用到 C# 13/14 语法，net6.0 默认的 C# 10 编译不过；
+    # 因此不用 Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment——
+    # 它会把 SDK 固定回 6.0，只借用它的参考程序集步骤。
+    - name: 准备 .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    # 游戏与 SMAPI 的公开 API 空壳（无实现），克隆到指定目录；
+    # 调用方用 -p:GamePath 显式指过去，不依赖 ModBuildConfig 的自动探测顺序
+    - name: 准备游戏参考程序集
+      uses: Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1
+      with:
+        path: ${{ github.workspace }}/_game
+
+    # UI 框架是本 mod 的编译期共享源码项目，路径由 StardewUICorePath 指定
+    - name: 检出 StardewUI
+      uses: actions/checkout@v4
+      with:
+        repository: Mushymato/StardewUI
+        ref: dev-unofficial
+        path: _stardewui

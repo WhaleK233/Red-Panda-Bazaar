@@ -59,9 +59,18 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
 
 ## 版本号
 
-格式 `1.x.y-Build.z`，`y` 为语义化版本号，`z` 为构建号（构建脚本自动递增）。
+| 场景 | 格式 | 说明 |
+|---|---|---|
+| 本地开发 | `x.y.z-beta.Build.N` | `N` 由构建脚本自动递增 |
+| CD 预览版 | `x.y.z-rc.Build.c` | `c` 为提交次数，由 CI 生成 |
+
+## 发布
+
+推送到 `develop` 后，仓库一致性校验与编译检查通过即自动构建并刷新 **[RC Release](https://github.com/WhaleK233/Red-Panda-Bazaar/releases/tag/rc)**。
+
+RC 是开发预览版，长期复用**同一条** release（tag 固定 `rc`），下载链接恒定不变，每次构建被最新产物覆盖。
 
 ## 分支策略
 
 - **main** — 稳定发布
-- **develop** — 日常开发
+- **develop** — 日常开发（推送后自动发布 RC）
