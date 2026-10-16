@@ -120,11 +120,12 @@ jobs:
           # tag（rc）强制指向本次构建的提交：gh release create 不指定 target 时会
           # 拿仓库默认分支（main）当 target，导致 tag 与产物不同源、无法回溯。
           git push --force origin "$GITHUB_SHA:refs/tags/rc"
-
           # release 与 tag（rc）固定复用，永不删除：已存在就原地更新标题、说明与产物，
           # 这样玩家手里的下载链接不会中断。不使用 --generate-notes，说明见上方 NOTES。
+          # 必须同时是 latest：仓库首页右栏只展示 latest release，而被标记为
+          # prerelease 的 release 永远不能成为 latest（GitHub 规则），首页会整块不显示。
           if gh release view rc >/dev/null 2>&1; then
-            gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --prerelease
+            gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --latest --prerelease=false
             # 清掉上一轮的产物，避免资产在 release 内堆积
             gh release view rc --json assets --jq '.assets[].name' | while read -r name; do
               [ -n "$name" ] && gh release delete-asset rc "$name" --yes || true
@@ -132,5 +133,5 @@ jobs:
             gh release upload rc "$zip"
           else
             # --verify-tag 复用上面已指好的 tag，阻止 gh 自行拿默认分支当 target
-            gh release create rc "$zip" --verify-tag --title "RC ${VERSION}" --notes "$NOTES" --prerelease
+            gh release create rc "$zip" --verify-tag --latest --title "RC ${VERSION}" --notes "$NOTES"
           fi
