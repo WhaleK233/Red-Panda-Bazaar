@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <!-- StardewUI.Core 源码使用 C# 12 语法（集合表达式等），高于 net6.0 默认的 C# 10 -->
+        <LangVersion>Latest</LangVersion>
         <RootNamespace>Red_Panda_Bazaar_Code</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -12,6 +14,25 @@
 
     <ItemGroup>
         <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
+    </ItemGroup>
+
+    <!-- StardewUI.Core 的 Data 解析依赖 SMAPI 内置的 Newtonsoft.Json -->
+    <ItemGroup>
+        <Reference Include="Newtonsoft.Json" Private="False">
+            <HintPath>$(GamePath)\smapi-internal\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <!-- StardewUI.Core 源码依赖的全局 using 与类型别名，与其官方 csproj 保持一致 -->
+    <ItemGroup>
+        <Using Include="StardewValley" />
+        <Using Include="StardewModdingAPI" />
+        <Using Alias="Object" Include="System.Object" />
+        <Using Alias="SObject" Include="StardewValley.Object" />
+        <Using Alias="Color" Include="Microsoft.Xna.Framework.Color" />
+        <Using Alias="Rectangle" Include="Microsoft.Xna.Framework.Rectangle" />
+        <Using Alias="Vector2" Include="Microsoft.Xna.Framework.Vector2" />
+        <Using Alias="Trace" Include="StardewUI.Diagnostics.Trace" />
     </ItemGroup>
 
     <!-- CP 以仓库内副本为源部署到 Mods；CP 包更新不随构建同步，需手动处理 -->
@@ -31,7 +52,19 @@
         <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 
-    <!-- 公共源码（UI 框架/物品序列化/随机与时间工具/GMCM 接口），见 MySDVMods/Common -->
+    <!-- 公共源码（物品序列化/随机与时间工具/GMCM 接口），见 MySDVMods/Common -->
     <Import Project="..\..\Common\WhaleK.Common.projitems" Label="Shared"/>
+
+    <!-- StardewUI Core（共享源码项目，本 mod 的 UI 框架），默认取 Projects 下的本地副本 -->
+    <PropertyGroup>
+        <StardewUICorePath Condition="'$(StardewUICorePath)' == ''">..\..\..\..\Projects\StardewUI\Core</StardewUICorePath>
+    </PropertyGroup>
+    <Import Project="$(StardewUICorePath)\StardewUI.projitems" Label="Shared"/>
+
+    <!-- 本 mod 的菜单已全部迁移到 StardewUI.Core：从共享源码中排除旧自研 UI 框架，
+         避免两套框架同时编进程序集。Common 的 UI 仍被其它 mod 使用，故只在本项目内排除。 -->
+    <ItemGroup>
+        <Compile Remove="..\..\Common\UI\**\*.cs" />
+    </ItemGroup>
 
 </Project>

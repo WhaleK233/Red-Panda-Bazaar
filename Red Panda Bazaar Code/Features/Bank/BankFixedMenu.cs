@@ -1,47 +1,74 @@
-﻿using WhaleK.Common;
 using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
-using WhaleK.Common.UI;
-using WhaleK.Common.UI.Controls;
-using WhaleK.Common.UI.Layout;
 using Red_Panda_Bazaar_Code.Utils;
-using StardewModdingAPI;
+using StardewUI;
+using StardewUI.Graphics;
+using StardewUI.Widgets;
 using StardewValley;
 using StardewValley.Menus;
+using WhaleK.Common;
 
 namespace Red_Panda_Bazaar_Code.Features.Bank;
 
-public class BankFixedMenu : UiBaseMenu
+/// <summary>银行定期理财菜单：列出三档存期与已有定期存款的支取入口。</summary>
+public class BankFixedMenu : ViewMenu
 {
-    protected override void BuildUi()
+    private Lane? _content;
+
+    protected override IView CreateView()
     {
-        // 三种定期方案，每种一行
+        CloseButtonSprite = UiSprites.CloseButton;
+
+        _content = MenuUi.Column();
+        BuildContent();
+        return MenuUi.Window(_content);
+    }
+
+    /// <summary>按当前存款数据重建内容（等价于原框架的 <c>Rebuild</c>）。</summary>
+    private void BuildContent()
+    {
+        if (_content is null)
+        {
+            return;
+        }
+        _content.Children.Clear();
+
+        var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
         var days = Tools.GetI18n(I18nKeys.Bank_Days).ToString();
+
+        // 三种定期方案，每种一行
         foreach (var term in BankCalculator.FixedTermOptions)
         {
             var rate = BankCalculator.GetFixedTermRate(term);
             var dailyRate = rate / term;
             var t = term; // capture
             var desc = $"{term}{days} {Tools.GetI18n(I18nKeys.Bank_DailyRateLabel).Tokens(new { rate = (dailyRate * 100).ToString("F2") })}";
-            // 交叉轴 Stretch 仅在 Arrange 撑满父宽；用 Stretch 属性（=Width=Fill）会在 Measure 索要全部可用宽，把窗口撑满屏幕
-            Root.Add(new UiRow { HorizontalAlignment = UiAlign.Stretch, JustifyContent = UiJustify.SpaceBetween }
-                .Add(new UiText(desc))
-                .Add(new UiButton(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(), () => OpenNewFixed(t))));
+            _content.Children.Add(
+                MenuUi.RowBetween(
+                    desc,
+                    MenuUi.Button(Tools.GetI18n(I18nKeys.Bank_Apply).ToString(), () => OpenNewFixed(t))
+                )
+            );
         }
 
         // 分割线
-        Root.Add(new UiSeparator());
+        _content.Children.Add(MenuUi.Divider());
 
         // 现有定期列表
         var deposits = Bank.GetFixedDeposits();
         if (deposits.Count == 0)
         {
-            Root.Add(new UiText(Tools.GetI18n(I18nKeys.Bank_FixedEmpty).ToString(), color: Color.Gray));
+            _content.Children.Add(
+                MenuUi.TextRow(
+                    Tools.GetI18n(I18nKeys.Bank_FixedEmpty).ToString(),
+                    color: Color.Gray,
+                    topMargin: MenuUi.RowGap
+                )
+            );
         }
         else
         {
             var displayIndex = 0;
-            var gold = Tools.GetI18n(I18nKeys.Text_Gold).ToString();
             for (var i = 0; i < deposits.Count; i++)
             {
                 var d = deposits[i];
@@ -57,7 +84,7 @@ public class BankFixedMenu : UiBaseMenu
                 var line = $"[{displayIndex}] ";
                 line += Tools.GetI18n(I18nKeys.Bank_FixedAmount).Tokens(new { amount = d.Amount, gold }).ToString();
                 line += $" | {Tools.GetI18n(I18nKeys.Bank_LoanInterest).Tokens(new { amount = interest, gold })}";
-                line += $" | {d.TermDays} {Tools.GetI18n(I18nKeys.Bank_Days).ToString()}";
+                line += $" | {d.TermDays} {days}";
                 line += " | ";
                 line += matured
                     ? Tools.GetI18n(I18nKeys.Bank_FixedStatusMature).ToString()
@@ -71,14 +98,18 @@ public class BankFixedMenu : UiBaseMenu
                     ? (Action)(() => HandleRedeem(idx))
                     : () => HandleEarly(idx);
 
-                Root.Add(new UiRow { HorizontalAlignment = UiAlign.Stretch, JustifyContent = UiJustify.SpaceBetween }
-                    .Add(new UiText(line))
-                    .Add(new UiButton(btnLabel, action)));
+                _content.Children.Add(MenuUi.RowBetween(line, MenuUi.Button(btnLabel, action)));
             }
         }
 
         // 底部提示
-        Root.Add(new UiText(Tools.GetI18n(I18nKeys.Bank_FixedEarlyWithdrawTip).ToString(), color: Color.Gray));
+        _content.Children.Add(
+            MenuUi.TextRow(
+                Tools.GetI18n(I18nKeys.Bank_FixedEarlyWithdrawTip).ToString(),
+                color: Color.Gray,
+                topMargin: MenuUi.RowGap
+            )
+        );
     }
 
     private void OpenNewFixed(int termDays)
@@ -104,7 +135,7 @@ public class BankFixedMenu : UiBaseMenu
     {
         Bank.RedeemFixedDeposit(index);
         Game1.playSound("coin");
-        if (Context.IsMainPlayer) Rebuild();
+        if (Context.IsMainPlayer) BuildContent();
         else Game1.exitActiveMenu();
     }
 
@@ -112,7 +143,7 @@ public class BankFixedMenu : UiBaseMenu
     {
         Bank.EarlyWithdrawFixedDeposit(index);
         Game1.playSound("coin");
-        if (Context.IsMainPlayer) Rebuild();
+        if (Context.IsMainPlayer) BuildContent();
         else Game1.exitActiveMenu();
     }
 }

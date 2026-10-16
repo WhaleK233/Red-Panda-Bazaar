@@ -25,6 +25,9 @@ public class ModEntry : Mod {
     public override void Entry(IModHelper helper) {
         ModInfo.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
+        // StardewUI.Core 是编译进本 mod 的 UI 框架，必须在 Entry 里初始化（内部会订阅 GameLoop 事件）
+        StardewUI.UI.Initialize(helper, Monitor);
+
         // 内容注册必须在游戏启动加载资产前就位（Data/AudioChanges 启动早期即被缓存）
         SharedBikes.RegisterContent();
 

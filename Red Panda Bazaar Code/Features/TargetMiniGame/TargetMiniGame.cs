@@ -9,8 +9,6 @@ using StardewValley.Minigames;
 using StardewValley.Projectiles;
 using Red_Panda_Bazaar_Code.Utils;
 using xTile.Dimensions;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Red_Panda_Bazaar_Code.Features.TargetMiniGame;
 
@@ -46,7 +44,7 @@ public class TargetMiniGame : IMinigame
         starTokensWon = 0;
         this.location = new GameLocation("Maps\\TargetGame", "tent");
         Tool tool = ItemRegistry.Create<Tool>("(W)32");
-        tool.attachments[0] = ItemRegistry.Create<Object>("(O)390", 999);
+        tool.attachments[0] = ItemRegistry.Create<SObject>("(O)390", 999);
         Game1.player.TemporaryItem = (Item)tool;
         Game1.player.CurrentToolIndex = 0;
         Game1.globalFadeToClear(fadeSpeed: 0.01f);
