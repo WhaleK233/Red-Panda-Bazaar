@@ -6,7 +6,6 @@ using Red_Panda_Bazaar_Code.Features.Bank;
 using Red_Panda_Bazaar_Code.Features.Buffs;
 using Red_Panda_Bazaar_Code.Features.ButterflyNight;
 using Red_Panda_Bazaar_Code.Features.Critters;
-using Red_Panda_Bazaar_Code.Features.FishingMiniGame;
 using Red_Panda_Bazaar_Code.Features.Furniture;
 using Red_Panda_Bazaar_Code.Features.PlayerStall;
 using Red_Panda_Bazaar_Code.Features.PrizeMachines;
@@ -59,7 +58,7 @@ public class ModEntry : Mod {
 
     private static void HarmonyPatch() {
         var harmony = new Harmony(ModInfo.ModManifest.UniqueID);
-        FishingMiniGamePatch.ApplyPatch(harmony);
+        SpringFairPatch.ApplyPatch(harmony);
         BuffsPatch.ApplyPatch(harmony);
         SpecialOrdersPatch.ApplyPatch(harmony);
         FurniturePatch.ApplyPatch(harmony);

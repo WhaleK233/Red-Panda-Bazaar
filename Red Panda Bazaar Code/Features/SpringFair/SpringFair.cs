@@ -7,8 +7,10 @@ using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Objects;
+using StardewValley.Minigames;
 
 namespace Red_Panda_Bazaar_Code.Features.SpringFair;
 
@@ -22,6 +24,7 @@ public static class SpringFair
     private const int WheelBetTileX2 = 68, WheelBetTileY2 = 75;
     private const int PrizeMachineTileX = 40, PrizeMachineTileY = 62;
     private const int BuyBackpackTileX = 26, BuyBackpackTileY = 77;
+    private static readonly PerScreen<Vector2?> MiniGameReturnPosition = new();
 
     /// <summary>是否处于春 8 节日状态（兼容 CJB 跳日期，不依赖 Game1.CurrentEvent）。</summary>
     private static bool IsSpringFairActive =>
@@ -38,6 +41,32 @@ public static class SpringFair
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
         Tools.Log("Spring Fair Initialized.");
+    }
+
+    internal static void StartTargetGame()
+    {
+        MiniGameReturnPosition.Value = Game1.player.Position;
+        Game1.globalFadeToBlack(TargetGame.startMe, 0.01f);
+    }
+
+    internal static void StartFishingGame()
+    {
+        MiniGameReturnPosition.Value = Game1.player.Position;
+        Game1.globalFadeToBlack(FishingGame.startMe, 0.01f);
+    }
+
+    internal static void TryRestoreMiniGamePosition()
+    {
+        if (!MiniGameReturnPosition.Value.HasValue)
+            return;
+
+        Game1.player.Position = MiniGameReturnPosition.Value.Value;
+        Game1.player.TemporaryPassableTiles.Add(new Rectangle(
+            Game1.player.TilePoint.X * 64,
+            Game1.player.TilePoint.Y * 64,
+            64,
+            64));
+        MiniGameReturnPosition.Value = null;
     }
 
     /// <summary>春 7 设次日微风，春 8 覆盖当天为微风。</summary>
@@ -163,7 +192,7 @@ public static class SpringFair
                 {
                     if (answer == "Positive")
                     {
-                        Game1.globalFadeToBlack(TargetMiniGame.TargetMiniGame.startMe, 0.01f);
+                        StartTargetGame();
                     }
                 });
         }
@@ -184,7 +213,7 @@ public static class SpringFair
                 {
                     if (answer == "Positive")
                     {
-                        Game1.globalFadeToBlack(FishingMiniGame.FishingMiniGame.startMe, 0.01f);
+                        StartFishingGame();
                     }
                 });
         }
