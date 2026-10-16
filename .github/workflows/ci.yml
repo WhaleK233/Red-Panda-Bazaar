@@ -51,8 +51,8 @@ jobs:
       - name: 准备构建环境
         uses: ./.github/actions/setup-build
 
-      # EnableModDeploy=false 同时关闭 CP 部署与版本号递增，因此不改动工作区；
-      # EnableModZip=false 避免产出与版本号绑定的发布 zip。
+      # EnableModDeploy=false 关闭 CP 部署；EnableModZip=false 避免产出发布 zip。
+      # 二者均不影响版本号——版本号只来自 csproj <Version>，构建不会改写任何文件。
       # GamePath 指向参考程序集目录（Linux 上绝对路径）
       - name: 编译模组
         run: >
@@ -63,7 +63,7 @@ jobs:
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
 
   # CD：仓库校验与编译检查都通过后，构建 RC 包并刷新同一条 release。
-  # 版本号 x.y.z-rc.Build.c（c = 提交次数）只在检出副本上生成，不提交回仓库。
+  # 版本号 x.y.z-rc.<日期>.<run> 由 csproj <Version> 派生，仅注入本次构建，不写回仓库。
   release:
     name: 发布 RC
     needs: [validate, build]
@@ -76,9 +76,6 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
-        with:
-          # Build.c 取提交总数，浅克隆会得到错误的 c
-          fetch-depth: 0
 
       # runner 上的 python 命令依赖 setup-python，不能假定已存在
       - name: 准备 Python
@@ -89,6 +86,9 @@ jobs:
       - name: 准备构建环境
         uses: ./.github/actions/setup-build
 
+      # 版本号由 csproj <Version> 派生为 x.y.z-rc.<日期>.<run>，
+      # 通过 -p:Version 注入构建；manifest 的 %ProjectVersion% 与程序集版本都随之生效，
+      # 不改写任何文件，检出副本保持干净
       - name: 生成 RC 版本号
         id: version
         run: echo "value=$(python "Red Panda Bazaar Code/scripts/MakeRcVersion.py")" >> "$GITHUB_OUTPUT"
@@ -98,6 +98,7 @@ jobs:
           dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
           -p:GamePath="$GITHUB_WORKSPACE/_game"
           -p:EnableModDeploy=false
+          -p:Version="${{ steps.version.outputs.value }}"
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
 
       - name: 刷新 RC Release

@@ -301,12 +301,12 @@ def check_manifest(parsed: dict[Path, object]) -> None:
             fail(MOD_MANIFEST, f"字段 {field} 缺失或为空")
 
     version = str(manifest.get("Version", ""))
-    if not re.fullmatch(r"\d+\.\d+\.\d+(?:[.\-][0-9A-Za-z.\-]+)?", version):
-        fail(MOD_MANIFEST, f"版本号 {version!r} 不符合 x.y.z / x.y.z-beta / x.y.z-beta.Build.N 格式")
-    else:
-        build = re.search(r"\.Build\.(.+)$", version)
-        if build and not build.group(1).isdigit():
-            fail(MOD_MANIFEST, f"版本号 {version!r} 的 Build 段必须是整数")
+    if version != "%ProjectVersion%" and not re.fullmatch(r"\d+\.\d+\.\d+(?:[.\-][0-9A-Za-z.\-]+)?", version):
+        # 正常情况是 %ProjectVersion% 占位符，实际值取自 csproj <Version>
+        fail(
+            MOD_MANIFEST,
+            f"版本号 {version!r} 应为 %ProjectVersion% 占位符，或符合 x.y.z / x.y.z-beta / x.y.z-rc.<日期>.<run> 格式",
+        )
 
     if not re.fullmatch(r"[A-Za-z0-9_.]+", str(manifest.get("UniqueID", ""))):
         fail(MOD_MANIFEST, f"UniqueID {manifest.get('UniqueID')!r} 含非法字符")
@@ -349,6 +349,15 @@ def check_csproj() -> None:
         fail(CSPROJ, f"TargetFramework 必须为 net6.0（SMAPI 4.x），实际 {match.group(1)!r}", line_at(text, match.start()))
     else:
         ok("TargetFramework = net6.0")
+
+    # 版本号唯一来源：csproj <Version>，manifest 用 %ProjectVersion% 引用
+    version_match = re.search(r"<Version>\s*([^<\s]+)\s*</Version>", text)
+    if version_match is None:
+        fail(CSPROJ, "未找到 <Version>（版本号的唯一来源，manifest 依赖它）")
+    elif not re.fullmatch(r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.\-]+)?", version_match.group(1)):
+        fail(CSPROJ, f"<Version> {version_match.group(1)!r} 不符合 x.y.z / x.y.z-beta 格式", line_at(text, version_match.start()))
+    else:
+        ok(f"Version = {version_match.group(1)}")
 
 
 # --------------------------------------------------------------------------- #

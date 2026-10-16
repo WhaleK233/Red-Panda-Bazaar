@@ -32,6 +32,7 @@ public class ModEntry : Mod {
         ModInfo.Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     }
 
+
     private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e) {
         Tools.LogInfo("Red Panda Bazaar Code Initializing...");
 

@@ -59,10 +59,12 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
 
 ## 版本号
 
+版本号只有一个来源：`Red Panda Bazaar Code.csproj` 的 `<Version>`。`manifest.json` 写 `%ProjectVersion%` 占位符，由 ModBuildConfig 在打包时替换为实际值；程序集版本同样由它派生。
+
 | 场景 | 格式 | 说明 |
 |---|---|---|
-| 本地开发 | `x.y.z-beta.Build.N` | `N` 由构建脚本自动递增 |
-| CD 预览版 | `x.y.z-rc.Build.c` | `c` 为提交次数，由 CI 生成 |
+| 本地开发 | `x.y.z-beta` | 手动维护在 csproj；构建不改写任何文件 |
+| CD 预览版 | `x.y.z-rc.<日期>.<run>` | 由 `<Version>` 派生，CI 经 `-p:Version=` 注入，不写回仓库 |
 
 ## 发布
 
