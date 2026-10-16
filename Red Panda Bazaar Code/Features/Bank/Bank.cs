@@ -57,8 +57,6 @@ public static class Bank
             Tools.GetI18n(I18nKeys.Bank_ServiceQuestion).ToString(),
             new Response[]
             {
-                new("Checking", Tools.GetI18n(I18nKeys.Bank_ServiceChecking).ToString()),
-                new("Fixed", Tools.GetI18n(I18nKeys.Bank_ServiceFixed).ToString()),
                 new("Investment", Tools.GetI18n(I18nKeys.Bank_ServiceInvestment).ToString()),
                 new("Cancel", Tools.GetI18n(I18nKeys.Bank_ServiceCancel).ToString()),
             },
@@ -69,12 +67,6 @@ public static class Bank
     {
         switch (whichAnswer)
         {
-            case "Checking":
-                Game1.activeClickableMenu = new BankCheckingMenu();
-                break;
-            case "Fixed":
-                Game1.activeClickableMenu = new BankFixedMenu();
-                break;
             case "Investment":
                 Game1.activeClickableMenu = new BankInvestmentMenu();
                 break;
@@ -102,28 +94,17 @@ public static class Bank
         ModInfo.Helper.Data.WriteSaveData(SaveKey, Data);
     }
 
-    /// <summary>每日利息结算及到期提醒（仅主机执行）。</summary>
+    /// <summary>每日贷款利息结算（仅主机执行）。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
         if (Context.IsMainPlayer)
         {
             SettleDailyInterest();
-            CheckMaturedDeposits();
             BroadcastSyncData();
         }
     }
 
-    /// <summary>检查是否有到期的定期存款未领取。</summary>
-    private static void CheckMaturedDeposits()
-    {
-        var now = (int)Game1.stats.DaysPlayed;
-        var matured = Data.FixedDeposits.Any(d => !d.Withdrawn && now - d.StartDay >= d.TermDays);
-        if (matured)
-            Game1.chatBox?.addMessage(
-                Tools.GetI18n(I18nKeys.Bank_FixedMatureReminder).ToString(), Color.Green);
-    }
-
-    /// <summary>按天逐日复利结算活期利息。</summary>
+    /// <summary>按天逐日结算未还贷款利息。</summary>
     private static void SettleDailyInterest()
     {
         if (Data.LastInterestDay >= Game1.stats.DaysPlayed) return;
@@ -133,9 +114,6 @@ public static class Bank
 
         for (var i = 0; i < daysElapsed; i++)
         {
-            var rate = BankCalculator.GetDailyCheckingRate();
-            Data.CheckingBalance += (long)(Data.CheckingBalance * rate);
-
             foreach (var loan in Data.Loans.Where(l => !l.Repaid))
             {
                 var loanRate = BankCalculator.LoanDailyRate[loan.PlanType];
@@ -148,14 +126,6 @@ public static class Bank
 
     // ====== 读取接口 ======
 
-    public static long GetCheckingBalance() => Context.IsMainPlayer ? Data.CheckingBalance : (_clientCache?.CheckingBalance ?? 0);
-    public static int GetLastInterestDay() => Context.IsMainPlayer ? Data.LastInterestDay : (_clientCache?.LastInterestDay ?? 0);
-
-    public static List<FixedDeposit> GetFixedDeposits()
-    {
-        return Context.IsMainPlayer ? Data.FixedDeposits.ToList() : (_clientCache?.FixedDeposits.ToList() ?? new());
-    }
-
     public static List<LoanAccount> GetLoans()
     {
         return Context.IsMainPlayer ? Data.Loans.ToList() : (_clientCache?.Loans.ToList() ?? new());
@@ -163,84 +133,6 @@ public static class Bank
 
     // ====== 操作接口 ======
     // 主机直接操作存档数据后广播同步；客机仅发请求，由主机验证并执行金钱操作。
-
-    public static void Deposit(int amount)
-    {
-        if (amount <= 0) return;
-        if (Context.IsMainPlayer)
-        {
-            if (!Tools.TryCharge(Game1.player, amount, false)) return;
-            Data.CheckingBalance += amount;
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("deposit", amount, 0);
-        }
-    }
-
-    public static void Withdraw(int amount)
-    {
-        if (amount <= 0) return;
-        if (Context.IsMainPlayer)
-        {
-            if (Data.CheckingBalance < amount) return;
-            Data.CheckingBalance -= amount;
-            Game1.player.Money += amount;
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("withdraw", amount, 0);
-        }
-    }
-
-    public static void CreateFixedDeposit(int amount, int termDays)
-    {
-        if (amount <= 0 || !BankCalculator.FixedTermOptions.Contains(termDays)) return;
-        if (Context.IsMainPlayer)
-        {
-            if (!Tools.TryCharge(Game1.player, amount, false)) return;
-            Data.FixedDeposits.Add(new FixedDeposit
-            {
-                Amount = amount,
-                TermDays = termDays,
-                StartDay = (int)Game1.stats.DaysPlayed,
-                Withdrawn = false
-            });
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("newFixed", amount, termDays);
-        }
-    }
-
-    public static void RedeemFixedDeposit(int depositIndex)
-    {
-        if (Context.IsMainPlayer)
-        {
-            ExecuteRedeemFixedDeposit(depositIndex, null);
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("redeemFixed", 0, depositIndex);
-        }
-    }
-
-    public static void EarlyWithdrawFixedDeposit(int depositIndex)
-    {
-        if (Context.IsMainPlayer)
-        {
-            ExecuteEarlyWithdrawFixedDeposit(depositIndex, null);
-            BroadcastSyncData();
-        }
-        else
-        {
-            SendActionRequest("earlyWithdraw", 0, depositIndex);
-        }
-    }
 
     public static void ApplyLoan(int planType)
     {
@@ -252,7 +144,7 @@ public static class Bank
         }
         else
         {
-            SendActionRequest("applyLoan", 0, planType);
+            SendActionRequest("applyLoan", planType);
         }
     }
 
@@ -265,7 +157,7 @@ public static class Bank
         }
         else
         {
-            SendActionRequest("repayLoan", 0, loanIndex);
+            SendActionRequest("repayLoan", loanIndex);
         }
     }
 
@@ -277,61 +169,6 @@ public static class Bank
     {
         if (!playerId.HasValue) return Game1.player;
         return Game1.GetPlayer(playerId.Value) ?? Game1.MasterPlayer;
-    }
-
-    private static void ExecuteDeposit(int amount, long? playerId)
-    {
-        if (!Tools.TryCharge(GetFarmer(playerId), amount, false)) return;
-        Data.CheckingBalance += amount;
-    }
-
-    private static void ExecuteWithdraw(int amount, long? playerId)
-    {
-        if (Data.CheckingBalance < amount) return;
-        Data.CheckingBalance -= amount;
-        var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += amount;
-    }
-
-    private static void ExecuteCreateFixedDeposit(int amount, int termDays, long? playerId)
-    {
-        if (!Tools.TryCharge(GetFarmer(playerId), amount, false)) return;
-        Data.FixedDeposits.Add(new FixedDeposit
-        {
-            Amount = amount,
-            TermDays = termDays,
-            StartDay = (int)Game1.stats.DaysPlayed,
-            Withdrawn = false
-        });
-    }
-
-    private static void ExecuteRedeemFixedDeposit(int depositIndex, long? playerId)
-    {
-        if (depositIndex < 0 || depositIndex >= Data.FixedDeposits.Count) return;
-        var deposit = Data.FixedDeposits[depositIndex];
-        if (deposit.Withdrawn) return;
-
-        var elapsed = (int)Game1.stats.DaysPlayed - deposit.StartDay;
-        if (elapsed < deposit.TermDays) return;
-
-        var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
-        var interest = (long)(deposit.Amount * rate);
-        var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += (int)(deposit.Amount + interest);
-        deposit.Withdrawn = true;
-    }
-
-    private static void ExecuteEarlyWithdrawFixedDeposit(int depositIndex, long? playerId)
-    {
-        if (depositIndex < 0 || depositIndex >= Data.FixedDeposits.Count) return;
-        var deposit = Data.FixedDeposits[depositIndex];
-        if (deposit.Withdrawn) return;
-
-        var rate = BankCalculator.GetFixedTermRate(deposit.TermDays);
-        var interest = (long)(deposit.Amount * rate * 0.5);
-        var farmer = GetFarmer(playerId);
-        if (farmer != null) farmer.Money += (int)(deposit.Amount + interest);
-        deposit.Withdrawn = true;
     }
 
     private static void ExecuteApplyLoan(int planType, long? playerId)
@@ -367,15 +204,13 @@ public static class Bank
         loan.Repaid = true;
     }
 
-
     // ====== 多人同步 ======
 
-    private static void SendActionRequest(string action, int amount, int param)
+    private static void SendActionRequest(string action, int param)
     {
         var data = new BankActionRequestData
         {
             Action = action,
-            Amount = amount,
             Param = param
         };
         ModInfo.Helper.Multiplayer.SendMessage(
@@ -388,8 +223,6 @@ public static class Bank
     {
         var syncData = new BankSyncData
         {
-            CheckingBalance = Data.CheckingBalance,
-            FixedDeposits = Data.FixedDeposits,
             Loans = Data.Loans,
             LastInterestDay = Data.LastInterestDay
         };
@@ -411,8 +244,6 @@ public static class Bank
                 {
                     _clientCache = new BankSaveData
                     {
-                        CheckingBalance = syncData.CheckingBalance,
-                        FixedDeposits = syncData.FixedDeposits,
                         Loans = syncData.Loans,
                         LastInterestDay = syncData.LastInterestDay
                     };
@@ -429,21 +260,6 @@ public static class Bank
 
                 switch (request.Action)
                 {
-                    case "deposit":
-                        ExecuteDeposit(request.Amount, pid);
-                        break;
-                    case "withdraw":
-                        ExecuteWithdraw(request.Amount, pid);
-                        break;
-                    case "newFixed":
-                        ExecuteCreateFixedDeposit(request.Amount, request.Param, pid);
-                        break;
-                    case "redeemFixed":
-                        ExecuteRedeemFixedDeposit(request.Param, pid);
-                        break;
-                    case "earlyWithdraw":
-                        ExecuteEarlyWithdrawFixedDeposit(request.Param, pid);
-                        break;
                     case "applyLoan":
                         ExecuteApplyLoan(request.Param, pid);
                         break;
@@ -462,6 +278,5 @@ public static class Bank
 public class BankActionRequestData
 {
     public string Action { get; set; } = "";
-    public int Amount { get; set; }
     public int Param { get; set; }
 }
