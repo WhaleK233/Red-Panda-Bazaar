@@ -3,8 +3,6 @@ using StardewValley;
 namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public static class BankCalculator {
-    private const double BaseCheckingRate = 0.01;
-
     /// <summary>三种贷款方案日利率：灵活贷 / 标准贷 / 定期贷</summary>
     public static readonly double[] LoanDailyRate = { 0.02, 0.018, 0.014 };
 
@@ -13,24 +11,6 @@ public static class BankCalculator {
 
     /// <summary>三种贷款方案的最低可贷额度</summary>
     private static readonly long[] LoanMinAmount = { 500, 8000, 20000 };
-
-    /// <summary>定期存款可选期限</summary>
-    public static readonly int[] FixedTermOptions = { 7, 28, 112 };
-
-    /// <summary>定期固定利率：7天/28天/112天</summary>
-    private static readonly double[] FixedTermRates = { 0.1, 0.5, 2.5 };
-
-    /// <summary>每日活期利率会随当日运气微量浮动（±2倍DailyLuck）。</summary>
-    public static double GetDailyCheckingRate() {
-        var luck = Game1.player.DailyLuck;
-        return Math.Max(0, BaseCheckingRate * (1.0 + luck * 2.0));
-    }
-
-    /// <summary>定期固定利率。</summary>
-    public static double GetFixedTermRate(int termDays) {
-        var index = Array.IndexOf(FixedTermOptions, termDays);
-        return index >= 0 ? FixedTermRates[index] : 0;
-    }
 
     /// <summary>有效收入 = 总收入 − 历史上所有贷款本金。</summary>
     private static long GetEffectiveEarnings(List<LoanAccount> allLoans) {

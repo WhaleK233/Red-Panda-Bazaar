@@ -138,37 +138,8 @@ public static class I18nKeys
 
     // Service
     public const string Bank_ServiceQuestion = "Bank.ServiceQuestion";
-    public const string Bank_ServiceChecking = "Bank.ServiceChecking";
-    public const string Bank_ServiceFixed = "Bank.ServiceFixed";
     public const string Bank_ServiceInvestment = "Bank.ServiceInvestment";
     public const string Bank_ServiceCancel = "Bank.ServiceCancel";
-
-    // Checking
-    public const string Bank_CheckingTab = "Bank.CheckingTab";
-    public const string Bank_CheckingBalance = "Bank.CheckingBalance";
-    public const string Bank_InterestEarned = "Bank.InterestEarned";
-    public const string Bank_TodayInterest = "Bank.TodayInterest";
-    public const string Bank_ClaimInterest = "Bank.ClaimInterest";
-    public const string Bank_TodayRate = "Bank.TodayRate";
-    public const string Bank_Deposit = "Bank.Deposit";
-    public const string Bank_Withdraw = "Bank.Withdraw";
-    public const string Bank_DepositTitle = "Bank.DepositTitle";
-    public const string Bank_WithdrawTitle = "Bank.WithdrawTitle";
-
-    // Fixed Deposit
-    public const string Bank_FixedTab = "Bank.FixedTab";
-    public const string Bank_Redeem = "Bank.Redeem";
-    public const string Bank_EarlyWithdraw = "Bank.EarlyWithdraw";
-    public const string Bank_FixedAmount = "Bank.FixedAmount";
-    public const string Bank_FixedTerm = "Bank.FixedTerm";
-    public const string Bank_FixedStatus = "Bank.FixedStatus";
-    public const string Bank_FixedStatusActive = "Bank.FixedStatusActive";
-    public const string Bank_FixedStatusWithdrawn = "Bank.FixedStatusWithdrawn";
-    public const string Bank_FixedStatusMature = "Bank.FixedStatusMature";
-    public const string Bank_Days = "Bank.Days";
-    public const string Bank_FixedEmpty = "Bank.FixedEmpty";
-    public const string Bank_NewFixedAmountTitle = "Bank.NewFixedAmountTitle";
-    public const string Bank_FixedEarlyWithdrawTip = "Bank.FixedEarlyWithdrawTip";
 
     // Investment
     public const string Bank_InvestmentTitle = "Bank.InvestmentTitle";
@@ -177,22 +148,6 @@ public static class I18nKeys
     public const string Bank_InvestmentStatusUnlocked = "Bank.InvestmentStatusUnlocked";
     public const string Bank_InvestmentStatusLocked = "Bank.InvestmentStatusLocked";
     public const string Bank_InvestmentUnlock = "Bank.InvestmentUnlock";
-
-    public const string Bank_DailyRateLabel = "Bank.DailyRateLabel";
-    public const string Bank_Apply = "Bank.Apply";
-    public const string Bank_LoanInterest = "Bank.LoanInterest";
-
-    // Messages
-    public const string Bank_DepositSuccess = "Bank.DepositSuccess";
-    public const string Bank_WithdrawSuccess = "Bank.WithdrawSuccess";
-    public const string Bank_InterestClaimed = "Bank.InterestClaimed";
-    public const string Bank_FixedCreated = "Bank.FixedCreated";
-    public const string Bank_FixedRedeemed = "Bank.FixedRedeemed";
-    public const string Bank_FixedEarlyWithdrawn = "Bank.FixedEarlyWithdrawn";
-    public const string Bank_FixedMatureReminder = "Bank.FixedMatureReminder";
-    public const string Bank_InvalidAmount = "Bank.InvalidAmount";
-    public const string Bank_NotEnoughBalance = "Bank.NotEnoughBalance";
-    public const string Bank_NoMoney = "Bank.NoMoney";
 
     #endregion
 
