@@ -202,92 +202,150 @@ public class TetrisMenu : ViewMenu
 
     private void BuildPlayUi()
     {
-        // 格子按窗口高度自适应，避免小窗口下棋盘被菜单边框裁剪
+        // 棋盘按可用高度缩放；右侧信息卡保持固定上限，避免小分辨率下内容互相挤压。
         var cell = Math.Clamp((Game1.uiViewport.Height - 280) / TetrisBoard.VisibleHeight, 14, 32);
 
-        var side = new Lane { Orientation = Orientation.Vertical, Layout = LayoutParameters.FitContent() };
-        AddSide(side, MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Next).ToString()));
-        AddSide(side, new TetrisNextView(_board));
-        _scoreText = AddValueRow(side, Tools.GetI18n(I18nKeys.Tetris_Score).ToString());
-        _linesText = AddValueRow(side, Tools.GetI18n(I18nKeys.Tetris_Lines).ToString());
-        _levelText = AddValueRow(side, Tools.GetI18n(I18nKeys.Tetris_Level).ToString());
-        side.Children.Add(MenuUi.Button(Tools.GetI18n(I18nKeys.Tetris_Pause).ToString(), Pause, new(Top: 4)));
-        side.Children.Add(MenuUi.Button(Tools.GetI18n(I18nKeys.Tetris_Exit).ToString(), Close, new(Top: 4)));
-        AddSide(side, MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Help1).ToString(), Game1.tinyFont));
-        AddSide(side, MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Help2).ToString(), Game1.tinyFont));
+        var board = new Frame
+        {
+            Background = UiSprites.MenuSlotInset,
+            Padding = new(12),
+            Layout = LayoutParameters.FitContent(),
+            Content = new TetrisBoardView(_board, cell),
+        };
 
-        var row = MenuUi.Row();
-        row.Children.Add(new TetrisBoardView(_board, cell));
-        side.Margin = new(Left: 16);
+        var side = MenuUi.Column(maxWidth: 240, maxHeight: 780);
+        side.Children.Add(MenuUi.Card(BuildNextCard(), topMargin: 0));
+        side.Children.Add(MenuUi.Card(BuildStatsCard(), topMargin: MenuUi.SectionGap));
+        side.Children.Add(MenuUi.Card(BuildControlsCard(), topMargin: MenuUi.SectionGap));
+
+        var row = MenuUi.Row(align: Alignment.Middle);
+        row.Children.Add(board);
+        side.Margin = new(Left: MenuUi.SectionGap);
         row.Children.Add(side);
         _root!.Children.Add(row);
     }
 
-    private void BuildPauseUi()
+    /// <summary>下一块预览单独成卡，避免棋盘与说明信息混在同一列。</summary>
+    private Lane BuildNextCard()
     {
-        _root!.Children.Add(
+        var card = MenuUi.Column();
+        card.Children.Add(
             MenuUi.TextRow(
-                Tools.GetI18n(I18nKeys.Tetris_Paused).ToString(),
-                Game1.dialogueFont,
-                align: Alignment.Middle
+                Tools.GetI18n(I18nKeys.Tetris_Next).ToString(),
+                color: MenuUi.Accent,
+                align: Alignment.Middle,
+                bold: true
             )
         );
-        AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Resume).ToString(), Resume);
+        var previewRow = MenuUi.Row(Alignment.Middle, topMargin: MenuUi.RowGap);
+        previewRow.Children.Add(new TetrisNextView(_board));
+        card.Children.Add(previewRow);
+        return card;
+    }
+
+    /// <summary>实时统计卡：每个数值均有独立引用，更新时不重建棋盘和焦点树。</summary>
+    private Lane BuildStatsCard()
+    {
+        var card = MenuUi.Column();
+        _scoreText = MenuUi.Text("0", color: Color.Black, scale: 1.15f, bold: true);
+        card.Children.Add(
+            MenuUi.RowBetween(
+                MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Score).ToString(), color: MenuUi.Muted),
+                _scoreText,
+                topMargin: 0
+            )
+        );
+
+        _linesText = MenuUi.Text("0", color: Color.Black, scale: 1.15f, bold: true);
+        card.Children.Add(
+            MenuUi.RowBetween(
+                MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Lines).ToString(), color: MenuUi.Muted),
+                _linesText,
+                topMargin: MenuUi.RowGap
+            )
+        );
+
+        _levelText = MenuUi.Text("0", color: Color.Black, scale: 1.15f, bold: true);
+        card.Children.Add(
+            MenuUi.RowBetween(
+                MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Level).ToString(), color: MenuUi.Muted),
+                _levelText,
+                topMargin: MenuUi.RowGap
+            )
+        );
+        return card;
+    }
+
+    /// <summary>操作卡：主按钮突出暂停，退出作为次要操作；帮助文字降低对视觉的干扰。</summary>
+    private Lane BuildControlsCard()
+    {
+        var card = MenuUi.Column();
+        card.Children.Add(
+            MenuUi.PrimaryButton(
+                Tools.GetI18n(I18nKeys.Tetris_Pause).ToString(),
+                Pause,
+                new(Bottom: MenuUi.RowGap)
+            )
+        );
+        card.Children.Add(MenuUi.SecondaryButton(Tools.GetI18n(I18nKeys.Tetris_Exit).ToString(), Close));
+        card.Children.Add(MenuUi.Divider(MenuUi.SectionGap));
+        card.Children.Add(MenuUi.Text(Tools.GetI18n(I18nKeys.Tetris_Help1).ToString(), Game1.tinyFont, MenuUi.Muted));
+        card.Children.Add(
+            MenuUi.Text(
+                Tools.GetI18n(I18nKeys.Tetris_Help2).ToString(),
+                Game1.tinyFont,
+                MenuUi.Muted,
+                topMargin: MenuUi.RowGap
+            )
+        );
+        return card;
+    }
+
+    private void BuildPauseUi()
+    {
+        _root!.Children.Add(MenuUi.Header(Tools.GetI18n(I18nKeys.Tetris_Paused).ToString()));
+        AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Resume).ToString(), Resume, primary: true);
         AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Restart).ToString(), Restart);
         AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Exit).ToString(), Close);
     }
 
     private void BuildGameOverUi()
     {
-        _root!.Children.Add(
+        _root!.Children.Add(MenuUi.Header(Tools.GetI18n(I18nKeys.Tetris_GameOver).ToString()));
+        var summary = MenuUi.Column();
+        summary.Children.Add(
             MenuUi.TextRow(
-                Tools.GetI18n(I18nKeys.Tetris_GameOver).ToString(),
+                $"{Tools.GetI18n(I18nKeys.Tetris_Score)}: {_board.Score}",
                 Game1.dialogueFont,
                 align: Alignment.Middle
             )
         );
-        _root.Children.Add(
+        summary.Children.Add(
             MenuUi.TextRow(
-                $"{Tools.GetI18n(I18nKeys.Tetris_Score)}: {_board.Score}    "
-                    + $"{Tools.GetI18n(I18nKeys.Tetris_Lines)}: {_board.Lines}    "
+                $"{Tools.GetI18n(I18nKeys.Tetris_Lines)}: {_board.Lines}　"
                     + $"{Tools.GetI18n(I18nKeys.Tetris_Level)}: {_board.Level}",
+                color: MenuUi.Muted,
                 align: Alignment.Middle,
                 topMargin: MenuUi.RowGap
             )
         );
-        AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Restart).ToString(), Restart);
+        _root.Children.Add(MenuUi.Card(summary, tint: new Color(236, 245, 236), topMargin: MenuUi.SectionGap));
+        AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Restart).ToString(), Restart, primary: true);
         AddCenteredButton(Tools.GetI18n(I18nKeys.Tetris_Exit).ToString(), Close);
     }
 
-    /// <summary>单按钮占一行并在行内居中（等价原框架 <c>Root.ContentHAlign = Center</c> 的效果）。</summary>
-    private void AddCenteredButton(string text, Action onClick)
+    /// <summary>单按钮占一行并在行内居中；主操作使用亮色按钮，次操作使用默认暗色按钮。</summary>
+    private void AddCenteredButton(string text, Action onClick, bool primary = false)
     {
         var row = MenuUi.Row(Alignment.Middle, topMargin: MenuUi.RowGap);
-        row.Children.Add(MenuUi.Button(text, onClick));
+        row.Children.Add(primary ? MenuUi.PrimaryButton(text, onClick) : MenuUi.SecondaryButton(text, onClick));
         _root!.Children.Add(row);
-    }
-
-    /// <summary>侧栏加一项（首项不加间距，其余留 4px 上间距）。</summary>
-    private static void AddSide(Lane side, View item)
-    {
-        if (side.Children.Count > 0)
-            item.Margin = new(Top: 4);
-        side.Children.Add(item);
-    }
-
-    /// <summary>侧栏加一组"标签 + 数值"行，数值文本由每帧 <see cref="SyncSideLabels"/> 刷新。</summary>
-    private static Label AddValueRow(Lane side, string label)
-    {
-        AddSide(side, MenuUi.Text(label));
-        var value = MenuUi.Text("0");
-        value.Layout = new() { Width = Length.Px(96), Height = Length.Content() };
-        AddSide(side, value);
-        return value;
     }
 
     private void SyncSideLabels()
     {
-        if (_scoreText == null || _linesText == null || _levelText == null) return;
+        if (_scoreText == null || _linesText == null || _levelText == null)
+            return;
         _scoreText.Text = _board.Score.ToString();
         _linesText.Text = _board.Lines.ToString();
         _levelText.Text = _board.Level.ToString();
