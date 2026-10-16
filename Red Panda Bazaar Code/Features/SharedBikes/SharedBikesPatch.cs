@@ -1,6 +1,7 @@
 using System;
-using WhaleK.Common;
+using Red_Panda_Bazaar_Code.Utils;
 using HarmonyLib;
+using Red_Panda_Bazaar_Code.Constant;
 using StardewValley.Characters;
 
 namespace Red_Panda_Bazaar_Code.Features.SharedBikes;

@@ -52,19 +52,10 @@
         <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 
-    <!-- 公共源码（物品序列化/随机与时间工具/GMCM 接口），见 MySDVMods/Common -->
-    <Import Project="..\..\Common\WhaleK.Common.projitems" Label="Shared"/>
-
     <!-- StardewUI Core（共享源码项目，本 mod 的 UI 框架），默认取 Projects 下的本地副本 -->
     <PropertyGroup>
         <StardewUICorePath Condition="'$(StardewUICorePath)' == ''">..\..\..\..\Projects\StardewUI\Core</StardewUICorePath>
     </PropertyGroup>
     <Import Project="$(StardewUICorePath)\StardewUI.projitems" Label="Shared"/>
-
-    <!-- 本 mod 的菜单已全部迁移到 StardewUI.Core：从共享源码中排除旧自研 UI 框架，
-         避免两套框架同时编进程序集。Common 的 UI 仍被其它 mod 使用，故只在本项目内排除。 -->
-    <ItemGroup>
-        <Compile Remove="..\..\Common\UI\**\*.cs" />
-    </ItemGroup>
 
 </Project>

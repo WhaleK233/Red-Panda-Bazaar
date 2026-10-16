@@ -6,7 +6,6 @@ using StardewUI.Graphics;
 using StardewUI.Layout;
 using StardewUI.Widgets;
 using StardewValley;
-using WhaleK.Common;
 using SharedBikesFeature = Red_Panda_Bazaar_Code.Features.SharedBikes.SharedBikes;
 
 namespace Red_Panda_Bazaar_Code.Features.Bank;
