@@ -93,12 +93,15 @@ jobs:
         id: version
         run: echo "value=$(python "Red Panda Bazaar Code/scripts/MakeRcVersion.py")" >> "$GITHUB_OUTPUT"
 
+      # AppendGitRevision=false：RC 不追加 +SHA。build metadata 里的 + 在下载 URL 中
+      # 会被解码成空格，有真实的链接风险；Release 说明里已单独记录来源提交
       - name: 构建发布包
         run: >
           dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
           -p:GamePath="$GITHUB_WORKSPACE/_game"
           -p:EnableModDeploy=false
           -p:Version="${{ steps.version.outputs.value }}"
+          -p:AppendGitRevision=false
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
 
       - name: 刷新 RC Release

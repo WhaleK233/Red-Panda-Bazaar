@@ -12,8 +12,8 @@
         <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
         <!-- 版本号唯一来源：manifest.json 用 %ProjectVersion% 引用本值，
              程序集版本也由它派生，不再有任何脚本改写 manifest。
-             本地开发格式 x.y.z-beta；CI 发布时用 -p:Version= 覆盖为 x.y.z-rc.<日期>.<run>。 -->
-        <Version>1.1.2-beta</Version>
+             本地开发格式 x.y.z-Beta；CI 发布时用 -p:Version= 覆盖为 x.y.z-rc.<日期>.<run>。 -->
+        <Version>1.2.0-Beta</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -51,6 +51,32 @@
               DestinationFolder="$(GameModsPath)\[CP]Red Panda Bazaar\%(RecursiveDir)"
               SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true"/>
+    </Target>
+
+    <!-- 本地构建时把 git 标识追加为 semver build metadata（+ 后缀），
+         让 zip 名、manifest 版本号、程序集版本都带上来源代码标识：
+         工作区干净是 +<短SHA>，有未提交改动是 +<短SHA>-dirty。
+         build metadata 不参与版本优先级比较（semver 2.0），因此不会被误判为新版本。
+         CI 经 -p:Version= 注入 RC 版本号，并以 -p:AppendGitRevision=false 显式关闭。 -->
+    <Target Name="AppendGitRevision" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo;BeforeBuild"
+            Condition="'$(Version)' != '' AND !$(Version.Contains('+')) AND '$(AppendGitRevision)' != 'false'">
+        <Exec Command="git rev-parse --short HEAD"
+              ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="_GitSha" />
+        </Exec>
+        <!-- 未跟踪的新文件同样算改动，避免「新增文件没提交就打包」被漏标 -->
+        <Exec Command="git status --porcelain"
+              ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="_GitChanges" />
+        </Exec>
+        <PropertyGroup>
+            <!-- 正则提取：非 git 副本（如导出的源码包）会输出错误信息，
+                 此处取不到 SHA，版本号安全退回 csproj 中的值 -->
+            <_GitSha>$([System.Text.RegularExpressions.Regex]::Match('$(_GitSha)', '^\s*([0-9a-f]{4,})\s*$').Groups[1].Value)</_GitSha>
+            <_GitRevision Condition="'$(_GitSha)' != '' AND '$(_GitChanges)' != ''">$(_GitSha)-dirty</_GitRevision>
+            <_GitRevision Condition="'$(_GitSha)' != '' AND '$(_GitChanges)' == ''">$(_GitSha)</_GitRevision>
+            <Version Condition="'$(_GitRevision)' != ''">$(Version)+$(_GitRevision)</Version>
+        </PropertyGroup>
     </Target>
 
     <!-- StardewUI Core（共享源码项目，本 mod 的 UI 框架），默认取 Projects 下的本地副本 -->

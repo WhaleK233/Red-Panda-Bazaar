@@ -63,8 +63,10 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
 
 | 场景 | 格式 | 说明 |
 |---|---|---|
-| 本地开发 | `x.y.z-beta` | 手动维护在 csproj；构建不改写任何文件 |
+| 本地开发 | `x.y.z-Beta+<短SHA>` | 手动维护 csproj 中的 `x.y.z-Beta`；构建时自动追加 git 标识，不改写任何文件 |
 | CD 预览版 | `x.y.z-rc.<日期>.<run>` | 由 `<Version>` 派生，CI 经 `-p:Version=` 注入，不写回仓库 |
+
+本地构建的 git 标识来自 `git rev-parse --short HEAD`：工作区干净时是 `1.2.0-Beta+04e0518`，有未提交改动（含新增未跟踪文件）时是 `1.2.0-Beta+04e0518-dirty`。zip 文件名、`manifest.json` 的版本号、程序集版本三处同步带上该标识，据此可确认发给别人的包对应哪份代码。
 
 ## 发布
 
