@@ -60,13 +60,17 @@
          CI 经 -p:Version= 注入 RC 版本号，并以 -p:AppendGitRevision=false 显式关闭。 -->
     <Target Name="AppendGitRevision" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo;BeforeBuild"
             Condition="'$(Version)' != '' AND !$(Version.Contains('+')) AND '$(AppendGitRevision)' != 'false'">
+        <!-- 非 git 工作副本（导出的源码包）下 git 会以 128 退出并把错误写到 stderr，
+             这里只关心输出内容，两个重要性都压到 low，避免每次构建刷无关信息 -->
         <Exec Command="git rev-parse --short HEAD"
-              ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
+              ConsoleToMSBuild="true" StandardOutputImportance="low" StandardErrorImportance="low"
+              IgnoreExitCode="true" ContinueOnError="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="_GitSha" />
         </Exec>
         <!-- 未跟踪的新文件同样算改动，避免「新增文件没提交就打包」被漏标 -->
         <Exec Command="git status --porcelain"
-              ConsoleToMSBuild="true" StandardOutputImportance="low" ContinueOnError="true">
+              ConsoleToMSBuild="true" StandardOutputImportance="low" StandardErrorImportance="low"
+              IgnoreExitCode="true" ContinueOnError="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="_GitChanges" />
         </Exec>
         <PropertyGroup>
