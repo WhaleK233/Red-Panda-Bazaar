@@ -10,6 +10,10 @@
         <EnableHarmony>true</EnableHarmony>
         <OutputPath>out\</OutputPath>
         <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+        <!-- 版本号唯一来源：manifest.json 用 %ProjectVersion% 引用本值，
+             程序集版本也由它派生，不再有任何脚本改写 manifest。
+             本地开发格式 x.y.z-beta；CI 发布时用 -p:Version= 覆盖为 x.y.z-rc.<日期>.<run>。 -->
+        <Version>1.1.2-beta</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -47,11 +51,6 @@
               DestinationFolder="$(GameModsPath)\[CP]Red Panda Bazaar\%(RecursiveDir)"
               SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true"/>
-    </Target>
-
-    <!-- 版本递增同样只在真实构建时执行，避免编译检查改写 manifest.json -->
-    <Target Name="UpdateModVersion" BeforeTargets="BeforeBuild" Condition="'$(EnableModDeploy)' != 'false'">
-        <Exec Command="python &quot;$(ProjectDir)scripts\UpdateVersion.py&quot;"/>
     </Target>
 
     <!-- StardewUI Core（共享源码项目，本 mod 的 UI 框架），默认取 Projects 下的本地副本 -->
