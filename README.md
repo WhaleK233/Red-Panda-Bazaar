@@ -1,6 +1,6 @@
 # Red Panda Bazaar — 星露谷物语 SMAPI 模组
 
-星露谷物语扩展模组，新增 NPC、地图场景、商店和节日。需配合 Content Patcher 内容包使用。
+星露谷物语扩展模组，新增 NPC、地图场景、商店、节日，以及银行、玩家摊位、共享单车、兑奖机等玩法系统。需配合 Content Patcher 内容包使用。
 
 > **注意：** 非中文玩家需安装对应翻译文件。
 
@@ -8,37 +8,42 @@
 
 ```
 Red Panda Bazaar Code/       # C# SMAPI 模组
-├── ModEntry.cs               # 入口：Tools.Init → FeatureInit() → HarmonyPatch()
+├── ModEntry.cs               # 入口：ModInfo.Init → 订阅 GameLaunched → FeatureInit() → HarmonyPatch()
 ├── manifest.json             # 模组元数据
 ├── Config/ModConfig.cs       # GMCM 可配置项
-├── Constant/                 # 常量（I18nKeys, DataKeys, ItemsKeys 等）
+├── Constant/                 # 常量（I18nKeys, ItemsKeys, MPMessageType, PatchType 等）
 ├── Features/                 # 功能模块，每个子目录一个独立功能
-│   ├── Transportation/       # 交通系统
-│   ├── SpringFair/           # 春季集市
-│   ├── Critters/             # 生物粒子效果
-│   ├── ButterflyNight/       # 秋 11 萤火虫之夜
-│   ├── FishingMiniGame/      # 钓鱼小游戏
-│   ├── TargetMiniGame/       # 射击靶子小游戏
+│   ├── Bank/                 # 银行与投资
+│   ├── PlayerStall/          # 玩家摊位系统
+│   ├── SpringFair/           # 春季展览会（含钓鱼 / 打靶小游戏）
 │   ├── PrizeMachines/        # 兑奖机
 │   ├── SpecialOrders/        # 特殊订单
+│   ├── SharedBikes/          # 共享单车
+│   ├── Tetris/               # 俄罗斯方块小游戏
+│   ├── Transportation/       # 交通系统
+│   ├── Critters/             # 生物粒子效果
+│   ├── ButterflyNight/       # 秋 11 萤火虫之夜
 │   ├── Buffs/                # 自定义 Buff
-│   ├── Furniture/            # 家具装饰
-│   └── PlayerStall/          # 玩家摊位系统
-├── Compatibility/            # 可选集成（GMCM、Central Station 等）
+│   └── Furniture/            # 家具装饰
+├── Compatibility/            # 可选集成（GMCM、Central Station、Dev Debug Kit）
 │   └── ModApi/               # 外部 Mod API 接口
-├── Utils/Tools.cs            # 全局工具类
+├── Utils/                    # ModInfo / MenuUi / Tools 等公共实现
 └── i18n/                     # SMAPI 翻译文件
 
-[CP]Red Panda Bazaar/        # Content Patcher 内容包（美术资源）
+[CP]Red Panda Bazaar/        # Content Patcher 内容包：地图、NPC、商店、节日、物品定义与美术资源（本仓库只读）
 ```
 
 ## 构建
 
 ```bash
+# 常规构建：编译 → 部署到 Mods/ → 打包 zip（有副作用，见下）
 dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+
+# 仅编译检查：不部署、不打包，零副作用
+dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
 ```
 
-自动编译并部署到 `Stardew Valley/Mods/`。
+常规构建会把编译产物连同仓库内的 `[CP]Red Panda Bazaar/` 一并部署到 `Stardew Valley/Mods/`（CP 包为全量覆盖，先删后拷），并在 `out/net6.0/` 下打包 zip；反复构建会在这里堆积历史 zip。只想验证能否编译时请用上面第二条命令。构建**不会改写任何仓库文件**。
 
 ## 依赖
 
