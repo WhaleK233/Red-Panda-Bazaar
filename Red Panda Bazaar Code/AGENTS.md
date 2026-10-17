@@ -75,7 +75,7 @@ flowchart TD
 | `Red Panda Bazaar Code/ModEntry.cs` | SMAPI 入口，仅 4 个方法 |
 | `Red Panda Bazaar Code/Utils/` | 本 mod 的本地公共实现：`ModInfo.cs`、`MenuUi.cs`、`Tools.cs`、`ItemSerializer.cs`、`RandomUtils.cs`、`TimeUtils.cs` |
 | `Red Panda Bazaar Code/Features/` | 12 个功能模块，每个自成一目录（`Bank/`、`PlayerStall/`、`SpringFair/`、`Buffs/`、`Furniture/`、`Transportation/`、`Critters/`、`SpecialOrders/`、`PrizeMachines/`、`SharedBikes/`、`ButterflyNight/`、`Tetris/`） |
-| `MySDVMods/Common/`（仓库外） | 其它 mod 使用的共享源码项目；本 mod 不再引用它。其旧 `WhaleK.Common.UI` 框架仍由其它 mod 使用 |
+| `MySDVMods/Common/`（仓库外） | 旧共享源码项目；本 mod 不引用它，本仓库内也已无其它 mod 引用（仅仓库外的 `PrizeMachineFramework` 仍在消费） |
 | `Projects/StardewUI/Core/`（仓库外） | UI 框架源码（`ViewMenu`/`View`/`Widgets`/`Layout`），csproj 的 `StardewUICorePath` 指向它；框架本身有改动时需回归本 mod |
 | `Red Panda Bazaar Code/docs/` | `StardewUI-Core-Api-Cheatsheet.md`——本 checkout 版 StardewUI.Core 的纯代码 API 速查（含"不存在"清单与源码行号），写新菜单前先查它；`SpringFair-Minigame-Invocation.md`——春季展览会复用原版小游戏的方案取舍与适配点 |
 | `Red Panda Bazaar Code/DeBug/` | `Debug.cs`——本模组专属调试 UI 的开关查询入口，转发到 Dev Debug Kit 的 API（未安装时恒为 false） |
@@ -358,4 +358,4 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 - `README.md` 与代码有多处不一致：功能列表仍列着已删除的 `FishingMiniGame/`、`TargetMiniGame/`，且缺 `Bank/`、`SharedBikes/`、`Tetris/`；未提及构建副作用（CP 部署等）；称 CP 包仅为「美术资源」。
 - `out/net6.0/` 的历史 zip 随构建持续堆积（已 gitignore），定期清理。
-- `MySDVMods/Common/UI/`（旧自研 UI 框架，约 34 个文件）本 mod 已不再引用，但 `Dev Debug Kit/Dev Debug Kit/DeBug/DebugMenu.cs` 仍在用，处于“半弃用”状态；等它也迁到 StardewUI.Core 后，才能整目录删除并把其它项目的 `projitems` 里的 `UI Framework` 组一并清掉。
+- `MySDVMods/Common/UI/`（旧自研 UI 框架，约 34 个文件）在本仓库内已无消费者：本 mod 与 `Dev Debug Kit` 都已迁到 StardewUI.Core。是否整目录删除、以及是否清理 `Common/WhaleK.Common.projitems` 里的 `UI Framework` 组，留给维护者决定（仓库外的 `PrizeMachineFramework` 仍在消费 `Common`）。
