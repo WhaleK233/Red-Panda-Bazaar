@@ -70,7 +70,7 @@ public class PlayerStallMenu : MenuWithInventory {
         if (_priceButton.bounds.Contains(x, y)) {
             var items = GetUnsoldItems();
             if (_stallItem != null && items.Count > 0)
-                Game1.activeClickableMenu = new PriceEditMenu(this, items[0]);
+                OpenPriceEditor(items[0]);
             return;
         }
 
@@ -167,8 +167,15 @@ public class PlayerStallMenu : MenuWithInventory {
         if (_stallSlot.bounds.Contains(x, y) && _stallItem != null) {
             var items = GetUnsoldItems();
             if (items.Count > 0)
-                Game1.activeClickableMenu = new PriceEditMenu(this, items[0]);
+                OpenPriceEditor(items[0]);
         }
+    }
+
+    /// <summary>打开价格编辑器；直接替换菜单不会触发旧菜单的手持物回收。</summary>
+    private void OpenPriceEditor(StallItem stallItem) {
+        var carried = heldItem;
+        heldItem = null;
+        Game1.activeClickableMenu = new PriceEditMenu(this, stallItem, carried);
     }
 
     public override void draw(SpriteBatch b) {
@@ -232,11 +239,16 @@ public class PlayerStallMenu : MenuWithInventory {
     }
 
     public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) {
-        Game1.activeClickableMenu = new PlayerStallMenu(_actionId);
+        var carried = heldItem;
+        heldItem = null;
+        Game1.activeClickableMenu = new PlayerStallMenu(_actionId) { heldItem = carried };
     }
 
     private class PriceEditMenu : NumberSelectionMenu {
-        public PriceEditMenu(PlayerStallMenu parent, StallItem stallItem)
+        private readonly PlayerStallMenu _parent;
+        private readonly Item? _carriedItem;
+
+        public PriceEditMenu(PlayerStallMenu parent, StallItem stallItem, Item? carriedItem)
             : base(
                 Tools.GetI18n(I18nKeys.PlayerStall_PriceEditTitle).ToString(),
                 (number, price, who) => {
@@ -244,11 +256,30 @@ public class PlayerStallMenu : MenuWithInventory {
                     if (stocked != null) PlayerStall.UpdateItem(stallItem.Id, stocked.Stack, number);
                     Game1.playSound("coin");
                     parent._stallItem = stocked;
-                    Game1.activeClickableMenu = new PlayerStallMenu(parent._actionId);
+                    Game1.activeClickableMenu = new PlayerStallMenu(parent._actionId) { heldItem = carriedItem };
                 },
                 price: -1,
                 minValue: Math.Max(1, (int)Math.Ceiling(stallItem.GetItem()!.sellToStorePrice() * 0.01)),
                 maxValue: Math.Max(1, stallItem.GetItem()!.sellToStorePrice() * 3),
-                defaultNumber: Math.Max(1, stallItem.Price)) { }
+                defaultNumber: Math.Max(1, stallItem.Price)) {
+            _parent = parent;
+            _carriedItem = carriedItem;
+        }
+
+        public override void emergencyShutDown() {
+            if (_carriedItem != null) {
+                Game1.player.addItemToInventory(_carriedItem);
+            }
+            base.emergencyShutDown();
+        }
+
+        public override void receiveLeftClick(int x, int y, bool playSound = true) {
+            if (cancelButton.containsPoint(x, y)) {
+                Game1.activeClickableMenu = new PlayerStallMenu(_parent._actionId) { heldItem = _carriedItem };
+                return;
+            }
+
+            base.receiveLeftClick(x, y, playSound);
+        }
     }
 }
