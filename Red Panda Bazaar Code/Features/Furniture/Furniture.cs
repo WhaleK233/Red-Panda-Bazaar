@@ -10,6 +10,8 @@ namespace Red_Panda_Bazaar_Code.Features.Furniture;
 
 public static class Furniture
 {
+    private const string MarlinShopLocation = "Custom_MarlinShop1";
+    private static readonly (float X, float Y)[] DisplayTankTiles = { (17f, 12f), (20f, 17f) };
     private static bool _initialized;
 
     public static void Init()
@@ -25,6 +27,7 @@ public static class Furniture
     /// <summary>存档加载时由主机创建鱼缸。</summary>
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        _initialized = false;
         if (!Context.IsMainPlayer) return;
         EnsureTanksExist();
     }
@@ -33,19 +36,24 @@ public static class Furniture
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
         if (!Context.IsMainPlayer || _initialized) return;
-        if (e.NewLocation.Name != "Custom_MarlinShop1") return;
+        if (e.NewLocation.Name != MarlinShopLocation) return;
         EnsureTanksExist();
     }
 
     private static void EnsureTanksExist()
     {
-        var loc = Game1.getLocationFromName("Custom_MarlinShop1");
+        var loc = Game1.getLocationFromName(MarlinShopLocation);
         if (loc == null) return;
-        if (loc.furniture.Any(f => f.QualifiedItemId == "(F)" + ItemsKeys.Furniture.MarlinFishTank1))
-            return;
 
-        CreateFishTank(loc, 17f, 12f);
-        CreateFishTank(loc, 20f, 17f);
+        foreach (var (x, y) in DisplayTankTiles)
+        {
+            var occupied = loc.furniture.Any(f =>
+                f.QualifiedItemId == "(F)" + ItemsKeys.Furniture.MarlinFishTank1 &&
+                f.TileLocation == new Vector2(x, y));
+            if (!occupied)
+                CreateFishTank(loc, x, y);
+        }
+
         _initialized = true;
     }
 
