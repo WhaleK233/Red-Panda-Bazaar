@@ -18,7 +18,6 @@ public static class SpecialOrders
         Tools.Log("Quests Initializing.");
 
         _itemsTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RedPandaBazaar_Items.png");
-        ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
@@ -29,11 +28,6 @@ public static class SpecialOrders
         });
 
         Tools.Log("Quests Initialized.");
-    }
-
-    private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
-    {
-        SpecialOrdersPatch.Reset();
     }
 
     /// <summary>陈小明商店内有可领取奖励时，渲染浮动提示图标。</summary>
