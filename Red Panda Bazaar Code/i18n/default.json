@@ -1,6 +1,7 @@
 ﻿{
   /****** Delete "Bank.ServiceChecking", "Bank.ServiceFixed", "Bank.CheckingTab", "Bank.CheckingBalance", "Bank.InterestEarned", "Bank.TodayInterest", "Bank.ClaimInterest", "Bank.TodayRate", "Bank.Deposit", "Bank.Withdraw", "Bank.DepositTitle", "Bank.WithdrawTitle", "Bank.FixedTab", "Bank.Redeem", "Bank.EarlyWithdraw", "Bank.FixedAmount", "Bank.FixedTerm", "Bank.FixedStatus", "Bank.FixedStatusActive", "Bank.FixedStatusWithdrawn", "Bank.FixedStatusMature", "Bank.Days", "Bank.FixedEmpty", "Bank.NewFixedAmountTitle", "Bank.FixedEarlyWithdrawTip", "Bank.DailyRateLabel", "Bank.Apply", "Bank.LoanInterest", "Bank.DepositSuccess", "Bank.WithdrawSuccess", "Bank.InterestClaimed", "Bank.FixedCreated", "Bank.FixedRedeemed", "Bank.FixedEarlyWithdrawn", "Bank.FixedMatureReminder", "Bank.InvalidAmount", "Bank.NotEnoughBalance", "Bank.NoMoney" ******/
   /****** Version 1.2.0 Added ******/
+  "Dialogue.XiaoMingRewardInventoryFull": "Your inventory is full. Make some room and come back for the reward.",
   "Tetris.Score": "Score",
   "Tetris.Lines": "Lines",
   "Tetris.Level": "Level",
