@@ -50,6 +50,7 @@ public static class I18nKeys
     public const string Dialogue_GetXiaoMingReward = "Dialogue.GetXiaoMingReward";
 
     public const string Dialogue_NoXiaoMingReward = "Dialogue.NoXiaoMingReward";
+    public const string Dialogue_XiaoMingRewardInventoryFull = "Dialogue.XiaoMingRewardInventoryFull";
 
     #endregion Dialogue
 

@@ -64,7 +64,14 @@ public static class SpecialOrders
 
         if (Game1.stats.Get(StatsKeys.ChenXiaomingRewardCount) > 0)
         {
-            Game1.player.addItemToInventory(ItemRegistry.Create(ItemsKeys.Tickets.ClassicTicket));
+            var ticket = ItemRegistry.Create(ItemsKeys.Tickets.ClassicTicket);
+            if (!Game1.player.couldInventoryAcceptThisItem(ticket))
+            {
+                Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_XiaoMingRewardInventoryFull));
+                return;
+            }
+
+            Game1.player.addItemToInventoryBool(ticket);
             Game1.stats.Decrement(StatsKeys.ChenXiaomingRewardCount);
             Game1.drawObjectDialogue(Tools.GetI18n(I18nKeys.Dialogue_GetXiaoMingReward));
         }
