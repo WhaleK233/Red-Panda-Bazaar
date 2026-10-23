@@ -49,11 +49,11 @@ public static class FurniturePatch
     }
 
     /// <returns>false = 跳过原方法（阻止左键点击造成的拿起/移动）。</returns>
-    private static bool Prefix_clicked(FishTankFurniture __instance)
+    private static bool Prefix_clicked(StardewValley.Objects.Furniture __instance)
     {
         try
         {
-            if (!IsTargetTank(__instance)) return true;
+            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank)) return true;
             return false;
         }
         catch (Exception e)
@@ -64,11 +64,11 @@ public static class FurniturePatch
     }
 
     /// <returns>false = 跳过原方法（阻止任何方式移除鱼缸）。</returns>
-    private static bool Prefix_canBeRemoved(FishTankFurniture __instance)
+    private static bool Prefix_canBeRemoved(StorageFurniture __instance)
     {
         try
         {
-            if (!IsTargetTank(__instance)) return true;
+            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank)) return true;
             return false;
         }
         catch (Exception e)
