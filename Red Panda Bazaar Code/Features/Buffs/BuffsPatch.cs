@@ -47,6 +47,9 @@ public static class BuffsPatch
     {
         try
         {
+            if (!__instance.IsLocalPlayer || __instance.itemToEat == null)
+                return true;
+
             var buffDict = Buffs.BuffDict;
 
             if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
@@ -57,7 +60,7 @@ public static class BuffsPatch
             if (__instance.itemToEat.ItemId == ItemsKeys.Food.Milk_Pudding)
             {
                 var ex = RandomUtils.Next(40, 60);
-                Game1.player.gainExperience(SkillsKeys.Farming, ex);
+                __instance.gainExperience(SkillsKeys.Farming, ex);
             }
 
             return true;
