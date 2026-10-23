@@ -15,6 +15,13 @@ public class BankInvestmentMenu : ViewMenu
 {
     private Label? _statusLabel;
     private Button? _unlockButton;
+    private bool? _shownUnlocked;
+
+    public override void update(GameTime time)
+    {
+        base.update(time);
+        RefreshStatusIfChanged();
+    }
 
     protected override IView CreateView()
     {
@@ -56,6 +63,19 @@ public class BankInvestmentMenu : ViewMenu
     private void OnUnlockBike()
     {
         SharedBikesFeature.TryUnlock();
+        RefreshStatusIfChanged();
+    }
+
+    /// <summary>客机收到主机广播后没有菜单回调，在更新循环中检测状态变化。</summary>
+    private void RefreshStatusIfChanged()
+    {
+        var unlocked = SharedBikesFeature.IsUnlocked();
+        if (_shownUnlocked == unlocked)
+        {
+            return;
+        }
+
+        _shownUnlocked = unlocked;
         RefreshStatus();
     }
 
