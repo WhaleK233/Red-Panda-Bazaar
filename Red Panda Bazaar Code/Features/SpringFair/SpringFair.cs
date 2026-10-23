@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Features.Critters;
-using Red_Panda_Bazaar_Code.Features.PrizeMachines;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -21,13 +20,16 @@ public static class SpringFair
     private const int TargetGameTileX = 72, TargetGameTileY = 75;
     private const int WheelBetTileX1 = 67, WheelBetTileY1 = 75;
     private const int WheelBetTileX2 = 68, WheelBetTileY2 = 75;
-    private const int PrizeMachineTileX = 40, PrizeMachineTileY = 62;
-    private const int BuyBackpackTileX = 26, BuyBackpackTileY = 77;
     private static readonly PerScreen<Vector2?> MiniGameReturnPosition = new();
 
     /// <summary>是否处于春 8 节日状态（兼容 CJB 跳日期，不依赖 Game1.CurrentEvent）。</summary>
     private static bool IsSpringFairActive =>
         Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 8;
+
+    /// <summary>是否位于春季展览会地图，避免春 8 在其他地图误触相同坐标。</summary>
+    private static bool IsSpringFairLocation =>
+        Game1.currentLocation?.Name.Contains("SpringFair", StringComparison.OrdinalIgnoreCase) == true ||
+        Game1.CurrentEvent?.FestivalName == "SpringFair";
 
     /// <summary>注册节日事件。</summary>
     public static void Init()
@@ -105,7 +107,7 @@ public static class SpringFair
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
     {
         if (!IsSpringFairActive) return;
-        if (Game1.CurrentEvent == null && !Game1.currentLocation.Name.Contains("SpringFair")) return;
+        if (!IsSpringFairLocation) return;
 
         e.SpriteBatch.Draw(Game1.fadeToBlackRect,
             new Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
@@ -124,7 +126,7 @@ public static class SpringFair
     /// <summary>根据点击坐标派发到对应的交互处理。</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e) || !IsSpringFairActive) return;
+        if (!Tools.IsValidButtonAction(e) || !IsSpringFairActive || !IsSpringFairLocation) return;
 
         var tile = e.Cursor.GrabTile;
 
@@ -139,12 +141,6 @@ public static class SpringFair
             case (WheelBetTileX1, WheelBetTileY1):
             case (WheelBetTileX2, WheelBetTileY2):
                 HandleWheelBetGame();
-                break;
-            case (PrizeMachineTileX, PrizeMachineTileY):
-                Game1.activeClickableMenu = new ClassicPrizeMachineMenu();
-                break;
-            case (BuyBackpackTileX, BuyBackpackTileY):
-                BuyBackpack();
                 break;
         }
     }
@@ -179,43 +175,37 @@ public static class SpringFair
     /// <summary>打靶游戏：付 50g 后进入。限时射击获得星星币。</summary>
     private static void HandleTargetGame()
     {
-        if (Tools.TryCharge(50))
-        {
-            Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_TargetGameQuestion),
-                new Response[]
+        Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_TargetGameQuestion),
+            new Response[]
+            {
+                new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
+            },
+            (_, answer) =>
+            {
+                if (answer == "Positive" && Tools.TryCharge(50))
                 {
-                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
-                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
-                },
-                (_, answer) =>
-                {
-                    if (answer == "Positive")
-                    {
-                        StartTargetGame();
-                    }
-                });
-        }
+                    StartTargetGame();
+                }
+            });
     }
 
     /// <summary>钓鱼游戏：付 50g 后进入。限时钓鱼获得星星币。</summary>
     private static void HandleFishingGame()
     {
-        if (Tools.TryCharge(50))
-        {
-            Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_FishingGameQuestion),
-                new Response[]
+        Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_FishingGameQuestion),
+            new Response[]
+            {
+                new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
+                new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
+            },
+            (_, answer) =>
+            {
+                if (answer == "Positive" && Tools.TryCharge(50))
                 {
-                    new("Positive", Tools.GetI18n(I18nKeys.Dialogue_PositiveResponse)),
-                    new("Negative", Tools.GetI18n(I18nKeys.Dialogue_NegativeResponse))
-                },
-                (_, answer) =>
-                {
-                    if (answer == "Positive")
-                    {
-                        StartFishingGame();
-                    }
-                });
-        }
+                    StartFishingGame();
+                }
+            });
     }
 
     /// <summary>购买背包：根据当前容量（12/24/36）提供升级选项。</summary>
