@@ -40,8 +40,8 @@ public static class ButterflyNight
     {
         if (Game1.Date.Season != Season.Fall || Game1.dayOfMonth != 11) return;
 
-        if (Game1.timeOfDay >= 1600)
-            CrittersSpawner.spawns(Game1.currentLocation, CrittersSpawner.Butterfly);
+        if (Game1.timeOfDay >= 1600 && e.NewLocation.IsOutdoors)
+            CrittersSpawner.spawns(e.NewLocation, CrittersSpawner.Butterfly);
 
         // 无论通过何种方式到达秋11，确保天气为大风（仅主机）
         if (Context.IsMainPlayer && !Game1.isDebrisWeather)

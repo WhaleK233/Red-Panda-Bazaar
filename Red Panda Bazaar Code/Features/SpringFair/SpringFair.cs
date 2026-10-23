@@ -91,7 +91,7 @@ public static class SpringFair
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
         if (!IsSpringFairActive) return;
-        if (!e.NewLocation.IsOutdoors) return;
+        if (!e.NewLocation.IsOutdoors || !IsSpringFairLocation) return;
 
         var critterType = TimeUtils.IsDayTime(e.NewLocation)
             ? CrittersSpawner.Butterfly
