@@ -25,6 +25,21 @@ public static class PlayerStall {
         public int CollectDay { get; set; }
     }
 
+    private class StallItemRequestData {
+        public long PlayerId { get; set; }
+        public StallItem? Item { get; set; }
+    }
+
+    private class StallItemIdRequestData {
+        public long PlayerId { get; set; }
+        public string Id { get; set; } = "";
+    }
+
+    private class StallItemUpdateRequestData {
+        public long PlayerId { get; set; }
+        public ItemUpdateData Update { get; set; } = new();
+    }
+
     private static readonly Dictionary<string, StallConfig> RegisteredStalls = new();
     private static StallSaveData Data { get; set; } = new();
 
@@ -150,6 +165,7 @@ public static class PlayerStall {
             if (stocked == null || !stocked.canStackWith(item)) return false;
         }
 
+        var list = Data.Stock.TryGetValue(actionId, out var stock) ? stock : Data.Stock[actionId] = new();
         var xml = ItemSerializer.Serialize(item);
         if (xml == null) return false;
 
@@ -159,10 +175,8 @@ public static class PlayerStall {
             ItemXml = xml,
             Price = price
         };
-        if (!Data.Stock.TryGetValue(actionId, out var list))
-            Data.Stock[actionId] = list = new();
         list.Add(stallItem);
-        Tools.SendToHostOrBroadcast(stallItem, MPMessageType.PlayerStall_AddItem);
+        SendAddItemRequest(stallItem);
         return true;
     }
 
@@ -174,7 +188,7 @@ public static class PlayerStall {
             if (list.Count == 0) Data.Stock.Remove(item.ActionId);
         }
 
-        Tools.SendToHostOrBroadcast(item.Id, MPMessageType.PlayerStall_RemoveItem);
+        SendRemoveItemRequest(item.Id);
     }
 
     /// <summary>更新物品数量/价格（乐观本地更新 + 主机权威同步）。</summary>
@@ -183,11 +197,123 @@ public static class PlayerStall {
         if (entry?.GetItem() is not { } stocked) return;
 
         stocked.Stack = amount;
-        entry!.RefreshSnapshot();
+        entry.RefreshSnapshot();
         entry.Price = price;
-        Tools.SendToHostOrBroadcast(
-            new ItemUpdateData { Id = stallItemId, Amount = amount, Price = price },
-            MPMessageType.PlayerStall_UpdateItem);
+        SendUpdateItemRequest(new ItemUpdateData { Id = stallItemId, Amount = amount, Price = price });
+    }
+
+    private static void SendAddItemRequest(StallItem item) {
+        var request = new StallItemRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Item = item };
+        if (Context.IsMainPlayer) {
+            BroadcastAddItem(item);
+            return;
+        }
+
+        ModInfo.Helper.Multiplayer.SendMessage(
+            request, MPMessageType.PlayerStall_AddItem,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+    }
+
+    private static void SendRemoveItemRequest(string id) {
+        var request = new StallItemIdRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Id = id };
+        if (Context.IsMainPlayer) {
+            BroadcastRemoveItem(id);
+            return;
+        }
+
+        ModInfo.Helper.Multiplayer.SendMessage(
+            request, MPMessageType.PlayerStall_RemoveItem,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+    }
+
+    private static void SendUpdateItemRequest(ItemUpdateData update) {
+        var request = new StallItemUpdateRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Update = update };
+        if (Context.IsMainPlayer) {
+            BroadcastUpdateItem(update);
+            return;
+        }
+
+        ModInfo.Helper.Multiplayer.SendMessage(
+            request, MPMessageType.PlayerStall_UpdateItem,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+    }
+
+    private static void BroadcastAddItem(StallItem item) {
+        ModInfo.Helper.Multiplayer.SendMessage(item, MPMessageType.PlayerStall_AddItemBroadcast,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID });
+    }
+
+    private static void BroadcastRemoveItem(string id) {
+        ModInfo.Helper.Multiplayer.SendMessage(id, MPMessageType.PlayerStall_RemoveItemBroadcast,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID });
+    }
+
+    private static void BroadcastUpdateItem(ItemUpdateData update) {
+        ModInfo.Helper.Multiplayer.SendMessage(update, MPMessageType.PlayerStall_UpdateItemBroadcast,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID });
+    }
+
+    private static void SendSyncData(long playerId) {
+        ModInfo.Helper.Multiplayer.SendMessage(
+            Data, MPMessageType.PlayerStall_SyncData,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { playerId });
+    }
+
+    /// <summary>主机按客户端请求的原始数据校验，不接受未经检查的快照。</summary>
+    private static bool ValidateAddItem(StallItem item) {
+        if (item == null || string.IsNullOrWhiteSpace(item.Id) ||
+            !RegisteredStalls.ContainsKey(item.ActionId) ||
+            item.Price < 1)
+            return false;
+
+        var restored = item.GetItem();
+        if (restored == null || restored.Stack <= 0 || restored.Stack > restored.maximumStackSize())
+            return false;
+
+        var existing = GetItems(item.ActionId).FirstOrDefault();
+        if (existing == null) return true;
+        var stocked = existing.GetItem();
+        return stocked != null && stocked.canStackWith(restored);
+    }
+
+    private static bool ValidateUpdateItem(ItemUpdateData update) {
+        if (update == null || string.IsNullOrWhiteSpace(update.Id) ||
+            update.Amount <= 0 || update.Price < 1 ||
+            update.Amount == int.MaxValue)
+            return false;
+
+        var target = FindItem(update.Id);
+        var stocked = target?.GetItem();
+        return stocked != null && update.Amount <= stocked.maximumStackSize();
+    }
+
+    private static StallItem? FindItem(string id) =>
+        Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == id);
+
+    private static void ApplyAddItem(StallItem item) {
+        if (!Data.Stock.TryGetValue(item.ActionId, out var list))
+            Data.Stock[item.ActionId] = list = new();
+        if (!list.Any(i => i.Id == item.Id))
+            list.Add(item);
+    }
+
+    private static void ApplyRemoveItem(string id) {
+        foreach (var list in Data.Stock.Values)
+            list.RemoveAll(i => i.Id == id);
+        var emptyKeys = Data.Stock.Where(kv => kv.Value.Count == 0).Select(kv => kv.Key).ToList();
+        foreach (var key in emptyKeys) Data.Stock.Remove(key);
+    }
+
+    private static void ApplyUpdateItem(ItemUpdateData update) {
+        var target = FindItem(update.Id);
+        if (target?.GetItem() is not { } stocked) return;
+        stocked.Stack = update.Amount;
+        target.RefreshSnapshot();
+        target.Price = update.Price;
     }
 
     /// <summary>获取售出记录。未收取时返回当前待领取的记录；已收取后当天仍返回最近一次记录。</summary>
@@ -261,6 +387,7 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_CollectResult: {
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var result = e.ReadAs<CollectResultData>();
                 if (result == null) break;
                 if (result.PlayerId != Game1.player.UniqueMultiplayerID) break;
@@ -290,50 +417,68 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_AddItem: {
-                var newItem = e.ReadAs<StallItem>();
-                if (newItem == null) break;
-                if (!Data.Stock.TryGetValue(newItem.ActionId, out var list))
-                    Data.Stock[newItem.ActionId] = list = new();
-                if (!list.Any(i => i.Id == newItem.Id))
-                    list.Add(newItem);
-
                 if (Context.IsMainPlayer) {
-                    ModInfo.Helper.Multiplayer.SendMessage(newItem, MPMessageType.PlayerStall_AddItem,
-                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
+                    var request = e.ReadAs<StallItemRequestData>();
+                    if (request?.Item == null || request.PlayerId != e.FromPlayerID) break;
+                    if (!ValidateAddItem(request.Item)) {
+                        SendSyncData(e.FromPlayerID);
+                        break;
+                    }
+                    ApplyAddItem(request.Item);
+                    BroadcastAddItem(request.Item);
                 }
 
+                break;
+            }
+
+            case MPMessageType.PlayerStall_AddItemBroadcast: {
+                if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                var newItem = e.ReadAs<StallItem>();
+                if (newItem != null) ApplyAddItem(newItem);
                 break;
             }
 
             case MPMessageType.PlayerStall_RemoveItem: {
-                var removeId = e.ReadAs<string>();
-                foreach (var list in Data.Stock.Values)
-                    list.RemoveAll(i => i.Id == removeId);
-                // 清理空摊位
-                var emptyKeys = Data.Stock.Where(kv => kv.Value.Count == 0).Select(kv => kv.Key).ToList();
-                foreach (var key in emptyKeys) Data.Stock.Remove(key);
-
                 if (Context.IsMainPlayer) {
-                    ModInfo.Helper.Multiplayer.SendMessage(removeId, MPMessageType.PlayerStall_RemoveItem,
-                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
+                    var request = e.ReadAs<StallItemIdRequestData>();
+                    if (request == null || request.PlayerId != e.FromPlayerID ||
+                        string.IsNullOrWhiteSpace(request.Id) || FindItem(request.Id) == null) {
+                        SendSyncData(e.FromPlayerID);
+                        break;
+                    }
+                    ApplyRemoveItem(request.Id);
+                    BroadcastRemoveItem(request.Id);
                 }
 
                 break;
             }
 
+            case MPMessageType.PlayerStall_RemoveItemBroadcast: {
+                if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                var removeId = e.ReadAs<string>();
+                if (!string.IsNullOrWhiteSpace(removeId)) ApplyRemoveItem(removeId);
+                break;
+            }
+
             case MPMessageType.PlayerStall_UpdateItem: {
-                var update = e.ReadAs<ItemUpdateData>();
-                if (update == null) break;
-                var target = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == update.Id);
-                if (target?.GetItem() is not { } stocked) break;
-                stocked.Stack = update.Amount;
-                target!.RefreshSnapshot();
-                target.Price = update.Price;
                 if (Context.IsMainPlayer) {
-                    ModInfo.Helper.Multiplayer.SendMessage(update, MPMessageType.PlayerStall_UpdateItem,
-                        modIDs: new[] { ModInfo.ModManifest.UniqueID });
+                    var request = e.ReadAs<StallItemUpdateRequestData>();
+                    if (request?.Update == null || request.PlayerId != e.FromPlayerID) break;
+                    if (!ValidateUpdateItem(request.Update)) {
+                        SendSyncData(e.FromPlayerID);
+                        break;
+                    }
+                    ApplyUpdateItem(request.Update);
+                    BroadcastUpdateItem(request.Update);
                 }
 
+                break;
+            }
+
+            case MPMessageType.PlayerStall_UpdateItemBroadcast: {
+                if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                var update = e.ReadAs<ItemUpdateData>();
+                if (update != null) ApplyUpdateItem(update);
                 break;
             }
         }
