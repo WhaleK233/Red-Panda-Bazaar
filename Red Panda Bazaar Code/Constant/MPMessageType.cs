@@ -8,8 +8,11 @@ public static class MPMessageType {
     public const string PlayerStall_SyncRequest = "PlayerStallSyncRequest";
     public const string PlayerStall_SyncData = "PlayerStallSyncData";
     public const string PlayerStall_AddItem = "PlayerStallAddItem";
+    public const string PlayerStall_AddItemBroadcast = "PlayerStallAddItemBroadcast";
     public const string PlayerStall_RemoveItem = "PlayerStallRemoveItem";
+    public const string PlayerStall_RemoveItemBroadcast = "PlayerStallRemoveItemBroadcast";
     public const string PlayerStall_UpdateItem = "PlayerStallUpdateItem";
+    public const string PlayerStall_UpdateItemBroadcast = "PlayerStallUpdateItemBroadcast";
 
     // Bank
     public const string Bank_SyncData = "BankSyncData";
