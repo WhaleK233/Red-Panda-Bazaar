@@ -84,7 +84,8 @@ flowchart TD
 | `Red Panda Bazaar Code/Config/` | `ModConfig.cs`（2 个配置项：萤火虫数量倍率、抽奖机动画速度倍率） |
 | `Red Panda Bazaar Code/i18n/` | `default.json`（英文）+ `zh.json`（中文），**必须同步维护** |
 | `Red Panda Bazaar Code/assets/` | C# 侧资源：6 个纹理 PNG（`Textures/`）+ 2 个 Ogg 音效（`Audio/`，共享单车起步与骑行循环音），经 `Content.AssetRequested` / `Data/AudioChanges` 注册 |
-| `Red Panda Bazaar Code/scripts/` | `ValidateRepo.py`（CI 与本地共用的静态校验脚本）、`MakeRcVersion.py`（CD 发布时派生 RC 版本号） |
+| `Red Panda Bazaar RepoTools/` | 仓库工具控制台工程（纯 net6.0）：`validate` 子命令做仓库一致性校验（CI 与本地共用），`rc-version` 子命令为 CD 派生 RC 版本号 |
+| `Red Panda Bazaar Code.Tests/` | xUnit 测试工程（仓库根，与 mod 工程平级）：链接编译纯逻辑源文件 + 仓库校验冒烟 |
 | `[CP]Red Panda Bazaar/` | **只读**：地图、NPC、商店、节日、物品定义、美术资源 |
 
 ---
@@ -286,8 +287,8 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | `Red Panda Bazaar Code/Constant/StatsKeys.cs` | 存档 key 与游戏统计 key |
 | `Red Panda Bazaar Code/Red Panda Bazaar Code.csproj` | 版本号唯一来源（`<Version>`）与两个自定义 Target（`DeployCP`、`AppendGitRevision`）都在这里，改动前先读 `Development Commands` |
 | `Red Panda Bazaar Code/manifest.json` | `Version` 为 `%ProjectVersion%` 占位符，实际值由 csproj `<Version>` 在打包时替换 |
-| `Red Panda Bazaar Code/scripts/MakeRcVersion.py` | CD 发布用：由 csproj `<Version>` 派生 `x.y.z-rc.<日期>.<run>`，只输出到 stdout，不改写文件 |
-| `.github/workflows/ci.yml` | CI/CD 入口：`validate` 跑 `ValidateRepo.py`；`build` 用参考程序集在 Linux 上编译；`release` 在校验与编译都通过后发布 RC |
+| `Red Panda Bazaar RepoTools/` | 仓库工具（validate / rc-version），原 `scripts/` 下两个 Python 脚本的 C# 移植：校验逻辑在 `RepoValidator.cs`，RC 版本派生在 `RcVersion.cs` |
+| `.github/workflows/ci.yml` | CI/CD 入口：`validate` 跑 RepoTools 校验与单元测试；`build` 用参考程序集在 Linux 上编译；`release` 在校验与编译都通过后发布 RC |
 | `.github/actions/setup-build/action.yml` | 复合 action：安装 .NET SDK、游戏参考程序集与 StardewUI，CI 与 CD 共用 |
 | `Red Panda Bazaar Code/i18n/default.json` | 翻译基准，结构即规范 |
 | `[CP]Red Panda Bazaar/content.json` | CP 侧入口：`CustomLocations` 注册地图、`Changes` 拼装数据 |
@@ -301,7 +302,7 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | 运行时 / TFM | **`net6.0`，不要升级**（SMAPI 4.x 本身即 net6.0） |
 | 构建工具 | `dotnet` CLI 或 Rider / Visual Studio |
 | 构建助手 | `Pathoschild.Stardew.ModBuildConfig` 4.4.0（唯一 NuGet 依赖），自动探测游戏目录并引用游戏与 SMAPI 程序集，含 `0Harmony.dll`（因 `EnableHarmony=true`） |
-| **`python`** | 必须在 `PATH`：CI 校验跑 `ValidateRepo.py`，CD 发布前跑 `MakeRcVersion.py` 派生 RC 版本号；本地构建不再调用任何 python 脚本 |
+| **`python`** | 不再需要：仓库校验与 RC 版本派生已全部移植为 C#（`Red Panda Bazaar RepoTools`），构建 / 校验 / 发布全链路只依赖 `dotnet` |
 | **GitHub Actions 权限** | `ci.yml` 顶层 `contents: read`；仅 `release` job 单独提权到 `contents: write`，用于创建 / 刷新 Release |
 | **`MySDVMods/Common`** | 本 mod 不再依赖；仅当其它接入 mod 需要共享源码时维护该目录 |
 | **`Projects/StardewUI/Core`** | StardewUI.Core 源码，csproj 的 `StardewUICorePath` 默认 `..\..\..\..\Projects\StardewUI\Core`（相对项目目录向上四级；本机 checkout 中即 `Codes\Projects\StardewUI\Core`），可用同名属性覆盖；缺失则构建硬失败 |
@@ -309,16 +310,17 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | 游戏安装 | 必须能被 ModBuildConfig 自动探测到（注册表 / 常见路径），否则构建报错 |
 | 外部源 | NuGet 需可还原 `Pathoschild.Stardew.ModBuildConfig`；离线时首次构建可能失败 |
 
-版本号只写在 `Red Panda Bazaar Code.csproj` 的 `<Version>`（本地开发格式 `x.y.z-Beta`）。`manifest.json` 的 `Version` 写 `%ProjectVersion%` 占位符，ModBuildConfig 打包时替换为实际值；程序集版本也由它派生。本地构建由 `AppendGitRevision` Target 追加 `+<短SHA>[-dirty]`（见「Development Commands」）。CD 发布的 RC 包版本为 `x.y.z-rc.<日期>.<run>`（run = GitHub Actions 运行号），由 `MakeRcVersion.py` 派生后经 `-p:Version=` 注入构建，不写回仓库。构建过程**不会改写任何仓库文件**。
+版本号只写在 `Red Panda Bazaar Code.csproj` 的 `<Version>`（本地开发格式 `x.y.z-Beta`）。`manifest.json` 的 `Version` 写 `%ProjectVersion%` 占位符，ModBuildConfig 打包时替换为实际值；程序集版本也由它派生。本地构建由 `AppendGitRevision` Target 追加 `+<短SHA>[-dirty]`（见「Development Commands」）。CD 发布的 RC 包版本为 `x.y.z-rc.<日期>.<run>`（run = GitHub Actions 运行号），由 RepoTools 的 `rc-version` 子命令派生后经 `-p:Version=` 注入构建，不写回仓库。构建过程**不会改写任何仓库文件**。
 
 ---
 
 ## Testing & QA
 
-**自动化测试分两轨**：
+**自动化测试是 xUnit（`Red Panda Bazaar Code.Tests/`，仓库根，与 mod 工程平级），测试对象分三块**：
 
-- **C# 单元测试（xUnit）**：`Red Panda Bazaar Code.Tests/`（仓库根，与 mod 工程平级）。以 `<Compile Include>` 链接方式直接编译 mod 工程里的**纯逻辑**源文件（游戏状态由调用方注入，不引用游戏程序集），不引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。给纯逻辑文件加游戏依赖时测试工程会编译失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。CI 的 `build` job 在编译检查后运行 `dotnet test`。
-- **Python 标准库 `unittest`**：`Red Panda Bazaar Code/tests/` 覆盖 `ValidateRepo.py` 的 JSONC 解析辅助函数、`MakeRcVersion.py` 的版本号派生，并对当前检出副本运行完整仓库校验作为冒烟测试。CI 的 `validate` job 会在校验脚本之后运行它们。
+- **纯游戏逻辑**：以 `<Compile Include>` 链接方式直接编译 mod 工程里的纯逻辑源文件（游戏状态由调用方注入，不引用游戏程序集），不引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。给纯逻辑文件加游戏依赖时测试工程会编译失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。
+- **仓库工具**：`Red Panda Bazaar RepoTools`（纯 net6.0 控制台工程）的 JSONC 解析与 RC 版本派生；工程引用直接测内部函数。
+- **仓库冒烟**：对当前检出副本运行完整校验（`RepoValidator.Run`，静默模式断言退出码）。
 
 仓库一致性校验（静态检查）与单元测试的本地入口：
 
@@ -326,14 +328,14 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 # 校验：JSON 可解析性与重复键、i18n 双文件键集合 / 顺序 / 占位符、
 # I18nKeys.cs 与 default.json 双向对应、manifest 字段与版本号占位符、
 # csproj 的 TFM 与 Version、以及 PR 中 [CP]Red Panda Bazaar/ 是否被改动
-python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
-python -m unittest discover -s "Red Panda Bazaar Code/tests" -t "Red Panda Bazaar Code" -p "test_*.py" -v
+dotnet run --project "Red Panda Bazaar RepoTools" -- validate
+dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
 ```
 
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
 
-- **仓库一致性校验与单元测试**（`validate`）：跑上面的 `ValidateRepo.py` 与 `tests/` 下的 `unittest` 测试。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
-- **编译检查与 C# 单元测试**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛），随后运行 `Red Panda Bazaar Code.Tests` 的 `dotnet test`（纯逻辑测试，不需要下面的环境准备，但在同一 job 顺带执行）。runner 上没有游戏本体，编译靠三样东西补齐：
+- **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate` 与 `dotnet test`（含仓库冒烟）。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
+- **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛）。runner 上没有游戏本体，靠三样东西补齐：
   1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（经 `Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1` 克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI`（`dev-unofficial` 分支）作为 UI 框架源码；
   3. `-p:EnableModDeploy=false -p:EnableModZip=false` 关掉全部副作用。

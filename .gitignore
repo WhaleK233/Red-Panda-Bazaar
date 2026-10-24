@@ -24,6 +24,3 @@ global.json
 
 # Logs
 *.log
-
-# Python test cache
-__pycache__/
