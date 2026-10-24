@@ -1,6 +1,7 @@
 ﻿{
   /****** Delete "Bank.ServiceChecking", "Bank.ServiceFixed", "Bank.CheckingTab", "Bank.CheckingBalance", "Bank.InterestEarned", "Bank.TodayInterest", "Bank.ClaimInterest", "Bank.TodayRate", "Bank.Deposit", "Bank.Withdraw", "Bank.DepositTitle", "Bank.WithdrawTitle", "Bank.FixedTab", "Bank.Redeem", "Bank.EarlyWithdraw", "Bank.FixedAmount", "Bank.FixedTerm", "Bank.FixedStatus", "Bank.FixedStatusActive", "Bank.FixedStatusWithdrawn", "Bank.FixedStatusMature", "Bank.Days", "Bank.FixedEmpty", "Bank.NewFixedAmountTitle", "Bank.FixedEarlyWithdrawTip", "Bank.DailyRateLabel", "Bank.Apply", "Bank.LoanInterest", "Bank.DepositSuccess", "Bank.WithdrawSuccess", "Bank.InterestClaimed", "Bank.FixedCreated", "Bank.FixedRedeemed", "Bank.FixedEarlyWithdrawn", "Bank.FixedMatureReminder", "Bank.InvalidAmount", "Bank.NotEnoughBalance", "Bank.NoMoney" ******/
   /****** Version 1.2.0 Added ******/
+  /****** Delete "Dialogue.BuyBackpack_PositiveResponseTo24Slots", "Dialogue.BuyBackpack_PositiveResponseTo36Slots" ******/
   "Dialogue.XiaoMingRewardInventoryFull": "你的背包已满，腾出空间后再来领取奖励吧。",
   "Tetris.Score": "分数",
   "Tetris.Lines": "消行",
@@ -73,8 +74,6 @@
   "Dialogue.PositiveResponse": "是",
   "Dialogue.NegativeResponse": "否",
   "Dialogue.MoneyNotEnough": "你的钱不够",
-  "Dialogue.BuyBackpack_PositiveResponseTo24Slots": "购买 (1999金)",
-  "Dialogue.BuyBackpack_PositiveResponseTo36Slots": "购买 (9999金)",
   "Dialogue.WheelBet_RedResponse": "红色",
   "Dialogue.WheelBet_WhiteResponse": "白色",
   "Dialogue.WheelBet_GiveUpResponse": "我放弃 (不退款)",
