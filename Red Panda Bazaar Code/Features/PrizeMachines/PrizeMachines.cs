@@ -85,9 +85,9 @@ public static class PrizeMachines
             new("(O)872", 1), // 仙尘
             new("(O)872", 2), // 仙尘
             new("(O)872", 3), // 仙尘
-            new("(BC)10", 4), // 避雷针
-            new("(BC)12", 4), // 蜂箱
-            new("(BC)15", 4) // 小桶
+            new("(BC)10", 4), // 蜂箱
+            new("(BC)12", 4), // 小桶
+            new("(BC)15", 4) // 罐头瓶
         };
         CouponPrizeList = new List<Tuple<string, int>>();
         for (var i = 1; i <= CouponCount; i++)

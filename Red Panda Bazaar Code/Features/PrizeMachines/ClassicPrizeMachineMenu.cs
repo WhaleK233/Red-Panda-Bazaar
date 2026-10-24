@@ -81,7 +81,7 @@ public class ClassicPrizeMachineMenu : IClickableMenu
             case < 0.11: // 10% 星之果茶
                 prize = ItemRegistry.Create("(O)StardropTea");
                 break;
-            case < 0.31: // 20% 17种兑换券
+            case < 0.31: // 20% 18种兑换券
                 i = random % couponList.Count;
                 itemId = couponList[i].Item1;
                 amount = couponList[i].Item2;
