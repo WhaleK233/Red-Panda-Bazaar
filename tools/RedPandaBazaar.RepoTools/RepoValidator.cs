@@ -409,9 +409,12 @@ public static class RepoValidator
         }
         var baseSha = ctx.Options.BaseSha!.Trim();
 
-        // 路径中的方括号会被 git 当作通配符，须显式声明为字面量
+        // 路径中的方括号会被 git 当作通配符，须显式声明为字面量。
+        // pathspec 含空格，必须加引号：ProcessStartInfo 按空白切分参数字符串，
+        // 不加引号会被拆成三段，git 收到 ":(literal)content/[CP]Red" 匹配不到任何文件，
+        // 检查会永远报「未被改动」而静默失效。
         var psi = new ProcessStartInfo("git",
-            $"-C \"{ctx.Options.RepoRoot}\" diff --name-only {baseSha} HEAD -- :(literal)content/[CP]Red Panda Bazaar")
+            $"-C \"{ctx.Options.RepoRoot}\" diff --name-only {baseSha} HEAD -- \":(literal)content/[CP]Red Panda Bazaar\"")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
