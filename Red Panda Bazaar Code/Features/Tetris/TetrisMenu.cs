@@ -76,7 +76,13 @@ public class TetrisMenu : ViewMenu
     {
         base.update(time);
 
-        if (_state != State.Playing) return;
+        if (_state != State.Playing)
+        {
+            // 暂停/结束期间继续同步按键缓存：否则恢复瞬间会把暂停前按住的键
+            // 对比陈旧快照误判为「新按下」，凭空多出一次旋转或硬降
+            RefreshPrevDown(Keyboard.GetState().GetPressedKeys());
+            return;
+        }
 
         _board.Update(time.ElapsedGameTime.Milliseconds);
         HandlePressEdges();
@@ -87,17 +93,22 @@ public class TetrisMenu : ViewMenu
     private void HandlePressEdges()
     {
         // Game1 只公开上帧键盘状态（oldKBState），当前帧用 MonoGame 直接读取
-        var down = new HashSet<Keys>(Keyboard.GetState().GetPressedKeys());
+        var down = Keyboard.GetState().GetPressedKeys();
 
         var upKey = Game1.options.getFirstKeyboardKeyFromInputButtonList(Game1.options.moveUpButton);
-        if (upKey != Keys.None && down.Contains(upKey) && !_prevDown.Contains(upKey))
+        if (upKey != Keys.None && Array.IndexOf(down, upKey) >= 0 && !_prevDown.Contains(upKey))
             _board.Rotate();
-        if (down.Contains(Keys.Space) && !_prevDown.Contains(Keys.Space))
+        if (Array.IndexOf(down, Keys.Space) >= 0 && !_prevDown.Contains(Keys.Space))
             _board.HardDrop();
 
+        RefreshPrevDown(down);
+    }
+
+    /// <summary>把上一帧按键缓存同步为当前按键集合（复用 HashSet，避免每帧重建）。</summary>
+    private void RefreshPrevDown(Keys[] down)
+    {
         _prevDown.Clear();
-        foreach (var k in down)
-            _prevDown.Add(k);
+        _prevDown.UnionWith(down);
     }
 
     public override void receiveKeyPress(Keys key)
