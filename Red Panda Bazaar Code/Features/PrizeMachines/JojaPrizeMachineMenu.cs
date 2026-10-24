@@ -11,7 +11,7 @@ namespace Red_Panda_Bazaar_Code.Features.PrizeMachines;
 
 public class JojaPrizeMachineMenu : IClickableMenu
 {
-    public Item flashingItem;
+    public Item flashingItem = null!; // 首次绘制前必然在 draw 中赋值，构造期不预生成以免消耗随机序列
 
     public float flashTimer;
     public float getRewardTimer; // 获奖计时器

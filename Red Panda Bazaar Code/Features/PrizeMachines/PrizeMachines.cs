@@ -10,16 +10,16 @@ public static class PrizeMachines
     private const int CouponCount = 18;
 
     /// <summary>经典抽奖机普通物品池（36 种，等概率）。</summary>
-    public static List<Tuple<string, int>> CommonPrizeList;
+    public static List<Tuple<string, int>> CommonPrizeList = new();
 
     /// <summary>经典抽奖机兑换券池（1~18 号各 1 张）。</summary>
-    public static List<Tuple<string, int>> CouponPrizeList;
+    public static List<Tuple<string, int>> CouponPrizeList = new();
 
     /// <summary>Joja 抽奖机普通物品池（18 种，等概率）。</summary>
-    public static List<Tuple<string, int>> JojaCommonPrizeList;
+    public static List<Tuple<string, int>> JojaCommonPrizeList = new();
 
     /// <summary>Joja 抽奖机兑换券池（1~18 号各 2 张）。</summary>
-    public static List<Tuple<string, int>> JojaCouponPrizeList;
+    public static List<Tuple<string, int>> JojaCouponPrizeList = new();
 
     /// <summary>注册 Tile Action 并初始化奖池。</summary>
     public static void Init()

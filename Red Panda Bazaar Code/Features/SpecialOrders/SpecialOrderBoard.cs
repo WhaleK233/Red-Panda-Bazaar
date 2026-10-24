@@ -26,22 +26,24 @@ public class SpecialOrderBoard : SpecialOrdersBoard
 
     public static void UpdateAvailableSpecialOrders(bool forceRefresh)
     {
-        if (Game1.player.team.availableSpecialOrders is not null)
+        // 游戏内该列表不会为 null；防御极端时序下的空引用，取不到就直接跳过本次刷新
+        var availableOrders = Game1.player.team.availableSpecialOrders;
+        if (availableOrders is null)
+            return;
+
+        foreach (SpecialOrder order in availableOrders)
         {
-            foreach (SpecialOrder order in Game1.player.team.availableSpecialOrders)
+            if ((order.questDuration.Value == QuestDuration.TwoDays ||
+                 order.questDuration.Value == QuestDuration.ThreeDays) &&
+                !Game1.player.team.acceptedSpecialOrderTypes.Contains(order.orderType.Value))
             {
-                if ((order.questDuration.Value == QuestDuration.TwoDays ||
-                     order.questDuration.Value == QuestDuration.ThreeDays) &&
-                    !Game1.player.team.acceptedSpecialOrderTypes.Contains(order.orderType.Value))
-                {
-                    order.SetDuration(order.questDuration.Value);
-                }
+                order.SetDuration(order.questDuration.Value);
             }
         }
 
         if (!forceRefresh)
         {
-            foreach (SpecialOrder availableSpecialOrder in Game1.player.team.availableSpecialOrders)
+            foreach (SpecialOrder availableSpecialOrder in availableOrders)
             {
                 if (availableSpecialOrder.orderType.Value == QuestsKeys.CXM_OrderType)
                     return;
@@ -69,7 +71,7 @@ public class SpecialOrderBoard : SpecialOrdersBoard
             }
 
             string key = random.ChooseFrom<string>((IList<string>)stringList);
-            Game1.player.team.availableSpecialOrders.Add(SpecialOrder.GetSpecialOrder(key, new int?(random.Next())));
+            availableOrders.Add(SpecialOrder.GetSpecialOrder(key, new int?(random.Next())));
             stringList.Remove(key);
             collection.Remove(key);
         }

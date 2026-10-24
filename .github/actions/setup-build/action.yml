@@ -15,11 +15,17 @@ runs:
         dotnet-version: '10.0.x'
 
     # 游戏与 SMAPI 的公开 API 空壳（无实现），克隆到指定目录；
-    # 调用方用 -p:GamePath 显式指过去，不依赖 ModBuildConfig 的自动探测顺序
+    # 调用方用 -p:GamePath 显式指过去，不依赖 ModBuildConfig 的自动探测顺序。
+    # 原先经 Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1 转发，
+    # 但其内部固定用 checkout@v4（Node 20 弃用告警的来源）且无法透传，
+    # 这里直接 checkout 同一仓库等价替代（它也只是 clone 后挪目录）
     - name: 准备游戏参考程序集
-      uses: Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1
+      uses: actions/checkout@v5
       with:
-        path: ${{ github.workspace }}/_game
+        repository: StardewModders/mod-reference-assemblies
+        ref: main
+        fetch-depth: 1
+        path: _game
 
     # UI 框架是本 mod 的编译期共享源码项目，路径由 StardewUICorePath 指定。
     # ref 钉到本地 Projects/StardewUI 的同一提交（dev-unofficial 分支），保证 CI 产物与本地构建
