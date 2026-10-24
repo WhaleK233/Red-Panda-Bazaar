@@ -19,11 +19,6 @@ public static class MPMessageType {
     public const string PlayerStall_RequestConfirm = "PlayerStallRequestConfirm";
     public const string PlayerStall_RequestReject = "PlayerStallRequestReject";
 
-    // Bank
-    public const string Bank_SyncData = "BankSyncData";
-    public const string Bank_ActionRequest = "BankActionRequest";
-    public const string Bank_ActionResult = "BankActionResult";
-
     // SharedBikes
     public const string SharedBikes_SyncData = "SharedBikesSyncData";
     public const string SharedBikes_SyncRequest = "SharedBikesSyncRequest";

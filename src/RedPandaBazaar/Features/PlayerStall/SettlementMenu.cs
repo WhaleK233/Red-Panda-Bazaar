@@ -29,6 +29,9 @@ public class SettlementMenu : ViewMenu
     /// <summary>滚动区高度上限：行数多时表格内部滚动，菜单整体不超出屏幕。</summary>
     private const int ScrollMaxH = 400;
 
+    /// <summary>客机收取请求的回执等待上限（游戏帧，约 10 秒）：超时解除按钮禁用，允许玩家重试。</summary>
+    private const int PendingTimeoutTicks = 600;
+
     /// <summary>单元格之间的横向留白。</summary>
     private const int CellGap = 8;
 
@@ -37,6 +40,9 @@ public class SettlementMenu : ViewMenu
     /// <summary>客机收取请求已发出、等待主机回执期间为真：按钮转为禁用的「收取中」。</summary>
     private bool _collectPending;
 
+    /// <summary>已等待的帧数，用于回执超时判定。</summary>
+    private int _pendingTicks;
+
     public override void update(GameTime time)
     {
         base.update(time);
@@ -44,6 +50,15 @@ public class SettlementMenu : ViewMenu
         if (_collectPending && PlayerStall.IsCollectedToday)
         {
             _collectPending = false;
+            BuildContent();
+        }
+        else if (_collectPending && ++_pendingTicks >= PendingTimeoutTicks)
+        {
+            // 回执一直未到（主机掉线或消息丢弃）：解除禁用允许重试；主机结算按天幂等，重试不会重复入账
+            _collectPending = false;
+            _pendingTicks = 0;
+            Game1.addHUDMessage(new HUDMessage(
+                Tools.GetI18n(I18nKeys.PlayerStall_CollectTimeout).ToString(), HUDMessage.error_type));
             BuildContent();
         }
     }
@@ -244,6 +259,7 @@ public class SettlementMenu : ViewMenu
         {
             // 请求已发往主机：按钮转「收取中」，入账与刷新由 update 轮询完成
             _collectPending = true;
+            _pendingTicks = 0;
         }
         else
         {

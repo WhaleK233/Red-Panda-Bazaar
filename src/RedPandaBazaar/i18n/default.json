@@ -6,6 +6,7 @@
   "Dialogue.XiaoMingRewardInventoryFull": "Your inventory is full. Make some room and come back for the reward.",
   "SharedBikes.NotEnoughGold": "Not enough gold",
   "PlayerStall.CollectPending": "Collecting…",
+  "PlayerStall.CollectTimeout": "The collection request timed out. Please try again.",
   /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "Project Investment",

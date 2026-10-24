@@ -6,6 +6,7 @@
   "Dialogue.XiaoMingRewardInventoryFull": "你的背包已满，腾出空间后再来领取奖励吧。",
   "SharedBikes.NotEnoughGold": "金币不足",
   "PlayerStall.CollectPending": "收取中…",
+  "PlayerStall.CollectTimeout": "收取请求超时，请重试。",
   /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
   /****** Version 1.1.2 Added ******/
   "Bank.ServiceInvestment": "项目投资",
