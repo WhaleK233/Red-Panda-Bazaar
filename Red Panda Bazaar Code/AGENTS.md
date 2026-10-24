@@ -336,7 +336,7 @@ dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
 
 - **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate` 与 `dotnet test`（含仓库冒烟）。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
 - **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛）。runner 上没有游戏本体，靠三样东西补齐：
-  1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（经 `Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1` 克隆到 `$GITHUB_WORKSPACE/_game`）；
+  1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（`actions/checkout` 直接克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI`（`dev-unofficial` 分支）作为 UI 框架源码；
   3. `-p:EnableModDeploy=false -p:EnableModZip=false` 关掉全部副作用。
 
