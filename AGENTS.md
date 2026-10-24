@@ -325,11 +325,12 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 
 ## Testing & QA
 
-**自动化测试是 xUnit（`tests/RedPandaBazaar.Tests/`），测试对象分三块**：
+**自动化测试是 xUnit（`tests/RedPandaBazaar.Tests/`），测试对象分两块**：
 
-- **纯游戏逻辑**：以 `<Compile Include>` 链接方式直接编译 mod 工程里的纯逻辑源文件（如 `Features/Bank/BankCalculator.cs`——游戏状态由调用方注入，不引用游戏程序集），不引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。给纯逻辑文件加游戏依赖时测试工程会编译失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。
 - **仓库工具**：`tools/RedPandaBazaar.RepoTools`（纯 net6.0 控制台工程）的 JSONC 解析与 RC 版本派生；工程引用直接测内部函数。
 - **仓库冒烟**：对当前检出副本运行完整校验（`RepoValidator.Run`，静默模式断言退出码）。
+
+需要测 mod 的纯游戏逻辑时，以 `<Compile Include>` 链接方式直接编译该源文件（游戏状态由调用方注入，不引用游戏程序集），不要引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。文件一旦引入游戏依赖，链接编译会立刻失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。
 
 仓库一致性校验（静态检查）与单元测试的本地入口：
 

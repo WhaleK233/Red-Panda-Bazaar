@@ -116,6 +116,7 @@ public static class I18nKeys
     public const string PlayerStall_CollectAll = "PlayerStall.CollectAll";
     public const string PlayerStall_Collected = "PlayerStall.Collected";
     public const string PlayerStall_CollectPending = "PlayerStall.CollectPending";
+    public const string PlayerStall_CollectTimeout = "PlayerStall.CollectTimeout";
 
     #endregion
 

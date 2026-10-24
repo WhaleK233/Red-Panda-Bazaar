@@ -55,7 +55,7 @@ public static class SpecialOrdersPatch
 
             foreach (var playerId in __instance.participants.Keys)
             {
-                var player = Game1.getAllFarmers().FirstOrDefault(p => p.UniqueMultiplayerID == playerId);
+                var player = Game1.GetPlayer(playerId);
                 player?.stats.Increment(StatsKeys.ChenXiaomingRewardCount);
                 if (player is { IsLocalPlayer: false })
                     ModInfo.Helper.Multiplayer.SendMessage(

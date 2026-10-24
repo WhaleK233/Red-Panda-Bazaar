@@ -6,7 +6,6 @@ public static class StatsKeys
     public const string ChenXiaomingRewardCount = "ChenXiaomingRewardCount";
 
     // ---- 存档数据 ----
-    public const string BankSave = "WhaleK233.RedPandaBazaar.Bank";
     public const string PlayerStallSave = "WhaleK233.RedPandaBazaar.PlayerStall";
     public const string SharedBikesSave = "WhaleK233.RedPandaBazaar.SharedBikes";
 }
