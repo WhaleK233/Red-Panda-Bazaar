@@ -27,6 +27,8 @@ C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: 
 
 ## Repository Layout
 
+仓库采用 `src / tests / tools / content` 四层标准布局：可执行代码在 `src`，测试在 `tests`，仓库工具在 `tools`，只读内容包在 `content`。工程目录名与产物名已解耦（见本节末），因此目录调整不影响玩家。
+
 ```
 RedPandaBazaar.sln                 # 解决方案（src / tests / tools 三个工程）
 Directory.Build.props              # 三工程共用的 MSBuild 属性（TFM 与 Version 不在此处，见下）
@@ -116,7 +118,7 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false
 | 副作用 | 触发时机 | 说明 |
 |---|---|---|
 | 重新部署 CP 包到 `Mods/`（`DeployCP`） | BeforeBuild | 以仓库内 `content/[CP]Red Panda Bazaar/` 为源，先 `rmdir /s /q` 再全量拷贝；`EnableModDeploy=false` 时跳过 |
-| 编译产物 → `out\` + 打包 zip | Build | zip 名绑定构建版本，反复构建会在 `out/net6.0/` 堆积；`EnableModZip=false` 时只产出 dll |
+| 编译产物 → `src/RedPandaBazaar/out\` + 打包 zip | Build | zip 名绑定构建版本，反复构建会在 `src/RedPandaBazaar/out/net6.0/` 堆积；`EnableModZip=false` 时只产出 dll |
 
 **构建不会改写任何仓库文件**：版本号只来自 csproj `<Version>`，`manifest.json` 写 `%ProjectVersion%` 占位符，由 ModBuildConfig 在打包时替换。只想验证编译时传入 `-p:EnableModDeploy=false -p:EnableModZip=false` 即可做到零副作用。CI 的编译检查正是这么跑的（见「Testing & QA」）。
 
@@ -341,7 +343,7 @@ dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
 
-- **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate` 与 `dotnet test`（含仓库冒烟）。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
+- **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate` 与 `dotnet test`（含仓库冒烟）。PR 中 `content/[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
 - **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error、0 可修复警告）。runner 上没有游戏本体，环境准备抽在复合 action `.github/actions/setup-build/action.yml`（CI 与 CD 共用）：
   1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（`actions/checkout@v5` 直接克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI` 固定提交（见 Runtime/Tooling 表）到 `_stardewui`；
@@ -367,4 +369,4 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false
 
 **已知的仓库卫生问题**（改动时顺带注意，不要扩散）：
 
-- `out/net6.0/` 的历史 zip 随构建持续堆积（已 gitignore），定期清理。
+- `src/RedPandaBazaar/out/net6.0/` 的历史 zip 随构建持续堆积（已 gitignore），定期清理。
