@@ -269,7 +269,8 @@ public static class SharedBikes
                 break;
 
             case MPMessageType.SharedBikes_ActionResult:
-                if (Context.IsMainPlayer) break;
+                // 与其余主机→客机消息一致：客机应用前必须确认发送方是主机
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var result = e.ReadAs<SharedBikesActionResultData>();
                 if (result is { Success: false })
                     NotifyNotEnoughGold();
