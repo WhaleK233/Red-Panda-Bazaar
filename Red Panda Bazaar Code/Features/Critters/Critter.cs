@@ -68,23 +68,33 @@ public static class Critter
         // 原版只对带 Outdoors 属性的地图初始化 critters，自定义地图缺该属性时列表为 null，直接访问会空引用
         loc.instantiateCrittersList();
 
+        // 按类型计数：黄昏移除与入夜补萤火虫的窗口（19:00–20:00）重叠，
+        // 不分类型就会「移除列表尾部恰好是刚补的萤火虫」，且直接移除会泄漏它挂在场景里的光源
+        var butterflies = 0;
+        var fireflies = 0;
+        foreach (var c in loc.critters) {
+            if (c is StardewValley.BellsAndWhistles.Firefly) fireflies++;
+            else butterflies++;
+        }
+
         // 白天补蝴蝶，直到达到上限
-        if (TimeUtils.IsDayTime(loc) && loc.critters.Count < ButterflyCount.Value)
-        {
+        if (TimeUtils.IsDayTime(loc) && butterflies < ButterflyCount.Value) {
             var tile = loc.getRandomTile();
             loc.critters.Add(CrittersSpawner.GetNewCritter(loc, tile, CrittersSpawner.Butterfly));
         }
 
-        // 黄昏逐渐移除
-        if (TimeUtils.IsDuskTime(loc) && loc.critters.Count > 0)
-        {
-            loc.critters.RemoveAt(loc.critters.Count - 1);
+        // 黄昏逐渐移除蝴蝶（不动萤火虫）
+        if (TimeUtils.IsDuskTime(loc) && butterflies > 0) {
+            for (var i = loc.critters.Count - 1; i >= 0; i--) {
+                if (loc.critters[i] is StardewValley.BellsAndWhistles.Firefly) continue;
+                loc.critters.RemoveAt(i);
+                break;
+            }
         }
 
         // 入夜补萤火虫
         if (Game1.timeOfDay > Game1.getTrulyDarkTime(loc) - 100 &&
-            loc.critters.Count < FireflyCount.Value)
-        {
+            fireflies < FireflyCount.Value) {
             var tile = loc.getRandomTile();
             loc.critters.Add(CrittersSpawner.GetNewCritter(loc, tile, CrittersSpawner.Firefly));
         }
