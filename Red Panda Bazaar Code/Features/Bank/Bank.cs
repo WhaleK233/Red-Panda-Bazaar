@@ -243,7 +243,7 @@ public static class Bank
         switch (e.Type)
         {
             case MPMessageType.Bank_SyncData:
-                if (Context.IsMainPlayer) break;
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var syncData = e.ReadAs<BankSyncData>();
                 if (syncData != null)
                 {

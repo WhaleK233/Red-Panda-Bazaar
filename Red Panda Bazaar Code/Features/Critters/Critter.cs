@@ -123,8 +123,8 @@ public static class Critter
             {
                 var bc = pair.Value;
                 if (!bc.bigCraftable.Value || !BCs.Contains(bc.ItemId)) continue;
-                if (TimeUtils.IsDayTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Butterfly);
-                else if (TimeUtils.IsNightTime(loc)) CrittersSpawner.spawns(loc, CrittersSpawner.Firefly);
+                if (TimeUtils.IsDayTime(loc)) CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Butterfly);
+                else if (TimeUtils.IsNightTime(loc)) CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Firefly);
                 hasStatue = true;
                 break;
             }
@@ -138,6 +138,6 @@ public static class Critter
 
         // 夜晚且在地图列表里，额外补萤火虫
         if (TimeUtils.IsNightTime(loc) && inMapList)
-            CrittersSpawner.spawns(loc, CrittersSpawner.Firefly);
+            CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Firefly);
     }
 }
