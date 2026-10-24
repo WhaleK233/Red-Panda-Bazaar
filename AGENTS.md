@@ -354,6 +354,8 @@ dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 
   **同一条 release 的实现要点**：`gh release delete` 会造成下载链接的中间态中断，因此用 `gh release edit` + `gh release upload` 原地刷新（先传新资产再清旧资产，顺序不能反），并显式传 `--latest`。CD 需要 `contents: write`（`ci.yml` 顶层仍是 `contents: read`，只有 `release` job 单独提权）。
 
+  **资产名不可用本地 zip 名比对**：GitHub 会重命名含空格等特殊字符的资产文件名（REST「Upload a release asset」的 Notes）。因此清理旧资产时不能拿 `"Red Panda Bazaar Code ${VERSION}.zip"` 逐字比对来认领本次产物——匹配不上就会把刚上传的资产当旧资产删掉，release 归零而 CI 仍报成功（历史上曾如此，下载链全部 404）。改为按 `createdAt` 认领（不早于本次上传起点，留 120s 时钟余量），并在清理后断言资产数为 1。改这段脚本时不要退回按文件名比对。
+
   **不要标记 prerelease**：GitHub 规定 prerelease 永远不能成为 latest。一旦打上该标记，`/releases/latest` 会返回 404。因此创建与刷新都显式传 `--latest`。
 
 其余验证方式是**编译 + 游戏内人工确认**：
