@@ -48,7 +48,7 @@ src/RedPandaBazaar/                # C# SMAPI 模组
 ├── docs/                          # StardewUI API 速查、春季展览会小游戏方案
 ├── i18n/                          # default.json（英）+ zh.json（中），必须同步维护
 └── assets/                        # 6 个纹理 PNG + 2 个 Ogg 音效（共享单车）
-tests/RedPandaBazaar.Tests/        # xUnit 测试工程（链接编译 mod 的纯逻辑源文件）
+tests/RedPandaBazaar.Tests/        # xUnit 测试工程（RepoTools 单元测试 + 仓库冒烟）
 tools/RedPandaBazaar.RepoTools/    # 仓库工具控制台工程（纯 net6.0）：validate / rc-version
 content/[CP]Red Panda Bazaar/      # 只读：Content Patcher 内容包
 .github/workflows/ci.yml           # CI/CD 入口
