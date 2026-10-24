@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <!-- net6.0 是 SMAPI 4.x 的硬约束，不升级；关掉“目标框架已停止支持”提示避免淹没真警告 -->
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
         <!-- StardewUI.Core 源码使用 C# 12 语法（集合表达式等），高于 net6.0 默认的 C# 10 -->
         <LangVersion>Latest</LangVersion>
         <RootNamespace>Red_Panda_Bazaar_Code</RootNamespace>

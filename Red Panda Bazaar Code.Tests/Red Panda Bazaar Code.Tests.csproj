@@ -2,8 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <!-- 与 mod 工程保持同一 TFM；“已停止支持”提示对 net6.0 是预期的，关掉避免淹没真警告 -->
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
         <!-- 测试代码用到 C# 11/12 语法（原始字符串、集合表达式），高于 net6.0 默认的 C# 10 -->
-        <LangVersion>Latest</LangVersion>
         <LangVersion>Latest</LangVersion>
         <RootNamespace>Red_Panda_Bazaar_Code.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>

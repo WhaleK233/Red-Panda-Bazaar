@@ -3,6 +3,8 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
+        <!-- 与 mod 工程保持同一 TFM；“已停止支持”提示对 net6.0 是预期的，关掉避免淹没真警告 -->
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
         <!-- 工具代码用到主构造函数（C# 12），高于 net6.0 默认的 C# 10 -->
         <LangVersion>Latest</LangVersion>
         <RootNamespace>Red_Panda_Bazaar_RepoTools</RootNamespace>
