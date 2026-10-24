@@ -27,32 +27,25 @@ jobs:
           # PR 需要与基线提交比对 [CP] 目录的改动，必须拉取完整历史
           fetch-depth: 0
 
-      - name: 准备 Python
-        uses: actions/setup-python@v5
+      # 校验工具与单元测试都是纯 net6.0 工程，只需要 SDK，不需要游戏参考程序集
+      - name: 准备 .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          python-version: '3.x'
+          dotnet-version: '10.0.x'
 
-      - name: 运行校验脚本
+      - name: 运行校验工具
         env:
-          PYTHONUTF8: '1'
-          # PR 事件下为基线提交，其他事件为空（脚本会跳过 CP 只读检查）
+          # PR 事件下为基线提交，其他事件为空（工具会跳过 CP 只读检查）
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
           ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
-        run: python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
+        run: dotnet run --project "Red Panda Bazaar RepoTools" -- validate
 
-      - name: 运行 Python 单元测试
-        env:
-          PYTHONUTF8: '1'
-        run: >
-          python -m unittest discover
-          -s "Red Panda Bazaar Code/tests"
-          -t "Red Panda Bazaar Code"
-          -p "test_*.py"
-          -v
+      - name: 运行 C# 单元测试
+        run: dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
 
   build:
-    name: 编译检查与单元测试
+    name: 编译检查
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
@@ -72,10 +65,6 @@ jobs:
           -p:EnableModZip=false
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
 
-      # C# 单元测试只编译纯逻辑源文件，不依赖游戏程序集，也无需上面的构建参数
-      - name: 运行 C# 单元测试
-        run: dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
-
   # CD：仓库校验与编译检查都通过后，构建 RC 包并刷新同一条 release。
   # 版本号 x.y.z-rc.<日期>.<run> 由 csproj <Version> 派生，仅注入本次构建，不写回仓库。
   release:
@@ -91,21 +80,20 @@ jobs:
       - name: 检出仓库
         uses: actions/checkout@v4
 
-      # runner 上的 python 命令依赖 setup-python，不能假定已存在
-      - name: 准备 Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
       - name: 准备构建环境
         uses: ./.github/actions/setup-build
 
       # 版本号由 csproj <Version> 派生为 x.y.z-rc.<日期>.<run>，
       # 通过 -p:Version 注入构建；manifest 的 %ProjectVersion% 与程序集版本都随之生效，
-      # 不改写任何文件，检出副本保持干净
+      # 不改写任何文件，检出副本保持干净。
+      # 工具先单独构建再运行：dotnet run 的 restore/build 日志也在 stdout，
+      # 会污染 $(...) 对版本号单行输出的捕获
       - name: 生成 RC 版本号
         id: version
-        run: echo "value=$(python "Red Panda Bazaar Code/scripts/MakeRcVersion.py")" >> "$GITHUB_OUTPUT"
+        run: |
+          tool="$RUNNER_TEMP/repotools"
+          dotnet build "Red Panda Bazaar RepoTools/Red Panda Bazaar RepoTools.csproj" -o "$tool" --nologo -v quiet
+          echo "value=$("$tool/Red Panda Bazaar RepoTools" rc-version --csproj "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj")" >> "$GITHUB_OUTPUT"
 
       # AppendGitRevision=false：RC 不追加 +SHA。build metadata 里的 + 在下载 URL 中
       # 会被解码成空格，有真实的链接风险；Release 说明里已单独记录来源提交
