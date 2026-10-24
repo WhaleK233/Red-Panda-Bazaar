@@ -12,7 +12,7 @@
 
 | 组件 | 目录 | 承担 |
 |---|---|---|
-| C# 模组 | `Red Panda Bazaar Code/` | 全部玩法逻辑：银行、玩家摊位、春季展览会与其小游戏、特殊订单、交通、共享单车、抽奖机、俄罗斯方块小游戏、菜单界面 |
+| C# 模组 | `Red Panda Bazaar Code/` | 全部玩法逻辑：银行、玩家摊位、春季展览会与其小游戏、特殊订单、交通、共享单车、抽奖机、菜单界面 |
 | Content Patcher 内容包 | `[CP]Red Panda Bazaar/` | 地图 TMX、NPC、商店、节日、邮件、物品定义与全部美术资源 |
 
 C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: true`，缺失会硬报错。CP 包由他人维护，**本仓库只读**；CP 更新不随构建自动同步，需手动处理。
@@ -44,7 +44,7 @@ flowchart TD
 - `Entry` 只做 `ModInfo.Init` + `StardewUI.UI.Initialize` + `SharedBikes.RegisterContent` + 订阅 `GameLaunched`，**不要**在此添加其它逻辑。
 - `StardewUI.UI.Initialize(helper, Monitor)` 必须先于任何菜单构造（Core 内部要注入 Helper 并订阅 `GameLoop` 事件）；漏掉会在打开菜单时抛 `InvalidOperationException`。
 - `SharedBikes.RegisterContent()`（订阅 `Content.AssetRequested`）也必须在这里调用：游戏启动早期就会加载 `Data/AudioChanges`，订阅晚了的 `e.Edit` 不会执行（CP 同样在 Entry 订阅该事件）。这是「Entry 不放业务逻辑」的唯一例外，新增同类需求照此办理。
-- `FeatureInit()`（`ModEntry.cs:44-57`）按 `Bank → Buffs → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation → SharedBikes → TetrisFeature` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。
+- `FeatureInit()`（`ModEntry.cs:44-56`）按 `Bank → Buffs → Critter → Furniture → SpringFair → PlayerStall → PrizeMachines → SpecialOrders → ButterflyNight → Transportation → SharedBikes` 顺序调用各 Feature 的 `Init()`；新功能在末尾追加。
 - `HarmonyPatch()` 依次 `SpringFairPatch` → `BuffsPatch` → `SpecialOrdersPatch` → `FurniturePatch` → `SharedBikesPatch`。
 
 ### 核心机制
@@ -74,7 +74,7 @@ flowchart TD
 |---|---|
 | `Red Panda Bazaar Code/ModEntry.cs` | SMAPI 入口，仅 4 个方法 |
 | `Red Panda Bazaar Code/Utils/` | 本 mod 的本地公共实现：`ModInfo.cs`、`MenuUi.cs`、`Tools.cs`、`ItemSerializer.cs`、`RandomUtils.cs`、`TimeUtils.cs` |
-| `Red Panda Bazaar Code/Features/` | 12 个功能模块，每个自成一目录（`Bank/`、`PlayerStall/`、`SpringFair/`、`Buffs/`、`Furniture/`、`Transportation/`、`Critters/`、`SpecialOrders/`、`PrizeMachines/`、`SharedBikes/`、`ButterflyNight/`、`Tetris/`） |
+| `Red Panda Bazaar Code/Features/` | 11 个功能模块，每个自成一目录（`Bank/`、`PlayerStall/`、`SpringFair/`、`Buffs/`、`Furniture/`、`Transportation/`、`Critters/`、`SpecialOrders/`、`PrizeMachines/`、`SharedBikes/`、`ButterflyNight/`） |
 | `MySDVMods/Common/`（仓库外） | 旧共享源码项目；本 mod 不引用它，本仓库内也已无其它 mod 引用（仅仓库外的 `PrizeMachineFramework` 仍在消费） |
 | `Projects/StardewUI/Core/`（仓库外） | UI 框架源码（`ViewMenu`/`View`/`Widgets`/`Layout`），csproj 的 `StardewUICorePath` 指向它；框架本身有改动时需回归本 mod |
 | `Red Panda Bazaar Code/docs/` | `StardewUI-Core-Api-Cheatsheet.md`——本 checkout 版 StardewUI.Core 的纯代码 API 速查（含"不存在"清单与源码行号），写新菜单前先查它；`SpringFair-Minigame-Invocation.md`——春季展览会复用原版小游戏的方案取舍与适配点 |
@@ -125,7 +125,7 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 ### 硬性规则
 
 - **优先复用 `Utils/` 中的工具类**，避免重复造轮子。
-- **菜单界面必须使用 StardewUI.Core**（`Projects/StardewUI/Core`）：菜单继承 `ViewMenu` 并实现 `CreateView()`，窗口与构件走 `Utils/MenuUi.cs` 的工厂方法；**禁止**直接使用星露谷原版的 `IClickableMenu`，也不要自造布局系统（确需自绘时按 `TetrisViews.cs` 的写法继承 `StardewUI.View`，重写 `OnMeasure` / `OnDrawContent`）。
+- **菜单界面必须使用 StardewUI.Core**（`Projects/StardewUI/Core`）：菜单继承 `ViewMenu` 并实现 `CreateView()`，窗口与构件走 `Utils/MenuUi.cs` 的工厂方法；**禁止**直接使用星露谷原版的 `IClickableMenu`，也不要自造布局系统（确需自绘时继承 `StardewUI.View`，重写 `OnMeasure` / `OnDrawContent`）。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
 - **禁止修改 `[CP]Red Panda Bazaar/` 下的任何文件**（Content Patcher 内容包）。它由他人维护，上游更新会整目录覆盖本地改动。
@@ -243,7 +243,7 @@ public class MyMenu : ViewMenu
 - 数据型页面必须区分信息层级：关键数值使用较大或加粗文本，提示与单位使用 `MenuUi.Muted`；状态颜色只表达正向、警告或锁定含义，不把颜色当作唯一信息来源。
 - 表格使用 `Grid` 的 `GridItemLayout.Count` 配合响应式 `Length.Stretch()`，表头与数据行共用同一 Grid；长列表放进有固定高度的 `ScrollableView`，禁止用固定像素列坐标模拟表格。
 - 重建列表时只重建数据区域；实时变化的数值保留 `Label` 引用更新，避免每帧清空视图树导致焦点和输入状态丢失。
-- 自绘内容（如俄罗斯方块棋盘）必须包在 `Frame` / `Card` 外壳内，并按视口计算尺寸；不得让自绘控件自行决定整个菜单的外观和关闭逻辑。
+- 自绘内容必须包在 `Frame` / `Card` 外壳内，并按视口计算尺寸；不得让自绘控件自行决定整个菜单的外观和关闭逻辑。
 
 ### i18n
 
@@ -315,7 +315,10 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 
 ## Testing & QA
 
-**自动化测试是 Python 标准库 `unittest`**：`Red Panda Bazaar Code/tests/` 覆盖 `ValidateRepo.py` 的 JSONC 解析辅助函数、`MakeRcVersion.py` 的版本号派生，并对当前检出副本运行完整仓库校验作为冒烟测试。CI 的 `validate` job 会在校验脚本之后运行它们。
+**自动化测试分两轨**：
+
+- **C# 单元测试（xUnit）**：`Red Panda Bazaar Code.Tests/`（仓库根，与 mod 工程平级）。以 `<Compile Include>` 链接方式直接编译 mod 工程里的**纯逻辑**源文件（游戏状态由调用方注入，不引用游戏程序集），不引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。给纯逻辑文件加游戏依赖时测试工程会编译失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。CI 的 `build` job 在编译检查后运行 `dotnet test`。
+- **Python 标准库 `unittest`**：`Red Panda Bazaar Code/tests/` 覆盖 `ValidateRepo.py` 的 JSONC 解析辅助函数、`MakeRcVersion.py` 的版本号派生，并对当前检出副本运行完整仓库校验作为冒烟测试。CI 的 `validate` job 会在校验脚本之后运行它们。
 
 仓库一致性校验（静态检查）与单元测试的本地入口：
 
@@ -330,7 +333,7 @@ python -m unittest discover -s "Red Panda Bazaar Code/tests" -t "Red Panda Bazaa
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
 
 - **仓库一致性校验与单元测试**（`validate`）：跑上面的 `ValidateRepo.py` 与 `tests/` 下的 `unittest` 测试。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
-- **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛）。runner 上没有游戏本体，靠三样东西补齐：
+- **编译检查与 C# 单元测试**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛），随后运行 `Red Panda Bazaar Code.Tests` 的 `dotnet test`（纯逻辑测试，不需要下面的环境准备，但在同一 job 顺带执行）。runner 上没有游戏本体，编译靠三样东西补齐：
   1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（经 `Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1` 克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI`（`dev-unofficial` 分支）作为 UI 框架源码；
   3. `-p:EnableModDeploy=false -p:EnableModZip=false` 关掉全部副作用。
@@ -359,6 +362,5 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 **已知的仓库卫生问题**（改动时顺带注意，不要扩散）：
 
-- `README.md` 与代码有多处不一致：功能列表仍列着已删除的 `FishingMiniGame/`、`TargetMiniGame/`，且缺 `Bank/`、`SharedBikes/`、`Tetris/`；未提及构建副作用（CP 部署等）；称 CP 包仅为「美术资源」。
 - `out/net6.0/` 的历史 zip 随构建持续堆积（已 gitignore），定期清理。
 - `MySDVMods/Common/UI/`（旧自研 UI 框架，约 34 个文件）在本仓库内已无消费者：本 mod 与 `Dev Debug Kit` 都已迁到 StardewUI.Core。是否整目录删除、以及是否清理 `Common/WhaleK.Common.projitems` 里的 `UI Framework` 组，留给维护者决定（仓库外的 `PrizeMachineFramework` 仍在消费 `Common`）。

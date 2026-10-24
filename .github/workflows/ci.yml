@@ -52,7 +52,7 @@ jobs:
           -v
 
   build:
-    name: 编译检查
+    name: 编译检查与单元测试
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
@@ -71,6 +71,10 @@ jobs:
           -p:EnableModDeploy=false
           -p:EnableModZip=false
           -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
+
+      # C# 单元测试只编译纯逻辑源文件，不依赖游戏程序集，也无需上面的构建参数
+      - name: 运行 C# 单元测试
+        run: dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
 
   # CD：仓库校验与编译检查都通过后，构建 RC 包并刷新同一条 release。
   # 版本号 x.y.z-rc.<日期>.<run> 由 csproj <Version> 派生，仅注入本次构建，不写回仓库。
