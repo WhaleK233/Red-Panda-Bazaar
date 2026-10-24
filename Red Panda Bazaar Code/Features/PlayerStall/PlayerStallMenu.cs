@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.DeBug;
 using Red_Panda_Bazaar_Code.Utils;
@@ -273,6 +274,14 @@ public class PlayerStallMenu : MenuWithInventory {
             base.emergencyShutDown();
         }
 
+        protected override void cleanupBeforeExit() {
+            // ESC / 手柄菜单键走 exitThisMenu，不经过 emergencyShutDown；退出时同样要归还手持物
+            if (_carriedItem != null) {
+                Game1.player.addItemToInventory(_carriedItem);
+            }
+            base.cleanupBeforeExit();
+        }
+
         public override void receiveLeftClick(int x, int y, bool playSound = true) {
             if (cancelButton.containsPoint(x, y)) {
                 Game1.activeClickableMenu = new PlayerStallMenu(_parent._actionId) { heldItem = _carriedItem };
@@ -280,6 +289,17 @@ public class PlayerStallMenu : MenuWithInventory {
             }
 
             base.receiveLeftClick(x, y, playSound);
+        }
+
+        public override void receiveKeyPress(Keys key) {
+            if (key != Keys.None && Game1.options.doesInputListContain(Game1.options.menuButton, key)) {
+                Game1.activeClickableMenu = new PlayerStallMenu(_parent._actionId) { heldItem = _carriedItem };
+                Game1.playSound("bigDeSelect");
+                Game1.player.canMove = true;
+                return;
+            }
+
+            base.receiveKeyPress(key);
         }
     }
 }
