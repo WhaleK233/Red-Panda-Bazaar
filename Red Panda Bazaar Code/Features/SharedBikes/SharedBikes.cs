@@ -218,7 +218,7 @@ public static class SharedBikes
         switch (e.Type)
         {
             case MPMessageType.SharedBikes_SyncData:
-                if (Context.IsMainPlayer) break;
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var syncData = e.ReadAs<SharedBikesSyncData>();
                 if (syncData != null)
                 {

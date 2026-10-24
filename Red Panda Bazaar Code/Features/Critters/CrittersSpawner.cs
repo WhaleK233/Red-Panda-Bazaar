@@ -48,6 +48,21 @@ public static class CrittersSpawner
         }
     }
 
+    /// <summary>按目标数量补差额生成：critters 列表要到过天才被游戏清空，
+    /// 全量重生成会随反复进出地图无上限叠加（萤火虫还携带光源），已有足够数量时不再追加。</summary>
+    public static void SpawnUpTo(GameLocation loc, int type)
+    {
+        var target = GetNumber(loc, type);
+        if (target <= 0) return;
+
+        loc.instantiateCrittersList();
+        var existing = type == Firefly
+            ? loc.critters.Count(c => c is StardewValley.BellsAndWhistles.Firefly)
+            : loc.critters.Count(c => c is not StardewValley.BellsAndWhistles.Firefly);
+        for (var i = existing; i < target; i++)
+            loc.critters.Add(GetNewCritter(loc, loc.getRandomTile(), type));
+    }
+
     /// <summary>创建一只氛围生物实例。</summary>
     /// <param name="loc">所在地图。</param>
     /// <param name="tile">生成坐标（像素）。</param>

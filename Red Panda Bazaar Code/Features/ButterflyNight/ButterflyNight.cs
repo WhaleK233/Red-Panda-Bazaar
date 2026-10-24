@@ -45,20 +45,7 @@ public static class ButterflyNight
         if (Game1.Date.Season != Season.Fall || Game1.dayOfMonth != 11) return;
 
         if (Game1.timeOfDay >= 1600 && e.NewLocation.IsOutdoors)
-        {
-            // 按 target 数量补差额而非全量重生成：同一地图反复进出会在 critters 里无上限叠加，
-            // 而该列表要到过天才会被游戏清空
-            var target = CrittersSpawner.GetNumber(e.NewLocation, CrittersSpawner.Butterfly);
-            if (target > 0)
-            {
-                e.NewLocation.instantiateCrittersList();
-                var existing = e.NewLocation.critters
-                    .Count(c => c is not StardewValley.BellsAndWhistles.Firefly);
-                for (var i = existing; i < target; i++)
-                    e.NewLocation.critters.Add(CrittersSpawner.GetNewCritter(
-                        e.NewLocation, e.NewLocation.getRandomTile(), CrittersSpawner.Butterfly));
-            }
-        }
+            CrittersSpawner.SpawnUpTo(e.NewLocation, CrittersSpawner.Butterfly);
 
         // 无论通过何种方式到达秋11，确保天气为大风（仅主机）
         if (Context.IsMainPlayer && !Game1.isDebrisWeather)
