@@ -16,6 +16,8 @@ public static class MPMessageType {
     public const string PlayerStall_RemoveItemBroadcast = "PlayerStallRemoveItemBroadcast";
     public const string PlayerStall_UpdateItem = "PlayerStallUpdateItem";
     public const string PlayerStall_UpdateItemBroadcast = "PlayerStallUpdateItemBroadcast";
+    public const string PlayerStall_RequestConfirm = "PlayerStallRequestConfirm";
+    public const string PlayerStall_RequestReject = "PlayerStallRequestReject";
 
     // Bank
     public const string Bank_SyncData = "BankSyncData";
@@ -24,6 +26,7 @@ public static class MPMessageType {
 
     // SharedBikes
     public const string SharedBikes_SyncData = "SharedBikesSyncData";
+    public const string SharedBikes_SyncRequest = "SharedBikesSyncRequest";
     public const string SharedBikes_ActionRequest = "SharedBikesActionRequest";
     public const string SharedBikes_ActionResult = "SharedBikesActionResult";
 }
