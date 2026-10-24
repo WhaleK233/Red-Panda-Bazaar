@@ -1,0 +1,19 @@
+<Project>
+
+    <!-- 三个工程共用的编译属性。注意：<TargetFramework> 与 <Version> 不在此处——
+         它们必须留在各工程自己的 csproj 文本里，RepoTools 的校验器与 rc-version 直接对该文件做正则匹配。 -->
+    <PropertyGroup>
+        <!-- 仓库根绝对路径。工程按 `..` 层级拼相对路径时，一旦目录深度变化就会失效，统一改用本属性 -->
+        <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+
+        <!-- net6.0 是 SMAPI 4.x 的硬约束，不升级；“目标框架已停止支持”提示对它是预期的，关掉避免淹没真警告 -->
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
+
+        <!-- StardewUI 源码使用 C# 12+ 语法（集合表达式、主构造函数等），高于 net6.0 默认的 C# 10 -->
+        <LangVersion>Latest</LangVersion>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+</Project>

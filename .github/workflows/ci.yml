@@ -1,0 +1,177 @@
+name: CI
+
+# 触发：主干分支的推送 / PR，以及手动运行
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 同一分支上后一次运行取消前一次
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: 仓库一致性校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v5
+        with:
+          # PR 需要与基线提交比对 [CP] 目录的改动，必须拉取完整历史
+          fetch-depth: 0
+
+      # 校验工具与单元测试都是纯 net6.0 工程，只需要 SDK，不需要游戏参考程序集
+      - name: 准备 .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 运行校验工具
+        env:
+          # PR 事件下为基线提交，其他事件为空（工具会跳过 CP 只读检查）
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
+          ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
+        run: dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
+
+      - name: 运行 C# 单元测试
+        run: dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
+
+  build:
+    name: 编译检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v5
+
+      - name: 准备构建环境
+        uses: ./.github/actions/setup-build
+
+      # EnableModDeploy=false 关闭 CP 部署；EnableModZip=false 避免产出发布 zip。
+      # 二者均不影响版本号——版本号只来自 csproj <Version>，构建不会改写任何文件。
+      # GamePath 指向参考程序集目录（Linux 上绝对路径）
+      - name: 编译模组
+        run: >
+          dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
+          -p:GamePath="$GITHUB_WORKSPACE/_game"
+          -p:EnableModDeploy=false
+          -p:EnableModZip=false
+          -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
+
+  # CD：仓库校验与编译检查都通过后，构建 RC 包并刷新同一条 release。
+  # 版本号 x.y.z-rc.<日期>.<run> 由 csproj <Version> 派生，仅注入本次构建，不写回仓库。
+  release:
+    name: 发布 RC
+    needs: [validate, build]
+    # RC 是开发预览版，只在 develop 的推送后发布：
+    # PR 上分叉仓库拿不到写权限，main 的推送代表稳定版，不该被 RC 覆盖
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v5
+
+      - name: 准备构建环境
+        uses: ./.github/actions/setup-build
+
+      # 版本号由 csproj <Version> 派生为 x.y.z-rc.<日期>.<run>，
+      # 通过 -p:Version 注入构建；manifest 的 %ProjectVersion% 与程序集版本都随之生效，
+      # 不改写任何文件，检出副本保持干净。
+      # 工具先单独构建再运行：dotnet run 的 restore/build 日志也在 stdout，
+      # 会污染 $(...) 对版本号单行输出的捕获
+      - name: 生成 RC 版本号
+        id: version
+        run: |
+          tool="$RUNNER_TEMP/repotools"
+          dotnet build "tools/RedPandaBazaar.RepoTools/RedPandaBazaar.RepoTools.csproj" -o "$tool" --nologo -v quiet
+          echo "value=$("$tool/RedPandaBazaar.RepoTools" rc-version --csproj "src/RedPandaBazaar/RedPandaBazaar.csproj")" >> "$GITHUB_OUTPUT"
+
+      # AppendGitRevision=false：RC 不追加 +SHA。build metadata 里的 + 在下载 URL 中
+      # 会被解码成空格，有真实的链接风险；Release 说明里已单独记录来源提交
+      - name: 构建发布包
+        run: >
+          dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
+          -p:GamePath="$GITHUB_WORKSPACE/_game"
+          -p:EnableModDeploy=false
+          -p:Version="${{ steps.version.outputs.value }}"
+          -p:AppendGitRevision=false
+          -p:StardewUICorePath="$GITHUB_WORKSPACE/_stardewui/Core"
+
+      - name: 刷新 RC Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.value }}
+          # 同一条 release 的说明里记录来源提交，便于回溯
+          NOTES: |
+            自动构建的开发预览版，每次 develop 构建后被最新产物覆盖。
+
+            - 版本号：${{ steps.version.outputs.value }}
+            - 来源提交：${{ github.sha }}
+            - 工作流运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # 产物名绑定 manifest 版本号，即步骤「生成 RC 版本号」写入的值
+          zip="src/RedPandaBazaar/out/net6.0/Red Panda Bazaar Code ${VERSION}.zip"
+          # 缺失说明构建未产出，直接失败而不是发旧包
+          test -f "$zip" || { echo "未找到发布包：$zip" >&2; exit 1; }
+
+          # tag（rc）强制指向本次构建的提交：gh release create 不指定 target 时会
+          # 拿仓库默认分支（main）当 target，导致 tag 与产物不同源、无法回溯。
+          git push --force origin "$GITHUB_SHA:refs/tags/rc"
+          # release 与 tag（rc）固定复用，永不删除：已存在就原地更新标题、说明与产物，
+          # 这样玩家手里的下载链接不会中断。不使用 --generate-notes，说明见上方 NOTES。
+          # 必须同时是 latest：仓库首页右栏只展示 latest release，而被标记为
+          # prerelease 的 release 永远不能成为 latest（GitHub 规则），首页会整块不显示。
+          if gh release view rc >/dev/null 2>&1; then
+            gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --latest --prerelease=false
+            # 先传新资产再清旧资产：cancel-in-progress 取消运行时，最坏是新旧资产短暂并存，
+            # 反过来（先删后传）会留下零资产的 release，玩家手里的下载链接直接失效。
+            # --clobber 兜底同版本重跑（重试同一 run number）时的同名资产冲突。
+            #
+            # 认领「本次上传的资产」不能按文件名比对：GitHub 会重命名含空格等特殊字符的资产名
+            # （REST「Upload a release asset」的 Notes），本地 zip 名与线上名字对不上，刚上传的
+            # 资产就会被当成旧资产删掉，release 归零而 CI 仍报成功。改为按上传时间认领：
+            # createdAt 不早于本次上传起点，留 120s 余量吸收 runner 与 GitHub 的时钟偏差；
+            # 同版本重跑时 --clobber 会替换同名资产并刷新其 createdAt，同样能被认领。
+            upload_start=$(date -u -d '-120 seconds' +%Y-%m-%dT%H:%M:%SZ)
+            gh release upload rc "$zip" --clobber
+            assets_after=$(gh release view rc --json assets --jq '.assets[] | "\(.createdAt)\t\(.name)"')
+            uploaded=$(printf '%s\n' "$assets_after" | awk -F'\t' -v s="$upload_start" '$1 >= s { print $2 }' | head -n 1)
+            if [ -z "$uploaded" ]; then
+              # 兜底：同版本重跑且 createdAt 未刷新时，release 里应只剩本次上传的那一个。
+              # 数量不为 1 就无从判断，宁可失败也不误删刚上传的资产。
+              total=$(printf '%s\n' "$assets_after" | grep -c . || true)
+              if [ "$total" -eq 1 ]; then
+                uploaded=$(printf '%s\n' "$assets_after" | cut -f2)
+              fi
+            fi
+            [ -n "$uploaded" ] || {
+              echo "上传后无法确认本次构建的资产（不会回退发旧包）：" >&2
+              printf '%s\n' "$assets_after" >&2
+              exit 1
+            }
+            echo "本次上传的资产：$uploaded"
+            printf '%s\n' "$assets_after" | cut -f2 | while read -r name; do
+              [ -n "$name" ] || continue
+              [ "$name" = "$uploaded" ] && continue
+              gh release delete-asset rc "$name" --yes || true
+            done
+            # 后置断言：清理循环任何一步出错都必须在这里暴露，而不是静默留下零资产的 release
+            remaining=$(gh release view rc --json assets --jq '.assets | length')
+            [ "$remaining" -eq 1 ] || {
+              echo "刷新后 release 资产数应为 1，实际 ${remaining}：" >&2
+              gh release view rc --json assets --jq '.assets[].name' >&2
+              exit 1
+            }
+          else
+            # --verify-tag 复用上面已指好的 tag，阻止 gh 自行拿默认分支当 target
+            gh release create rc "$zip" --verify-tag --latest --title "RC ${VERSION}" --notes "$NOTES"
+          fi

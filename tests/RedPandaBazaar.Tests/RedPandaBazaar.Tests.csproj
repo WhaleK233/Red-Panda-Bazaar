@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>Red_Panda_Bazaar_Code.Tests</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <!-- CI 与本机都只保证有最新 SDK，不保证有 net6 运行时；向前滚到已装的最高主版本跑测试 -->
+        <RollForward>LatestMajor</RollForward>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageReference Include="xunit" Version="2.9.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    </ItemGroup>
+
+    <!-- 仓库校验与 RC 版本工具（纯 net6.0，无游戏依赖） -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\tools\RedPandaBazaar.RepoTools\RedPandaBazaar.RepoTools.csproj"/>
+    </ItemGroup>
+
+</Project>
