@@ -51,16 +51,6 @@ jobs:
           -p "test_*.py"
           -v
 
-      - name: 运行 Python 单元测试
-        env:
-          PYTHONUTF8: '1'
-        run: >
-          python -m unittest discover
-          -s "Red Panda Bazaar Code/tests"
-          -t "Red Panda Bazaar Code"
-          -p "test_*.py"
-          -v
-
   build:
     name: 编译检查
     runs-on: ubuntu-latest
@@ -150,11 +140,14 @@ jobs:
           # prerelease 的 release 永远不能成为 latest（GitHub 规则），首页会整块不显示。
           if gh release view rc >/dev/null 2>&1; then
             gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --latest --prerelease=false
-            # 清掉上一轮的产物，避免资产在 release 内堆积
+            # 先传新资产再清旧资产：cancel-in-progress 取消运行时，最坏是新旧资产短暂并存，
+            # 反过来（先删后传）会留下零资产的 release，玩家手里的下载链接直接失效。
+            # --clobber 兜底同版本重跑（重试同一 run number）时的同名资产冲突
+            gh release upload rc "$zip" --clobber
             gh release view rc --json assets --jq '.assets[].name' | while read -r name; do
+              [ "$name" = "Red Panda Bazaar Code ${VERSION}.zip" ] && continue
               [ -n "$name" ] && gh release delete-asset rc "$name" --yes || true
             done
-            gh release upload rc "$zip"
           else
             # --verify-tag 复用上面已指好的 tag，阻止 gh 自行拿默认分支当 target
             gh release create rc "$zip" --verify-tag --latest --title "RC ${VERSION}" --notes "$NOTES"
