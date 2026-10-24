@@ -315,18 +315,21 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 
 ## Testing & QA
 
-**本仓库没有自动化测试与测试工程**：`.sln` 仅含一个项目，无测试框架引用，无 `test` 相关 Target 或脚本。可自动化的是**静态一致性校验**，CI 与本地共用同一入口：
+**自动化测试是 Python 标准库 `unittest`**：`Red Panda Bazaar Code/tests/` 覆盖 `ValidateRepo.py` 的 JSONC 解析辅助函数、`MakeRcVersion.py` 的版本号派生，并对当前检出副本运行完整仓库校验作为冒烟测试。CI 的 `validate` job 会在校验脚本之后运行它们。
+
+仓库一致性校验（静态检查）与单元测试的本地入口：
 
 ```bash
 # 校验：JSON 可解析性与重复键、i18n 双文件键集合 / 顺序 / 占位符、
 # I18nKeys.cs 与 default.json 双向对应、manifest 字段与版本号占位符、
 # csproj 的 TFM 与 Version、以及 PR 中 [CP]Red Panda Bazaar/ 是否被改动
 python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
+python -m unittest discover -s "Red Panda Bazaar Code/tests" -t "Red Panda Bazaar Code" -p "test_*.py" -v
 ```
 
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
 
-- **仓库一致性校验**（`validate`）：跑上面的 `ValidateRepo.py`。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
+- **仓库一致性校验与单元测试**（`validate`）：跑上面的 `ValidateRepo.py` 与 `tests/` 下的 `unittest` 测试。PR 中 `[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
 - **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error 门槛）。runner 上没有游戏本体，靠三样东西补齐：
   1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（经 `Pathoschild/SMAPI-ModBuildWorkflow/add-reference-assemblies@v1` 克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI`（`dev-unofficial` 分支）作为 UI 框架源码；

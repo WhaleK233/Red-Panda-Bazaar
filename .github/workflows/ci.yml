@@ -41,6 +41,26 @@ jobs:
           ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
         run: python "Red Panda Bazaar Code/scripts/ValidateRepo.py"
 
+      - name: 运行 Python 单元测试
+        env:
+          PYTHONUTF8: '1'
+        run: >
+          python -m unittest discover
+          -s "Red Panda Bazaar Code/tests"
+          -t "Red Panda Bazaar Code"
+          -p "test_*.py"
+          -v
+
+      - name: 运行 Python 单元测试
+        env:
+          PYTHONUTF8: '1'
+        run: >
+          python -m unittest discover
+          -s "Red Panda Bazaar Code/tests"
+          -t "Red Panda Bazaar Code"
+          -p "test_*.py"
+          -v
+
   build:
     name: 编译检查
     runs-on: ubuntu-latest
