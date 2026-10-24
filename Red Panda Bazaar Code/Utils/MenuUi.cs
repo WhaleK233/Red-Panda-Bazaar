@@ -258,7 +258,8 @@ internal static class MenuUi
             HoverBackground = UiSprites.ButtonDark,
             Margin = margin ?? Edges.NONE,
         };
-        button.Click += (_, _) => onClick();
+        // Click 对任意键触发（含右键/手柄次键），操作按钮必须只认主键，否则右键会误触扣款
+        button.LeftClick += (_, _) => onClick();
         return button;
     }
 
@@ -266,7 +267,7 @@ internal static class MenuUi
     public static Button SecondaryButton(string text, Action onClick, Edges? margin = null)
     {
         var button = new Button { Text = text, Margin = margin ?? Edges.NONE };
-        button.Click += (_, _) => onClick();
+        button.LeftClick += (_, _) => onClick();
         return button;
     }
 }
