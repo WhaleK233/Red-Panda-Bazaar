@@ -78,10 +78,12 @@ public static class FurniturePatch
         }
     }
 
-    /// <summary>判断是否为我们放置在 Custom_MarlinShop1 中的特定鱼缸。</summary>
+    /// <summary>判断是否为我们放置在 Custom_MarlinShop1 中的特定鱼缸。
+    /// 必须比对物品 ID：只按地图+坐标判定会把玩家自己搬到这两个坐标的鱼缸一并锁死。</summary>
     private static bool IsTargetTank(FishTankFurniture tank)
     {
         if (tank.Location?.Name != "Custom_MarlinShop1") return false;
+        if (tank.QualifiedItemId != "(F)" + ItemsKeys.Furniture.MarlinFishTank1) return false;
         var pos = tank.TileLocation;
         return pos is ({ X: 17f, Y: 12f } or { X: 20f, Y: 17f });
     }
