@@ -34,6 +34,20 @@ public class SettlementMenu : ViewMenu
 
     private Lane? _content;
 
+    /// <summary>客机收取请求已发出、等待主机回执期间为真：按钮转为禁用的「收取中」。</summary>
+    private bool _collectPending;
+
+    public override void update(GameTime time)
+    {
+        base.update(time);
+        // 客机收取是异步请求-回执：轮询收取状态，主机广播到达后刷新为「已收取」
+        if (_collectPending && PlayerStall.IsCollectedToday)
+        {
+            _collectPending = false;
+            BuildContent();
+        }
+    }
+
     private sealed class SoldEntry
     {
         public string StallName = "";
@@ -156,10 +170,13 @@ public class SettlementMenu : ViewMenu
         );
 
         var collected = PlayerStall.IsCollectedToday;
+        var pending = _collectPending && !collected;
         var button = collected
             ? MenuUi.SecondaryButton(Tools.GetI18n(I18nKeys.PlayerStall_Collected).ToString(), OnCollect)
-            : MenuUi.PrimaryButton(Tools.GetI18n(I18nKeys.PlayerStall_CollectAll).ToString(), OnCollect);
-        if (collected)
+            : pending
+                ? MenuUi.SecondaryButton(Tools.GetI18n(I18nKeys.PlayerStall_CollectPending).ToString(), OnCollect)
+                : MenuUi.PrimaryButton(Tools.GetI18n(I18nKeys.PlayerStall_CollectAll).ToString(), OnCollect);
+        if (collected || pending)
         {
             button.PointerEventsEnabled = false;
         }
@@ -196,7 +213,7 @@ public class SettlementMenu : ViewMenu
             entries.Add(
                 new SoldEntry
                 {
-                    StallName = (entries.Count + 1).ToString(),
+                    StallName = GetStallLabel(item.ActionId),
                     ItemName = obj.DisplayName,
                     Amount = obj.Stack,
                     UnitPrice = item.Price,
@@ -208,6 +225,13 @@ public class SettlementMenu : ViewMenu
         return entries;
     }
 
+    /// <summary>摊位号取 Action ID 尾段（RedPandaBazaar_PlayerStall_{n}）；解析失败原样展示 ID。</summary>
+    private static string GetStallLabel(string actionId)
+    {
+        var idx = actionId.LastIndexOf('_');
+        return idx >= 0 && int.TryParse(actionId[(idx + 1)..], out var n) ? n.ToString() : actionId;
+    }
+
     private void OnCollect()
     {
         var netEarnings = PlayerStall.TryCollectToday();
@@ -215,6 +239,11 @@ public class SettlementMenu : ViewMenu
         {
             Game1.player.Money += netEarnings;
             Game1.playSound("coin");
+        }
+        else if (netEarnings == PlayerStall.CollectPending)
+        {
+            // 请求已发往主机：按钮转「收取中」，入账与刷新由 update 轮询完成
+            _collectPending = true;
         }
         else
         {

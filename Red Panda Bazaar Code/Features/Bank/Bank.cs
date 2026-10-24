@@ -74,10 +74,14 @@ public static class Bank
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        // 分屏玩家中途加入会在本机再次触发本事件：Data 是进程内共享的当日最新状态，
+        // 重置或重读都会把它回滚到上次存档（当日贷款记录会凭空消失）
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) return;
+
         Data = new BankSaveData();
         _clientCache = null;
 
-        if (Context.IsOnHostComputer)
+        if (Context.IsMainPlayer)
         {
             Data = ModInfo.Helper.Data.ReadSaveData<BankSaveData>(SaveKey) ?? new BankSaveData();
         }
@@ -127,7 +131,8 @@ public static class Bank
 
     public static List<LoanAccount> GetLoans()
     {
-        return Context.IsMainPlayer ? Data.Loans.ToList() : (_clientCache?.Loans.ToList() ?? new());
+        // 分屏客机与主机同进程共享 Data，直接读
+        return Context.IsOnHostComputer ? Data.Loans.ToList() : (_clientCache?.Loans.ToList() ?? new());
     }
 
     // ====== 操作接口 ======
@@ -136,9 +141,9 @@ public static class Bank
     public static void ApplyLoan(int planType)
     {
         if (planType < 0 || planType > 2) return;
-        if (Context.IsMainPlayer)
+        if (Context.IsOnHostComputer)
         {
-            ExecuteApplyLoan(planType, null);
+            ExecuteApplyLoan(planType, Game1.player.UniqueMultiplayerID);
             BroadcastSyncData();
         }
         else
@@ -147,16 +152,17 @@ public static class Bank
         }
     }
 
-    public static void RepayLoan(int loanIndex)
+    /// <summary>按方案还款。同方案同时只有一笔未还，方案号即天然键，避免列表索引在并发下错位。</summary>
+    public static void RepayLoan(int planType)
     {
-        if (Context.IsMainPlayer)
+        if (Context.IsOnHostComputer)
         {
-            ExecuteRepayLoan(loanIndex, null);
+            ExecuteRepayLoan(planType, Game1.player.UniqueMultiplayerID);
             BroadcastSyncData();
         }
         else
         {
-            SendActionRequest("repayLoan", loanIndex);
+            SendActionRequest("repayLoan", planType);
         }
     }
 
@@ -178,8 +184,9 @@ public static class Bank
         // 每种方案同时只能有一笔未还贷款
         if (Data.Loans.Any(l => !l.Repaid && l.PlanType == planType)) return;
 
-        var remaining = BankCalculator.GetRemainingCredit(Data.Loans, Game1.player.totalMoneyEarned);
-        var amount = BankCalculator.GetAvailableLoanAmount(planType, remaining, Data.Loans, Game1.player.totalMoneyEarned);
+        // 信用额度按请求者自己的收入计算，主机代客机执行时不能用主机玩家的收入
+        var remaining = BankCalculator.GetRemainingCredit(Data.Loans, farmer.totalMoneyEarned);
+        var amount = BankCalculator.GetAvailableLoanAmount(planType, remaining, Data.Loans, farmer.totalMoneyEarned);
         if (amount <= 0) return;
 
         Data.Loans.Add(new LoanAccount
@@ -193,11 +200,10 @@ public static class Bank
         farmer.Money += (int)amount;
     }
 
-    private static void ExecuteRepayLoan(int loanIndex, long? playerId)
+    private static void ExecuteRepayLoan(int planType, long? playerId)
     {
-        if (loanIndex < 0 || loanIndex >= Data.Loans.Count) return;
-        var loan = Data.Loans[loanIndex];
-        if (loan.Repaid) return;
+        var loan = Data.Loans.FirstOrDefault(l => !l.Repaid && l.PlanType == planType);
+        if (loan == null) return;
 
         if (!Tools.TryCharge(GetFarmer(playerId), (int)(loan.Principal + loan.InterestAccrued), false)) return;
         loan.Repaid = true;
@@ -250,7 +256,8 @@ public static class Bank
                 break;
 
             case MPMessageType.Bank_ActionRequest:
-                if (!Context.IsMainPlayer) break;
+                // 用进程级判据：混合联机下消息可能在主机进程的任意屏上下文触发
+                if (!Game1.IsMasterGame) break;
                 var request = e.ReadAs<BankActionRequestData>();
                 if (request == null) break;
 

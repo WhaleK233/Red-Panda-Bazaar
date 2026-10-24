@@ -82,8 +82,12 @@ public static class SpringFair
 
         if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 8)
         {
+            // 只改 net 标志 + 手动刷本端表现，不重跑原版 ApplyWeatherForNewDay：
+            // 它在主机侧会对每个 LocationWeather 递增 monthlyNonRainyDayCount（无雨日统计），
+            // 过天时原版已调用过一次，这里再调会把春 8 双计进存档的天气统计
             Game1.netWorldState.Value.GetWeatherForLocation("Default").isDebrisWeather.Value = true;
-            Game1.ApplyWeatherForNewDay();
+            Game1.isDebrisWeather = true;
+            Game1.populateDebrisWeatherArray();
         }
     }
 
@@ -98,9 +102,14 @@ public static class SpringFair
             : CrittersSpawner.Firefly;
         CrittersSpawner.spawns(e.NewLocation, critterType);
 
-        // 无论通过何种方式到达春8，确保天气为微风（仅主机）
+        // 无论通过何种方式到达春8，确保天气为微风（仅主机）。
+        // net 标志之外还要刷本端静态字段与风粒子数组，否则画面无风、判断条件也不成立
         if (Context.IsMainPlayer && !Game1.isDebrisWeather)
+        {
             Game1.netWorldState.Value.GetWeatherForLocation("Default").isDebrisWeather.Value = true;
+            Game1.isDebrisWeather = true;
+            Game1.populateDebrisWeatherArray();
+        }
     }
 
     /// <summary>渲染星星币数量（左上角）。</summary>

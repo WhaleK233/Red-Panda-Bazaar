@@ -199,11 +199,13 @@ private static void OnModMessageReceived(object? sender, ModMessageReceivedEvent
 
 | 动作 | 判据 | 位置 |
 |---|---|---|
-| 读存档 | `Context.IsOnHostComputer` | `GameLoop.SaveLoaded` |
+| 读存档 | `Context.IsMainPlayer` | `GameLoop.SaveLoaded` |
 | 写存档 | `Context.IsMainPlayer` | `GameLoop.Saving` |
 | 改世界 / 结算 | `Context.IsMainPlayer` | 各 Feature 的事件处理器 |
 
-- 判据区别：`IsMainPlayer` = 屏幕 0 上的权威玩家；`IsOnHostComputer` = 存档在本机（分屏第二玩家为真）。**访问存档 API 必须用后者** —— SMAPI 的 `ReadSaveData`/`WriteSaveData` 内部就是按 `IsOnHostComputer` 校验，用错会抛 `InvalidOperationException`。
+- 判据区别：`IsMainPlayer` = 屏幕 0 上的权威玩家；`IsOnHostComputer` = 存档在本机（分屏第二玩家为真）。**访问存档 API 用 `IsOnHostComputer` 才不抛 `InvalidOperationException`，但 SaveLoaded 里的「重置 + 读存档」必须用 `IsMainPlayer` 并先放行分屏中途加入**（`IsSplitScreen && !IsMainPlayer` 直接 return）：分屏加入会在本机再次触发 SaveLoaded，静态 `Data` 是进程内共享的当日最新状态，重置或重读都会回滚到上次存档。
+- 「是否主机」处理多人消息时用**进程级**的 `Game1.IsMasterGame`，不要用屏级的 `Context.IsMainPlayer`：混合联机（主机+分屏+远端客机）下，消息可能在主机进程的任意屏上下文触发。
+- **同机分屏不走网络消息**：分屏客机定向发给 `MasterPlayer` 的消息会被 SMAPI 静默丢弃（master 不在 `Peers`，`sendToSelf` 只认当前屏玩家）。分屏与主机共享进程内静态数据，直接调用主机执行方法即可；需要以主机身份广播给远端客机时，经 `PlayerStall.HostScreenRelay` 这类「主机屏代发队列」转交（远端客机对广播的信任检查只认主机玩家）。
 - 存档 key 常量集中在 `Constant/StatsKeys.cs`，前缀 `WhaleK233.RedPandaBazaar.`。
 - `OnSaveLoaded` 中先 `Data = new T()` 重置跨存档状态，再按判据读取。
 - **跨存档 / 跨网络传物品一律走 `Utils.ItemSerializer` 的 XML 快照**（`ItemSnapshot` 模式），数量以快照的 `Item.Stack` 为准，不要另存数量字段；惰性访问器写成**方法**（`GetItem()`）而非属性，否则会被 JSON 序列化器写回存档。

@@ -129,11 +129,13 @@ public static class Transportation
     /// <summary>巴士站按钮交互：进入小熊猫集市。</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains("BusStop")) return;
+        // 精确匹配原版地图名：子串匹配会把第三方地图名含 "BusStop" 的内容包误判为入口；
+        // 可交互 Y 范围与 CP 侧 EditMap 的两格贴图（19,10)-(19,11)）对齐
+        if (!Tools.IsValidButtonAction(e) || Game1.currentLocation.Name != "BusStop") return;
 
         var tile = e.Cursor.GrabTile;
 
-        if (tile is { X: 19 } and ({ Y: 10 } or { Y: 11 } or { Y: 12 }))
+        if (tile is { X: 19 } and ({ Y: 10 } or { Y: 11 }))
         {
             ModInfo.Helper.Input.Suppress(e.Button);
             Game1.currentLocation.createQuestionDialogue(Tools.GetI18n(I18nKeys.Dialogue_EntranceQuestion),

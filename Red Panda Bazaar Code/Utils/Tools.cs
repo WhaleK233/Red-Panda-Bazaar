@@ -87,9 +87,14 @@ public static class Tools
         return e.Button.IsActionButton();
     }
 
+    /// <summary>
+    /// 主机侧广播：主机屏与同机分屏客机共用进程内状态，一律以广播发给远端客机
+    /// （分屏客机的定向消息发不到本机主机屏——SMAPI 的 Peers 只含网络连接，
+    /// sendToSelf 只认当前屏玩家，消息会被静默丢弃）；远程客机则定向发主机。
+    /// </summary>
     public static void SendToHostOrBroadcast<T>(T data, string messageType)
     {
-        if (Context.IsMainPlayer)
+        if (Context.IsOnHostComputer)
         {
             _helper!.Multiplayer.SendMessage(data, messageType, modIDs: new[] { _modId! });
         }

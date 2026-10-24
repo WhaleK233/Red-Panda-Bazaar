@@ -197,10 +197,10 @@ public class JojaPrizeMachineMenu : IClickableMenu
             flashingItem.drawInMenu(b, this.Position + v2, 1f, 1f, 0.9f, StackDrawType.Draw, Color.White, false);
         }
 
-        // 绘制抽奖券数量
+        // 绘制抽奖券数量（SpriteText 会把 color 整体乘 alpha，第 4 分量必须给 255，否则文字全透明）
         string s = Game1.player.Items.CountId(ItemsKeys.Tickets.JojaTicket).ToString();
         SpriteText.drawString(b, s, this.xPositionOnScreen + 242 - SpriteText.getWidthOfString(s) / 2,
-            this.yPositionOnScreen + 315, color: new Color(11, 241, 239, 0));
+            this.yPositionOnScreen + 315, color: new Color(11, 241, 239));
         this.mainButton.draw(b);
         base.draw(b);
         this.drawMouse(b);
