@@ -82,6 +82,7 @@ public static class PlayerStall {
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
         ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
         ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
+        ModInfo.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
         Tools.Log("PlayerStall Initialized.");
     }
 
@@ -105,16 +106,24 @@ public static class PlayerStall {
             (int)tile.X, (int)tile.Y, "Action", "Buildings");
         if (action == null || !action.StartsWith("RedPandaBazaar_PlayerStall_")) return;
 
+        // 鼠标交互绕过了 TileAction 路由，也就绕开了原版的贴近校验，这里手动补上
+        if (!Utility.tileWithinRadiusOfPlayer((int)tile.X, (int)tile.Y, 2, Game1.player)) return;
+
         Game1.activeClickableMenu = new PlayerStallMenu(action);
         ModInfo.Helper.Input.Suppress(e.Button);
     }
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e) {
+        // 分屏玩家中途加入会在本机再次触发本事件：Data 是进程内共享的当日最新状态，
+        // 既不能重置也不能按存档重读（那是上次入睡时的版本），否则当日改动整体回滚
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) return;
+
         Data = new StallSaveData();
         PendingRollbacks.Clear();
+        HostScreenRelay.Clear();
 
         // 存档只在主机电脑上可读写，远程客机靠 DayStarted 的同步请求获取数据
-        if (!Context.IsOnHostComputer) return;
+        if (!Context.IsMainPlayer) return;
 
         Data = ModInfo.Helper.Data.ReadSaveData<StallSaveData>(SaveKey) ?? new StallSaveData();
         PurgeInvalidSnapshots();
@@ -123,6 +132,7 @@ public static class PlayerStall {
     /// <summary>回到标题界面：丢弃乐观操作的回滚登记，闭包里捕获的物品引用一并释放。</summary>
     private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e) {
         PendingRollbacks.Clear();
+        HostScreenRelay.Clear();
     }
 
     /// <summary>丢弃快照无法还原的条目（旧存档只存了 ItemId，没有 ItemXml）。</summary>
@@ -138,7 +148,8 @@ public static class PlayerStall {
 
     /// <summary>新的一天开始，客机向主机请求最新内存数据。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e) {
-        if (!Context.IsMainPlayer) {
+        // 分屏客机与主机同进程共享 Data，无需也不能走网络请求（见 SendToHostOrBroadcast 的分屏说明）
+        if (!Context.IsOnHostComputer) {
             ModInfo.Helper.Multiplayer.SendMessage(
                 true, MPMessageType.PlayerStall_SyncRequest,
                 modIDs: new[] { ModInfo.ModManifest.UniqueID },
@@ -169,16 +180,23 @@ public static class PlayerStall {
     public static bool AddItem(string actionId, Item item, int price) {
         if (item == null || item.Stack <= 0 || price < 1 || !RegisteredStalls.ContainsKey(actionId)) return false;
 
-        var list = Data.Stock.TryGetValue(actionId, out var stock) ? stock : Data.Stock[actionId] = new();
-        var xml = ItemSerializer.Serialize(item);
-        if (xml == null) return false;
-
         var stallItem = new StallItem {
             Id = Guid.NewGuid().ToString(),
             ActionId = actionId,
-            ItemXml = xml,
+            ItemXml = ItemSerializer.Serialize(item) ?? "",
             Price = price
         };
+        if (stallItem.ItemXml.Length == 0) return false;
+
+        // 分屏客机与主机同进程共享 Data：同步走主机校验即可，无需乐观更新与回滚登记
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) {
+            if (!ValidateAddItem(stallItem)) return false;
+            ApplyAddItem(stallItem);
+            RelayOnHostScreen(() => BroadcastAddItem(stallItem));
+            return true;
+        }
+
+        var list = Data.Stock.TryGetValue(actionId, out var stock) ? stock : Data.Stock[actionId] = new();
         list.Add(stallItem);
         // 客机登记回滚：主机拒绝（并发抢空位等）时把物品原样退回背包，菜单的乐观删除才算安全
         string? requestId = null;
@@ -193,6 +211,18 @@ public static class PlayerStall {
     /// <summary>直接删除物品实例，避免按 ID 查询匹配错位。</summary>
     public static void RemoveItem(StallItem item) {
         if (item == null) return;
+
+        // 分屏客机与主机同进程：条目仍在共享 Data 中才移除（防御并发抢空位，菜单读取与点击同帧内不会发生）
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) {
+            if (FindItem(item.Id) == null) {
+                Tools.Log($"[PlayerStall] 分屏移除摊位条目 {item.Id} 时条目已不存在，跳过。");
+                return;
+            }
+            ApplyRemoveItem(item.Id);
+            RelayOnHostScreen(() => BroadcastRemoveItem(item.Id));
+            return;
+        }
+
         if (Data.Stock.TryGetValue(item.ActionId, out var list)) {
             list.Remove(item);
             if (list.Count == 0) Data.Stock.Remove(item.ActionId);
@@ -219,6 +249,16 @@ public static class PlayerStall {
         var entry = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == stallItemId);
         if (entry?.GetItem() is not { } stocked) return;
 
+        // 分屏客机与主机同进程：同步校验并直接改共享 Data（数量与乐观路径同口径以快照为基准：
+        // 部分取回会原地改小共享实例，从实例现值出发会双扣）
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) {
+            var newStack = entry.SnapshotStack() + stackDelta;
+            if (newStack < 1 || newStack > stocked.maximumStackSize()) return;
+            ApplyUpdateItemSnapshot(entry, newStack, price);
+            RelayOnHostScreen(() => BroadcastUpdateItem(new ItemUpdateData { Id = stallItemId, StackDelta = stackDelta, Price = price }));
+            return;
+        }
+
         string? requestId = null;
         if (!Context.IsMainPlayer && stackDelta != 0) {
             // 客机登记回滚：增量 > 0 时背包已扣，拒绝则退回；增量 < 0 时物品已进背包，拒绝则扣回
@@ -239,14 +279,43 @@ public static class PlayerStall {
 
         // 数量以快照为基准应用增量：部分取回路径中原版已把缓存实例原地改小，
         // 从实例现值出发会双扣；快照在 RefreshSnapshot 之前始终是变更前的权威数量
-        stocked.Stack = Math.Clamp(entry.SnapshotStack() + stackDelta, 1, stocked.maximumStackSize());
+        ApplyUpdateItemSnapshot(entry, entry.SnapshotStack() + stackDelta, price);
+        SendUpdateItemRequest(new ItemUpdateData { RequestId = requestId, Id = stallItemId, StackDelta = stackDelta, Price = price });
+    }
+
+    /// <summary>按变更后的权威数量写回条目并刷新快照。</summary>
+    private static void ApplyUpdateItemSnapshot(StallItem entry, int newStack, int price) {
+        if (entry.GetItem() is not { } stocked) return;
+        stocked.Stack = Math.Clamp(newStack, 1, stocked.maximumStackSize());
         entry.RefreshSnapshot();
         entry.Price = price;
-        SendUpdateItemRequest(new ItemUpdateData { RequestId = requestId, Id = stallItemId, StackDelta = stackDelta, Price = price });
     }
 
     /// <summary>客机乐观操作的回滚动作，键为请求 ID；主机拒绝时执行，确认时丢弃。</summary>
     private static readonly Dictionary<string, Action> PendingRollbacks = new();
+
+    /// <summary>
+    /// 分屏客机待转交主机屏执行的动作。SMAPI 消息在分屏客机上下文发出时 FromPlayerID 是分屏玩家，
+    /// 远端客机对广播的信任检查只认主机玩家，会被整体忽略；改由主机屏代发即可带上主机身份。
+    /// 队列只在同进程内传递，游戏循环单线程，无需加锁。
+    /// </summary>
+    private static readonly Queue<Action> HostScreenRelay = new();
+
+    /// <summary>把动作放到主机屏执行：主机屏上下文立即执行，分屏客机上下文入队等待下一 tick 转发。</summary>
+    private static void RelayOnHostScreen(Action action) {
+        if (Context.IsMainPlayer)
+            action();
+        else
+            HostScreenRelay.Enqueue(action);
+    }
+
+    private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e) {
+        // 仅主机屏处理转发队列（见 HostScreenRelay 的说明）
+        if (!Context.IsMainPlayer || HostScreenRelay.Count == 0) return;
+
+        while (HostScreenRelay.TryDequeue(out var action))
+            action();
+    }
 
     /// <summary>把物品放回背包，放不下则掉落在脚下。</summary>
     private static void RefundToInventory(Item item) {
@@ -406,15 +475,15 @@ public static class PlayerStall {
 
     /// <summary>尝试收取今日账单。主机结算并广播，客机仅发送请求。</summary>
     public static int TryCollectToday() {
-        if (!Context.IsMainPlayer) {
-            ModInfo.Helper.Multiplayer.SendMessage(
-                true, MPMessageType.PlayerStall_CollectRequest,
-                modIDs: new[] { ModInfo.ModManifest.UniqueID },
-                playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
-            return CollectPending;
-        }
+        // 分屏客机与主机同进程，直接执行主机结算；返回值由调用方入账（Game1.player 即分屏玩家自己）
+        if (Context.IsOnHostComputer)
+            return TryCollectTodayHost();
 
-        return TryCollectTodayHost();
+        ModInfo.Helper.Multiplayer.SendMessage(
+            true, MPMessageType.PlayerStall_CollectRequest,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+        return CollectPending;
     }
 
     private static int TryCollectTodayHost() {
@@ -427,13 +496,16 @@ public static class PlayerStall {
         Data.LastSoldRecords = Data.SoldRecords.ToList();
         Data.SoldRecords.Clear();
 
-        // 通过 SMAPI 多人消息通知其他玩家
-        Tools.SendToHostOrBroadcast(Data.CollectDay, MPMessageType.PlayerStall_Collect);
+        // 分屏客机触发时经主机屏代发，保证远端客机收到的是主机玩家身份的广播
+        RelayOnHostScreen(() =>
+            Tools.SendToHostOrBroadcast(Data.CollectDay, MPMessageType.PlayerStall_Collect));
 
         return gross;
     }
 
-    /// <summary>接收其他玩家的同步消息。主机负责接收客机请求并转发给所有客机；客机直接应用主机广播。</summary>
+    /// <summary>接收其他玩家的同步消息。主机负责接收客机请求并转发给所有客机；客机直接应用主机广播。
+    /// 「是否主机」用进程级的 Game1.IsMasterGame 判断：混合联机（主机+分屏+远端客机）下，
+    /// 消息可能在主机进程的任意屏上下文触发，屏级的 Context.IsMainPlayer 会误拒客机请求。</summary>
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e) {
         if (e.FromModID != ModInfo.ModManifest.UniqueID) return;
 
@@ -447,7 +519,7 @@ public static class PlayerStall {
                 break;
 
             case MPMessageType.PlayerStall_CollectRequest: {
-                if (!Context.IsMainPlayer) break;
+                if (!Game1.IsMasterGame) break;
                 var net = TryCollectTodayHost();
                 var result = new CollectResultData {
                     PlayerId = e.FromPlayerID,
@@ -475,7 +547,7 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_SyncRequest: {
-                if (!Context.IsMainPlayer) break;
+                if (!Game1.IsMasterGame) break;
                 ModInfo.Helper.Multiplayer.SendMessage(
                     Data, MPMessageType.PlayerStall_SyncData,
                     modIDs: new[] { ModInfo.ModManifest.UniqueID },
@@ -492,7 +564,7 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_AddItem: {
-                if (Context.IsMainPlayer) {
+                if (Game1.IsMasterGame) {
                     var request = e.ReadAs<StallItemRequestData>();
                     if (request?.Item == null || request.PlayerId != e.FromPlayerID) break;
                     if (!ValidateAddItem(request.Item)) {
@@ -516,7 +588,7 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_RemoveItem: {
-                if (Context.IsMainPlayer) {
+                if (Game1.IsMasterGame) {
                     var request = e.ReadAs<StallItemIdRequestData>();
                     if (request == null || request.PlayerId != e.FromPlayerID ||
                         string.IsNullOrWhiteSpace(request.Id) || FindItem(request.Id) == null) {
@@ -542,7 +614,7 @@ public static class PlayerStall {
             }
 
             case MPMessageType.PlayerStall_UpdateItem: {
-                if (Context.IsMainPlayer) {
+                if (Game1.IsMasterGame) {
                     var request = e.ReadAs<StallItemUpdateRequestData>();
                     if (request?.Update == null || request.PlayerId != e.FromPlayerID) break;
                     if (!ValidateUpdateItem(request.Update)) {

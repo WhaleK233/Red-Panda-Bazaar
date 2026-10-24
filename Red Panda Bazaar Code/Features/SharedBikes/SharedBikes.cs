@@ -114,8 +114,8 @@ public static class SharedBikes
         }
     }
 
-    /// <summary>共享单车项目是否已开通（主机读存档数据，客机读广播缓存）。</summary>
-    public static bool IsUnlocked() => Context.IsMainPlayer ? Data.Unlocked : (_clientUnlocked ?? false);
+    /// <summary>共享单车项目是否已开通（主机侧读存档数据；远程客机读广播缓存）。</summary>
+    public static bool IsUnlocked() => Context.IsOnHostComputer ? Data.Unlocked : (_clientUnlocked ?? false);
 
     /// <summary>
     /// 开通共享单车项目：主机直接扣操作者金币执行，客机发请求由主机代扣。
@@ -123,7 +123,8 @@ public static class SharedBikes
     /// </summary>
     public static void TryUnlock()
     {
-        if (Context.IsMainPlayer)
+        // 分屏客机与主机同进程共享 Data，直接执行（定向消息发不到本机主机屏，会被 SMAPI 静默丢弃）
+        if (Context.IsOnHostComputer)
         {
             if (ExecuteUnlock(Game1.player.UniqueMultiplayerID))
                 BroadcastSyncData();
@@ -166,11 +167,15 @@ public static class SharedBikes
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
+        // 分屏玩家中途加入会在本机再次触发本事件：Data 是进程内共享的当日最新状态，
+        // 重置或重读都会把它回滚到上次存档（当日开通记录会凭空消失）
+        if (Context.IsSplitScreen && !Context.IsMainPlayer) return;
+
         Data = new SharedBikesSaveData();
         _clientUnlocked = null;
         StopMoveCue();
         _riddenBike = null;
-        if (Context.IsOnHostComputer)
+        if (Context.IsMainPlayer)
             Data = ModInfo.Helper.Data.ReadSaveData<SharedBikesSaveData>(SaveKey) ?? new SharedBikesSaveData();
     }
 
@@ -228,12 +233,13 @@ public static class SharedBikes
                 break;
 
             case MPMessageType.SharedBikes_SyncRequest:
-                if (!Context.IsMainPlayer) break;
+                // 用进程级判据：混合联机下消息可能在主机进程的任意屏上下文触发
+                if (!Game1.IsMasterGame) break;
                 SendSyncData(e.FromPlayerID);
                 break;
 
             case MPMessageType.SharedBikes_ActionRequest:
-                if (!Context.IsMainPlayer) break;
+                if (!Game1.IsMasterGame) break;
                 var request = e.ReadAs<SharedBikesActionRequestData>();
                 if (request == null) break;
                 switch (request.Action)
@@ -304,7 +310,7 @@ public static class SharedBikes
         };
     }
 
-    /// <summary>客机端收到 netcode 同步来的单车实体时，构造函数只会挂默认马贴图，这里补换。</summary>
+    /// <summary>客机端收到 netcode 同步来的单车实体时，构造函数只会挂默认马贴图与默认马蹄声，这里补换。</summary>
     private static void OnNpcListChanged(object? sender, NpcListChangedEventArgs e)
     {
         if (e.Added == null)
@@ -312,7 +318,12 @@ public static class SharedBikes
         foreach (NPC npc in e.Added)
         {
             if (npc is Horse horse && horse.modData.ContainsKey(BikeMarkerKey))
+            {
                 ApplyBikeSprite(horse);
+                // onFootstepAction 是 [XmlIgnore] 的本地委托，不随 netcode 同步：
+                // 客机反序列化出的实例挂的是默认马蹄声，必须本地重设屏蔽回调（幂等）
+                horse.onFootstepAction = stepType => PerformBikeFootstep(horse, stepType);
+            }
         }
     }
 
@@ -341,14 +352,18 @@ public static class SharedBikes
     /// <summary>每天开始：清掉散落各图的旧坐骑，已开通则在枫叶桥固定坐标生成两匹；客机向主机请求一次开通状态。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        // 中途加入的客机同样会触发 DayStarted：主动向主机请求开通状态，
-        // 否则要等到主机下一次日更广播才能知道项目已开通
         if (!Context.IsMainPlayer)
         {
-            ModInfo.Helper.Multiplayer.SendMessage(
-                true, MPMessageType.SharedBikes_SyncRequest,
-                modIDs: new[] { ModInfo.ModManifest.UniqueID },
-                playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+            // 远程客机：中途加入同样会触发 DayStarted，主动向主机请求开通状态，
+            // 否则要等到主机下一次日更广播才能知道项目已开通。
+            // 分屏客机与主机同进程共享 Data，无需走网络请求
+            if (!Context.IsOnHostComputer)
+            {
+                ModInfo.Helper.Multiplayer.SendMessage(
+                    true, MPMessageType.SharedBikes_SyncRequest,
+                    modIDs: new[] { ModInfo.ModManifest.UniqueID },
+                    playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
+            }
             return;
         }
 
