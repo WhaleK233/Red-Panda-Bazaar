@@ -29,12 +29,6 @@ public static class I18nKeys
     public const string Dialogue_NegativeResponse = "Dialogue.NegativeResponse";
     public const string Dialogue_MoneyNotEnough = "Dialogue.MoneyNotEnough";
 
-    public const string Dialogue_BuyBackpack_PositiveResponseTo24Slots =
-        "Dialogue.BuyBackpack_PositiveResponseTo24Slots";
-
-    public const string Dialogue_BuyBackpack_PositiveResponseTo36Slots =
-        "Dialogue.BuyBackpack_PositiveResponseTo36Slots";
-
     public const string Dialogue_WheelBetChargeQuestion = "Dialogue.WheelBetChargeQuestion";
 
     public const string Dialogue_WheelBet_RedResponse = "Dialogue.WheelBet_RedResponse";
