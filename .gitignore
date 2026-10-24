@@ -9,6 +9,9 @@
 CLAUDE.md
 AGENTS.md
 
+# Codex CLI
+.codex/
+
 # Build output
 bin/
 obj/
