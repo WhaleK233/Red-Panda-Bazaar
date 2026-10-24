@@ -152,21 +152,4 @@ public static class I18nKeys
     public const string SharedBikes_NotEnoughGold = "SharedBikes.NotEnoughGold";
 
     #endregion
-
-    #region Tetris
-
-    public const string Tetris_Score = "Tetris.Score";
-    public const string Tetris_Lines = "Tetris.Lines";
-    public const string Tetris_Level = "Tetris.Level";
-    public const string Tetris_Next = "Tetris.Next";
-    public const string Tetris_Pause = "Tetris.Pause";
-    public const string Tetris_Resume = "Tetris.Resume";
-    public const string Tetris_Restart = "Tetris.Restart";
-    public const string Tetris_Exit = "Tetris.Exit";
-    public const string Tetris_Paused = "Tetris.Paused";
-    public const string Tetris_GameOver = "Tetris.GameOver";
-    public const string Tetris_Help1 = "Tetris.Help1";
-    public const string Tetris_Help2 = "Tetris.Help2";
-
-    #endregion
 }
