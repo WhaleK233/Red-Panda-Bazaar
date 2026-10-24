@@ -43,6 +43,12 @@ public abstract class ItemSnapshot {
     public void RefreshSnapshot() {
         if (_item != null) ItemXml = ItemSerializer.Serialize(_item) ?? ItemXml;
     }
+
+    /// <summary>快照里记录的权威数量。部分取回路径中原版会原地改小缓存实例，
+    /// 数量运算必须以快照为基准，否则会把已扣除的部分再扣一次。</summary>
+    public int SnapshotStack() {
+        return ItemSerializer.Deserialize(ItemXml)?.Stack ?? _item?.Stack ?? 0;
+    }
 }
 
 /// <summary>摊位中的在售物品。</summary>

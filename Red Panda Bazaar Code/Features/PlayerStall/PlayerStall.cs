@@ -14,8 +14,9 @@ public static class PlayerStall {
     public const int CollectPending = -2;
 
     private class ItemUpdateData {
+        public string? RequestId { get; set; }
         public string Id { get; set; } = "";
-        public int Amount { get; set; }
+        public int StackDelta { get; set; }
         public int Price { get; set; }
     }
 
@@ -27,16 +28,19 @@ public static class PlayerStall {
 
     private class StallItemRequestData {
         public long PlayerId { get; set; }
+        public string? RequestId { get; set; }
         public StallItem? Item { get; set; }
     }
 
     private class StallItemIdRequestData {
         public long PlayerId { get; set; }
+        public string? RequestId { get; set; }
         public string Id { get; set; } = "";
     }
 
     private class StallItemUpdateRequestData {
         public long PlayerId { get; set; }
+        public string? RequestId { get; set; }
         public ItemUpdateData Update { get; set; } = new();
     }
 
@@ -73,6 +77,7 @@ public static class PlayerStall {
         ModInfo.Helper.Events.GameLoop.DayEnding += OnDayEnding;
         ModInfo.Helper.Events.GameLoop.Saving += OnSaving;
         ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+        ModInfo.Helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
         ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
@@ -106,12 +111,18 @@ public static class PlayerStall {
 
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e) {
         Data = new StallSaveData();
+        PendingRollbacks.Clear();
 
         // 存档只在主机电脑上可读写，远程客机靠 DayStarted 的同步请求获取数据
         if (!Context.IsOnHostComputer) return;
 
         Data = ModInfo.Helper.Data.ReadSaveData<StallSaveData>(SaveKey) ?? new StallSaveData();
         PurgeInvalidSnapshots();
+    }
+
+    /// <summary>回到标题界面：丢弃乐观操作的回滚登记，闭包里捕获的物品引用一并释放。</summary>
+    private static void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e) {
+        PendingRollbacks.Clear();
     }
 
     /// <summary>丢弃快照无法还原的条目（旧存档只存了 ItemId，没有 ItemXml）。</summary>
@@ -158,13 +169,6 @@ public static class PlayerStall {
     public static bool AddItem(string actionId, Item item, int price) {
         if (item == null || item.Stack <= 0 || price < 1 || !RegisteredStalls.ContainsKey(actionId)) return false;
 
-        // 摊位已有物品时必须可叠加，canStackWith 内含品质、染色、orderData、名称比对
-        var existing = GetItems(actionId).FirstOrDefault();
-        if (existing != null) {
-            var stocked = existing.GetItem();
-            if (stocked == null || !stocked.canStackWith(item)) return false;
-        }
-
         var list = Data.Stock.TryGetValue(actionId, out var stock) ? stock : Data.Stock[actionId] = new();
         var xml = ItemSerializer.Serialize(item);
         if (xml == null) return false;
@@ -176,7 +180,13 @@ public static class PlayerStall {
             Price = price
         };
         list.Add(stallItem);
-        SendAddItemRequest(stallItem);
+        // 客机登记回滚：主机拒绝（并发抢空位等）时把物品原样退回背包，菜单的乐观删除才算安全
+        string? requestId = null;
+        if (!Context.IsMainPlayer) {
+            requestId = Guid.NewGuid().ToString();
+            PendingRollbacks[requestId] = () => RefundToInventory(item);
+        }
+        SendAddItemRequest(stallItem, requestId);
         return true;
     }
 
@@ -188,22 +198,88 @@ public static class PlayerStall {
             if (list.Count == 0) Data.Stock.Remove(item.ActionId);
         }
 
-        SendRemoveItemRequest(item.Id);
+        string? requestId = null;
+        if (!Context.IsMainPlayer && item.GetItem() is { } taken) {
+            // 客机登记回滚：主机拒绝（他人先一步取走）时按快照从背包扣回，避免凭空复制。
+            // 数量取快照而非实例：全额并入已有堆时原版会把实例 Stack 归零、整格放入空位时
+            // 实例本身就成了背包物品，两种情况下实例现值都不可靠
+            var proto = taken.getOne();
+            var count = item.SnapshotStack();
+            if (count > 0) {
+                requestId = Guid.NewGuid().ToString();
+                PendingRollbacks[requestId] = () => RemoveFromInventoryMatching(proto, count);
+            }
+        }
+        SendRemoveItemRequest(item.Id, requestId);
     }
 
-    /// <summary>更新物品数量/价格（乐观本地更新 + 主机权威同步）。</summary>
-    public static void UpdateItem(string stallItemId, int amount, int price) {
+    /// <summary>更新物品数量/价格（乐观本地更新 + 主机权威同步）。
+    /// 数量走增量：并发叠加在主机端可交换，绝对值会互相覆盖造成「先到者扣了背包却丢库存」。</summary>
+    public static void UpdateItem(string stallItemId, int stackDelta, int price) {
         var entry = Data.Stock.SelectMany(kv => kv.Value).FirstOrDefault(i => i.Id == stallItemId);
         if (entry?.GetItem() is not { } stocked) return;
 
-        stocked.Stack = amount;
+        string? requestId = null;
+        if (!Context.IsMainPlayer && stackDelta != 0) {
+            // 客机登记回滚：增量 > 0 时背包已扣，拒绝则退回；增量 < 0 时物品已进背包，拒绝则扣回
+            var proto = stocked.getOne();
+            var refund = stackDelta > 0;
+            var count = Math.Abs(stackDelta);
+            requestId = Guid.NewGuid().ToString();
+            PendingRollbacks[requestId] = () => {
+                if (refund) {
+                    var copy = proto.getOne();
+                    copy.Stack = count;
+                    RefundToInventory(copy);
+                } else {
+                    RemoveFromInventoryMatching(proto, count);
+                }
+            };
+        }
+
+        // 数量以快照为基准应用增量：部分取回路径中原版已把缓存实例原地改小，
+        // 从实例现值出发会双扣；快照在 RefreshSnapshot 之前始终是变更前的权威数量
+        stocked.Stack = Math.Clamp(entry.SnapshotStack() + stackDelta, 1, stocked.maximumStackSize());
         entry.RefreshSnapshot();
         entry.Price = price;
-        SendUpdateItemRequest(new ItemUpdateData { Id = stallItemId, Amount = amount, Price = price });
+        SendUpdateItemRequest(new ItemUpdateData { RequestId = requestId, Id = stallItemId, StackDelta = stackDelta, Price = price });
     }
 
-    private static void SendAddItemRequest(StallItem item) {
-        var request = new StallItemRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Item = item };
+    /// <summary>客机乐观操作的回滚动作，键为请求 ID；主机拒绝时执行，确认时丢弃。</summary>
+    private static readonly Dictionary<string, Action> PendingRollbacks = new();
+
+    /// <summary>把物品放回背包，放不下则掉落在脚下。</summary>
+    private static void RefundToInventory(Item item) {
+        var leftover = Game1.player.addItemToInventory(item);
+        if (leftover != null)
+            Game1.createItemDebris(leftover, Game1.player.getStandingPosition(), Game1.player.FacingDirection);
+    }
+
+    /// <summary>按快照（含品质等）从背包扣回 count 个同类物品；背包已被玩家挪动时不强拆，记日志放弃。</summary>
+    private static void RemoveFromInventoryMatching(Item proto, int count) {
+        for (var i = 0; i < Game1.player.Items.Count && count > 0; i++) {
+            var inv = Game1.player.Items[i];
+            if (inv == null || !inv.canStackWith(proto)) continue;
+            var take = Math.Min(count, inv.Stack);
+            inv.Stack -= take;
+            count -= take;
+            if (inv.Stack <= 0) Game1.player.Items[i] = null;
+        }
+        if (count > 0)
+            Tools.Log($"[PlayerStall] 回滚时背包中找不到 {count} 个 {proto.QualifiedItemId}，跳过扣回。");
+    }
+
+    /// <summary>主机向请求方回执：accepted 丢弃回滚登记，rejected 执行回滚。</summary>
+    private static void SendRequestResult(long playerId, string? requestId, bool accepted) {
+        if (string.IsNullOrEmpty(requestId)) return;
+        ModInfo.Helper.Multiplayer.SendMessage(
+            requestId, accepted ? MPMessageType.PlayerStall_RequestConfirm : MPMessageType.PlayerStall_RequestReject,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { playerId });
+    }
+
+    private static void SendAddItemRequest(StallItem item, string? requestId) {
+        var request = new StallItemRequestData { PlayerId = Game1.player.UniqueMultiplayerID, RequestId = requestId, Item = item };
         if (Context.IsMainPlayer) {
             BroadcastAddItem(item);
             return;
@@ -215,8 +291,8 @@ public static class PlayerStall {
             playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
     }
 
-    private static void SendRemoveItemRequest(string id) {
-        var request = new StallItemIdRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Id = id };
+    private static void SendRemoveItemRequest(string id, string? requestId) {
+        var request = new StallItemIdRequestData { PlayerId = Game1.player.UniqueMultiplayerID, RequestId = requestId, Id = id };
         if (Context.IsMainPlayer) {
             BroadcastRemoveItem(id);
             return;
@@ -229,9 +305,9 @@ public static class PlayerStall {
     }
 
     private static void SendUpdateItemRequest(ItemUpdateData update) {
-        var request = new StallItemUpdateRequestData { PlayerId = Game1.player.UniqueMultiplayerID, Update = update };
+        var request = new StallItemUpdateRequestData { PlayerId = Game1.player.UniqueMultiplayerID, RequestId = update.RequestId, Update = update };
         if (Context.IsMainPlayer) {
-            BroadcastUpdateItem(update);
+            BroadcastUpdateItem(new ItemUpdateData { Id = update.Id, StackDelta = update.StackDelta, Price = update.Price });
             return;
         }
 
@@ -274,21 +350,20 @@ public static class PlayerStall {
         if (restored == null || restored.Stack <= 0 || restored.Stack > restored.maximumStackSize())
             return false;
 
-        var existing = GetItems(item.ActionId).FirstOrDefault();
-        if (existing == null) return true;
-        var stocked = existing.GetItem();
-        return stocked != null && stocked.canStackWith(restored);
+        // 摊位非空一律拒绝：并发窗口内两人同抢空位，后到者靠拒绝回执退回物品；
+        // 叠加必须走 UpdateItem 的增量路径，在此合并会产生双条目与超额覆盖
+        return GetItems(item.ActionId).FirstOrDefault() == null;
     }
 
     private static bool ValidateUpdateItem(ItemUpdateData update) {
-        if (update == null || string.IsNullOrWhiteSpace(update.Id) ||
-            update.Amount <= 0 || update.Price < 1 ||
-            update.Amount == int.MaxValue)
+        if (update == null || string.IsNullOrWhiteSpace(update.Id) || update.Price < 1)
             return false;
 
         var target = FindItem(update.Id);
         var stocked = target?.GetItem();
-        return stocked != null && update.Amount <= stocked.maximumStackSize();
+        if (stocked == null) return false;
+        var newStack = stocked.Stack + update.StackDelta;
+        return newStack >= 1 && newStack <= stocked.maximumStackSize();
     }
 
     private static StallItem? FindItem(string id) =>
@@ -311,7 +386,7 @@ public static class PlayerStall {
     private static void ApplyUpdateItem(ItemUpdateData update) {
         var target = FindItem(update.Id);
         if (target?.GetItem() is not { } stocked) return;
-        stocked.Stack = update.Amount;
+        stocked.Stack = Math.Clamp(stocked.Stack + update.StackDelta, 1, stocked.maximumStackSize());
         target.RefreshSnapshot();
         target.Price = update.Price;
     }
@@ -422,10 +497,12 @@ public static class PlayerStall {
                     if (request?.Item == null || request.PlayerId != e.FromPlayerID) break;
                     if (!ValidateAddItem(request.Item)) {
                         SendSyncData(e.FromPlayerID);
+                        SendRequestResult(e.FromPlayerID, request.RequestId, accepted: false);
                         break;
                     }
                     ApplyAddItem(request.Item);
                     BroadcastAddItem(request.Item);
+                    SendRequestResult(e.FromPlayerID, request.RequestId, accepted: true);
                 }
 
                 break;
@@ -443,11 +520,15 @@ public static class PlayerStall {
                     var request = e.ReadAs<StallItemIdRequestData>();
                     if (request == null || request.PlayerId != e.FromPlayerID ||
                         string.IsNullOrWhiteSpace(request.Id) || FindItem(request.Id) == null) {
-                        SendSyncData(e.FromPlayerID);
+                        if (request != null && request.PlayerId == e.FromPlayerID) {
+                            SendSyncData(e.FromPlayerID);
+                            SendRequestResult(e.FromPlayerID, request.RequestId, accepted: false);
+                        }
                         break;
                     }
                     ApplyRemoveItem(request.Id);
                     BroadcastRemoveItem(request.Id);
+                    SendRequestResult(e.FromPlayerID, request.RequestId, accepted: true);
                 }
 
                 break;
@@ -466,10 +547,14 @@ public static class PlayerStall {
                     if (request?.Update == null || request.PlayerId != e.FromPlayerID) break;
                     if (!ValidateUpdateItem(request.Update)) {
                         SendSyncData(e.FromPlayerID);
+                        SendRequestResult(e.FromPlayerID, request.RequestId, accepted: false);
                         break;
                     }
                     ApplyUpdateItem(request.Update);
-                    BroadcastUpdateItem(request.Update);
+                    BroadcastUpdateItem(new ItemUpdateData {
+                        Id = request.Update.Id, StackDelta = request.Update.StackDelta, Price = request.Update.Price
+                    });
+                    SendRequestResult(e.FromPlayerID, request.RequestId, accepted: true);
                 }
 
                 break;
@@ -479,6 +564,21 @@ public static class PlayerStall {
                 if (e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
                 var update = e.ReadAs<ItemUpdateData>();
                 if (update != null) ApplyUpdateItem(update);
+                break;
+            }
+
+            case MPMessageType.PlayerStall_RequestConfirm: {
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                var confirmedId = e.ReadAs<string>();
+                if (!string.IsNullOrEmpty(confirmedId)) PendingRollbacks.Remove(confirmedId);
+                break;
+            }
+
+            case MPMessageType.PlayerStall_RequestReject: {
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                var rejectedId = e.ReadAs<string>();
+                if (!string.IsNullOrEmpty(rejectedId) && PendingRollbacks.Remove(rejectedId, out var rollback))
+                    rollback();
                 break;
             }
         }

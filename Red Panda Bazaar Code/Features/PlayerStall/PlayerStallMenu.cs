@@ -92,7 +92,7 @@ public class PlayerStallMenu : MenuWithInventory {
                 var moved = Math.Min(stocked.maximumStackSize() - stocked.Stack, item.Stack);
                 if (moved <= 0) return;
 
-                PlayerStall.UpdateItem(existing.Id, stocked.Stack + moved, existing.Price);
+                PlayerStall.UpdateItem(existing.Id, moved, existing.Price);
                 item.Stack -= moved;
                 if (item.Stack <= 0) Game1.player.Items[i] = null;
                 _stallItem = stocked;
@@ -123,7 +123,7 @@ public class PlayerStallMenu : MenuWithInventory {
                 if (stockedItem != null && stockedItem.canStackWith(heldItem)) {
                     var moved = Math.Min(stockedItem.maximumStackSize() - stockedItem.Stack, heldItem.Stack);
                     if (moved <= 0) return;
-                    PlayerStall.UpdateItem(stocked!.Id, stockedItem.Stack + moved, stocked.Price);
+                    PlayerStall.UpdateItem(stocked!.Id, moved, stocked.Price);
                     heldItem.Stack -= moved;
                     if (heldItem.Stack <= 0) heldItem = null;
                     _stallItem = stockedItem;
@@ -145,11 +145,14 @@ public class PlayerStallMenu : MenuWithInventory {
 
             // 没拿物品，格子有物品 → 取回背包
             if (stockedItem != null) {
+                var stackBefore = stockedItem.Stack;
                 var leftover = Game1.player.addItemToInventory(stockedItem);
                 if (leftover != null) {
                     // 背包只放得下一部分：原版吸收时已原地改小缓存物品，
-                    // 走 UpdateItem 把余量写回快照并同步主机，否则存档与联机数据都会回滚
-                    PlayerStall.UpdateItem(stocked!.Id, stockedItem.Stack, stocked.Price);
+                    // 把被吸收的数量以负增量写回快照并同步主机，否则存档与联机数据都会回滚
+                    var taken = stackBefore - stockedItem.Stack;
+                    if (taken > 0)
+                        PlayerStall.UpdateItem(stocked!.Id, -taken, stocked.Price);
                     return;
                 }
                 PlayerStall.RemoveItem(stocked!);
@@ -254,7 +257,7 @@ public class PlayerStallMenu : MenuWithInventory {
                 Tools.GetI18n(I18nKeys.PlayerStall_PriceEditTitle).ToString(),
                 (number, price, who) => {
                     var stocked = stallItem.GetItem();
-                    if (stocked != null) PlayerStall.UpdateItem(stallItem.Id, stocked.Stack, number);
+                    if (stocked != null) PlayerStall.UpdateItem(stallItem.Id, 0, number);
                     Game1.playSound("coin");
                     parent._stallItem = stocked;
                     Game1.activeClickableMenu = new PlayerStallMenu(parent._actionId) { heldItem = carriedItem };
