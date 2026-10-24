@@ -21,6 +21,7 @@ public static class SpecialOrders
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
+        ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
         GameLocation.RegisterTileAction("RedPandaBazaar_SpecialOrdersBoard", (_, _, _, _) =>
         {
             Game1.activeClickableMenu = new SpecialOrderBoard(QuestsKeys.CXM_OrderType);
@@ -28,6 +29,18 @@ public static class SpecialOrders
         });
 
         Tools.Log("Quests Initialized.");
+    }
+
+    /// <summary>客机接收主机补发的陈小茗奖励计数（Farmer.stats 不是网络同步字段）。</summary>
+    private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
+    {
+        if (e.FromModID != ModInfo.ModManifest.UniqueID ||
+            e.Type != MPMessageType.SpecialOrders_RewardSync)
+            return;
+
+        var targetPlayerId = e.ReadAs<long>();
+        if (targetPlayerId == Game1.player.UniqueMultiplayerID)
+            Game1.player.stats.Increment(StatsKeys.ChenXiaomingRewardCount);
     }
 
     /// <summary>陈小明商店内有可领取奖励时，渲染浮动提示图标。</summary>
