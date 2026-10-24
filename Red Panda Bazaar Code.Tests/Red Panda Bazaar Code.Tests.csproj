@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>Latest</LangVersion>
+        <RootNamespace>Red_Panda_Bazaar_Code.Tests</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <!-- CI 与本机都只保证有最新 SDK，不保证有 net6 运行时；向前滚到已装的最高主版本跑测试 -->
+        <RollForward>LatestMajor</RollForward>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageReference Include="xunit" Version="2.9.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    </ItemGroup>
+
+    <!-- 以链接方式直接编译 mod 工程里的纯逻辑源文件，而不是引用工程本身：
+         引用会连带触发 mod 构建（需要游戏程序集与 StardewUI，且有部署副作用），
+         纯逻辑文件单独编译即可脱离游戏测试。文件一旦引入游戏依赖，这里会立刻编译失败，
+         正是「该文件不再可测」的信号——届时把它移出本列表，而不是给测试工程补游戏引用。 -->
+    <ItemGroup>
+        <Compile Include="..\Red Panda Bazaar Code\Features\Bank\BankCalculator.cs" Link="Game\BankCalculator.cs"/>
+        <Compile Include="..\Red Panda Bazaar Code\Features\Bank\BankData.cs" Link="Game\BankData.cs"/>
+    </ItemGroup>
+
+</Project>
