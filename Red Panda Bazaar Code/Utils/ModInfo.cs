@@ -21,5 +21,19 @@ public static class ModInfo {
         I18n = helper.Translation;
         Tools.Init(helper, monitor, manifest.UniqueID,
             () => Tools.GetI18n(I18nKeys.Dialogue_MoneyNotEnough).ToString());
+
+        NormalizeConfig();
+    }
+
+    /// <summary>归一化配置值。GMCM 有范围校验，但直接手改 config.json 会绕过它：
+    /// 抽奖机动画倍率为 0/NaN 时出奖计时永不结束，菜单会卡死到无法关闭。</summary>
+    private static void NormalizeConfig() {
+        if (!float.IsFinite(ModConfig.AnimationSpeed_PrizeMenu_Multiplier) ||
+            ModConfig.AnimationSpeed_PrizeMenu_Multiplier < 0.1f)
+            ModConfig.AnimationSpeed_PrizeMenu_Multiplier = 1.0f;
+        if (!float.IsFinite(ModConfig.CritterMultiplier) || ModConfig.CritterMultiplier < 0f)
+            ModConfig.CritterMultiplier = 1.0f;
+        else if (ModConfig.CritterMultiplier > 10f)
+            ModConfig.CritterMultiplier = 10f;
     }
 }
