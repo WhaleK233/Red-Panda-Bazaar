@@ -9,6 +9,7 @@ namespace Red_Panda_Bazaar_Code.Features.SpecialOrders;
 public static class SpecialOrdersPatch
 {
     private const string NAME = nameof(SpecialOrdersPatch);
+    private static readonly HashSet<string> RewardedOrderIds = new();
 
     public static void ApplyPatch(Harmony harmony)
     {
@@ -24,7 +25,7 @@ public static class SpecialOrdersPatch
     {
         try
         {
-            // 原版只在主机推进完成状态；订单完成后仍会被目标重复调用 CheckCompletion。
+            // 订单完成后 CheckCompletion 仍会被目标反复调用，只能按订单 ID 发一次奖励。
             if (!Context.IsMainPlayer ||
                 __instance.questState.Value != SpecialOrderStatus.Complete ||
                 !__instance.orderType.Value.Contains(QuestsKeys.CXM_OrderType))
@@ -32,10 +33,18 @@ public static class SpecialOrdersPatch
                 return;
             }
 
+            if (!RewardedOrderIds.Add(__instance.questKey.Value))
+                return;
+
             foreach (var playerId in __instance.participants.Keys)
             {
-                var player = Game1.GetPlayer(playerId);
+                var player = Game1.getAllFarmers().FirstOrDefault(p => p.UniqueMultiplayerID == playerId);
                 player?.stats.Increment(StatsKeys.ChenXiaomingRewardCount);
+                if (player is { IsLocalPlayer: false })
+                    ModInfo.Helper.Multiplayer.SendMessage(
+                        player.UniqueMultiplayerID, MPMessageType.SpecialOrders_RewardSync,
+                        modIDs: new[] { ModInfo.ModManifest.UniqueID },
+                        playerIDs: new[] { player.UniqueMultiplayerID });
             }
             Tools.Log("A SpecialOrders of Chen Xiaoming has been completed.");
         }
