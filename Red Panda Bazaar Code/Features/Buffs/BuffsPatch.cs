@@ -50,11 +50,11 @@ public static class BuffsPatch
             if (!__instance.IsLocalPlayer || __instance.itemToEat == null)
                 return true;
 
-            var buffDict = Buffs.BuffDict;
+            var buffFactories = Buffs.BuffFactories;
 
-            if (buffDict.ContainsKey(__instance.itemToEat.ItemId))
+            if (buffFactories.TryGetValue(__instance.itemToEat.ItemId, out var createBuff))
             {
-                __instance.applyBuff(buffDict[__instance.itemToEat.ItemId]);
+                __instance.applyBuff(createBuff());
             }
 
             if (__instance.itemToEat.ItemId == ItemsKeys.Food.Milk_Pudding)
