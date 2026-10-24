@@ -35,7 +35,8 @@ public static class SpecialOrders
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
     {
         if (e.FromModID != ModInfo.ModManifest.UniqueID ||
-            e.Type != MPMessageType.SpecialOrders_RewardSync)
+            e.Type != MPMessageType.SpecialOrders_RewardSync ||
+            e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID)
             return;
 
         var targetPlayerId = e.ReadAs<long>();
