@@ -2,13 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <!-- 与 mod 工程保持同一 TFM；“已停止支持”提示对 net6.0 是预期的，关掉避免淹没真警告 -->
-        <CheckEolTargetFramework>false</CheckEolTargetFramework>
-        <!-- 测试代码用到 C# 11/12 语法（原始字符串、集合表达式），高于 net6.0 默认的 C# 10 -->
-        <LangVersion>Latest</LangVersion>
         <RootNamespace>Red_Panda_Bazaar_Code.Tests</RootNamespace>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <!-- CI 与本机都只保证有最新 SDK，不保证有 net6 运行时；向前滚到已装的最高主版本跑测试 -->
         <RollForward>LatestMajor</RollForward>
@@ -22,7 +16,7 @@
 
     <!-- 仓库校验与 RC 版本工具（纯 net6.0，无游戏依赖） -->
     <ItemGroup>
-        <ProjectReference Include="..\Red Panda Bazaar RepoTools\Red Panda Bazaar RepoTools.csproj"/>
+        <ProjectReference Include="..\..\tools\RedPandaBazaar.RepoTools\RedPandaBazaar.RepoTools.csproj"/>
     </ItemGroup>
 
     <!-- 以链接方式直接编译 mod 工程里的纯逻辑源文件，而不是引用工程本身：
@@ -30,8 +24,8 @@
          纯逻辑文件单独编译即可脱离游戏测试。文件一旦引入游戏依赖，这里会立刻编译失败，
          正是「该文件不再可测」的信号——届时把它移出本列表，而不是给测试工程补游戏引用。 -->
     <ItemGroup>
-        <Compile Include="..\Red Panda Bazaar Code\Features\Bank\BankCalculator.cs" Link="Game\BankCalculator.cs"/>
-        <Compile Include="..\Red Panda Bazaar Code\Features\Bank\BankData.cs" Link="Game\BankData.cs"/>
+        <Compile Include="..\..\src\RedPandaBazaar\Features\Bank\BankCalculator.cs" Link="Game\BankCalculator.cs"/>
+        <Compile Include="..\..\src\RedPandaBazaar\Features\Bank\BankData.cs" Link="Game\BankData.cs"/>
     </ItemGroup>
 
 </Project>

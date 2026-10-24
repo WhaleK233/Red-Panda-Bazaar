@@ -7,39 +7,48 @@
 ## 项目结构
 
 ```
-Red Panda Bazaar Code/       # C# SMAPI 模组
-├── ModEntry.cs               # 入口：ModInfo.Init → 订阅 GameLaunched → FeatureInit() → HarmonyPatch()
-├── manifest.json             # 模组元数据
-├── Config/ModConfig.cs       # GMCM 可配置项
-├── Constant/                 # 常量（I18nKeys, ItemsKeys, MPMessageType, PatchType 等）
-├── Features/                 # 功能模块，每个子目录一个独立功能
-│   ├── Bank/                 # 银行与投资
-│   ├── PlayerStall/          # 玩家摊位系统
-│   ├── SpringFair/           # 春季展览会（含钓鱼 / 打靶小游戏）
-│   ├── PrizeMachines/        # 兑奖机
-│   ├── SpecialOrders/        # 特殊订单
-│   ├── SharedBikes/          # 共享单车
-│   ├── Transportation/       # 交通系统
-│   ├── Critters/             # 生物粒子效果
-│   ├── ButterflyNight/       # 秋 11 萤火虫之夜
-│   ├── Buffs/                # 自定义 Buff
-│   └── Furniture/            # 家具装饰
-├── Compatibility/            # 可选集成（GMCM、Central Station、Dev Debug Kit）
-│   └── ModApi/               # 外部 Mod API 接口
-├── Utils/                    # ModInfo / MenuUi / Tools 等公共实现
-└── i18n/                     # SMAPI 翻译文件
+RedPandaBazaar.sln           # 解决方案（src / tests / tools 三个工程）
+Directory.Build.props        # 三工程共用的 MSBuild 属性
+global.json                  # 钉住的 .NET SDK 版本
 
-[CP]Red Panda Bazaar/        # Content Patcher 内容包：地图、NPC、商店、节日、物品定义与美术资源（本仓库只读）
+src/RedPandaBazaar/          # C# SMAPI 模组
+├── ModEntry.cs              # 入口：ModInfo.Init → 订阅 GameLaunched → FeatureInit() → HarmonyPatch()
+├── manifest.json            # 模组元数据
+├── Config/ModConfig.cs      # GMCM 可配置项
+├── Constant/                # 常量（I18nKeys, ItemsKeys, MPMessageType, PatchType 等）
+├── Features/                # 功能模块，每个子目录一个独立功能
+│   ├── Bank/                # 银行与投资
+│   ├── PlayerStall/         # 玩家摊位系统
+│   ├── SpringFair/          # 春季展览会（含钓鱼 / 打靶小游戏）
+│   ├── PrizeMachines/       # 兑奖机
+│   ├── SpecialOrders/       # 特殊订单
+│   ├── SharedBikes/         # 共享单车
+│   ├── Transportation/      # 交通系统
+│   ├── Critters/            # 生物粒子效果
+│   ├── ButterflyNight/      # 秋 11 萤火虫之夜
+│   ├── Buffs/               # 自定义 Buff
+│   └── Furniture/           # 家具装饰
+├── Compatibility/           # 可选集成（GMCM、Central Station、Dev Debug Kit）
+│   └── ModApi/              # 外部 Mod API 接口
+├── Utils/                   # ModInfo / MenuUi / Tools 等公共实现
+└── i18n/                    # SMAPI 翻译文件
+
+tests/RedPandaBazaar.Tests/  # xUnit 测试（纯逻辑 + 仓库工具 + 仓库冒烟）
+tools/RedPandaBazaar.RepoTools/  # 仓库工具：validate / rc-version
+
+content/[CP]Red Panda Bazaar/    # Content Patcher 内容包：地图、NPC、商店、节日、物品定义与美术资源（本仓库只读）
 ```
+
+> 工程目录已标准化，但**发布产物名保持不变**：csproj 用 `<AssemblyName>` 与 `<ModFolderName>` 把 DLL 名和 `Mods/` 部署目录钉为 `Red Panda Bazaar Code`，老玩家升级不会出现新旧目录并存。
 
 ## 构建
 
 ```bash
 # 常规构建：编译 → 部署到 Mods/ → 打包 zip（有副作用，见下）
-dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
 
 # 仅编译检查：不部署、不打包，零副作用
-dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
+dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
 ```
 
 常规构建会把编译产物连同仓库内的 `[CP]Red Panda Bazaar/` 一并部署到 `Stardew Valley/Mods/`（CP 包为全量覆盖，先删后拷），并在 `out/net6.0/` 下打包 zip；反复构建会在这里堆积历史 zip。只想验证能否编译时请用上面第二条命令。构建**不会改写任何仓库文件**。
@@ -63,7 +72,7 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 
 ## 版本号
 
-版本号只有一个来源：`Red Panda Bazaar Code.csproj` 的 `<Version>`。`manifest.json` 写 `%ProjectVersion%` 占位符，由 ModBuildConfig 在打包时替换为实际值；程序集版本同样由它派生。
+版本号只有一个来源：`src/RedPandaBazaar/RedPandaBazaar.csproj` 的 `<Version>`。`manifest.json` 写 `%ProjectVersion%` 占位符，由 ModBuildConfig 在打包时替换为实际值；程序集版本同样由它派生。
 
 | 场景 | 格式 | 说明 |
 |---|---|---|

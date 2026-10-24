@@ -28,7 +28,7 @@ switch (command)
 static int RunRcVersion(List<string> args)
 {
     var csproj = Path.Combine(RepoLayout.FindRepoRoot(AppContext.BaseDirectory),
-        "Red Panda Bazaar Code", "Red Panda Bazaar Code.csproj");
+        "src", "RedPandaBazaar", "RedPandaBazaar.csproj");
     var run = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER") ?? "0";
     var date = DateTime.UtcNow.ToString("yyyyMMdd");
     for (var i = 0; i + 1 < args.Count; i += 2)
