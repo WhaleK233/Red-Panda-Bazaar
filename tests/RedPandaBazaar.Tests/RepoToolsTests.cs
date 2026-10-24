@@ -110,6 +110,6 @@ public class RepoSmokeTests
             Out = null, // 静默：失败详情由断言消息给出
         });
         Assert.True(exitCode == 0,
-            $"仓库校验未通过（在 {repoRoot} 上运行；本地可用 dotnet run --project \"Red Panda Bazaar RepoTools\" -- validate 查看详情）");
+            $"仓库校验未通过（在 {repoRoot} 上运行；本地可用 dotnet run --project \"tools/RedPandaBazaar.RepoTools\" -- validate 查看详情）");
     }
 }

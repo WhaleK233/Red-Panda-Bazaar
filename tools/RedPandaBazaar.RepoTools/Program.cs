@@ -20,8 +20,8 @@ switch (command)
     default:
         Console.Error.WriteLine(
             $"未知命令 '{command}'。用法：\n" +
-            "  Red Panda Bazaar RepoTools validate            仓库一致性校验\n" +
-            "  Red Panda Bazaar RepoTools rc-version [--csproj <路径>] [--run <运行号>] [--date <YYYYMMDD>]");
+            "  RedPandaBazaar.RepoTools validate            仓库一致性校验\n" +
+            "  RedPandaBazaar.RepoTools rc-version [--csproj <路径>] [--run <运行号>] [--date <YYYYMMDD>]");
         return 2;
 }
 
