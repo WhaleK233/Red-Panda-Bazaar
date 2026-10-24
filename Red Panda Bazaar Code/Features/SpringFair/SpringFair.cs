@@ -100,7 +100,8 @@ public static class SpringFair
         var critterType = TimeUtils.IsDayTime(e.NewLocation)
             ? CrittersSpawner.Butterfly
             : CrittersSpawner.Firefly;
-        CrittersSpawner.spawns(e.NewLocation, critterType);
+        // critters 列表过天才清空，全量生成会随反复进出会场无上限叠加，按目标数量补差额
+        CrittersSpawner.SpawnUpTo(e.NewLocation, critterType);
 
         // 无论通过何种方式到达春8，确保天气为微风（仅主机）。
         // net 标志之外还要刷本端静态字段与风粒子数组，否则画面无风、判断条件也不成立
