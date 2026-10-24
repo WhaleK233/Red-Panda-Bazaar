@@ -7,7 +7,6 @@
 # Claude Code
 .claude/
 CLAUDE.md
-AGENTS.md
 
 # Codex CLI
 .codex/
@@ -21,9 +20,6 @@ out/
 # OS
 .DS_Store
 Thumbs.db
-
-# Runtime
-global.json
 
 # Logs
 *.log

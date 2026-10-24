@@ -39,10 +39,10 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
           ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
-        run: dotnet run --project "Red Panda Bazaar RepoTools" -- validate
+        run: dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
 
       - name: 运行 C# 单元测试
-        run: dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
+        run: dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 
   build:
     name: 编译检查
@@ -59,7 +59,7 @@ jobs:
       # GamePath 指向参考程序集目录（Linux 上绝对路径）
       - name: 编译模组
         run: >
-          dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+          dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
           -p:GamePath="$GITHUB_WORKSPACE/_game"
           -p:EnableModDeploy=false
           -p:EnableModZip=false
@@ -92,14 +92,14 @@ jobs:
         id: version
         run: |
           tool="$RUNNER_TEMP/repotools"
-          dotnet build "Red Panda Bazaar RepoTools/Red Panda Bazaar RepoTools.csproj" -o "$tool" --nologo -v quiet
-          echo "value=$("$tool/Red Panda Bazaar RepoTools" rc-version --csproj "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj")" >> "$GITHUB_OUTPUT"
+          dotnet build "tools/RedPandaBazaar.RepoTools/RedPandaBazaar.RepoTools.csproj" -o "$tool" --nologo -v quiet
+          echo "value=$("$tool/RedPandaBazaar.RepoTools" rc-version --csproj "src/RedPandaBazaar/RedPandaBazaar.csproj")" >> "$GITHUB_OUTPUT"
 
       # AppendGitRevision=false：RC 不追加 +SHA。build metadata 里的 + 在下载 URL 中
       # 会被解码成空格，有真实的链接风险；Release 说明里已单独记录来源提交
       - name: 构建发布包
         run: >
-          dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj"
+          dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
           -p:GamePath="$GITHUB_WORKSPACE/_game"
           -p:EnableModDeploy=false
           -p:Version="${{ steps.version.outputs.value }}"
@@ -119,7 +119,7 @@ jobs:
             - 工作流运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           # 产物名绑定 manifest 版本号，即步骤「生成 RC 版本号」写入的值
-          zip="Red Panda Bazaar Code/out/net6.0/Red Panda Bazaar Code ${VERSION}.zip"
+          zip="src/RedPandaBazaar/out/net6.0/Red Panda Bazaar Code ${VERSION}.zip"
           # 缺失说明构建未产出，直接失败而不是发旧包
           test -f "$zip" || { echo "未找到发布包：$zip" >&2; exit 1; }
 

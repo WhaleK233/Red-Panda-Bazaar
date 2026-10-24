@@ -66,17 +66,14 @@ public static class RepoValidator
     private sealed class Paths(string repoRoot)
     {
         // 属性初始化器不能引用同类其他实例属性，统一从 repoRoot 直接拼
-        public string CodeDir { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code");
-        public string CpDir { get; } = Path.Combine(repoRoot, "[CP]Red Panda Bazaar");
-
-        public string I18nDefault { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code", "i18n", "default.json");
-        public string I18nZh { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code", "i18n", "zh.json");
-        public string I18nKeysCs { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code", "Constant", "I18nKeys.cs");
-        public string ModManifest { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code", "manifest.json");
-        public string Csproj { get; } = Path.Combine(repoRoot, "Red Panda Bazaar Code", "Red Panda Bazaar Code.csproj");
-        public string CpManifest { get; } = Path.Combine(repoRoot, "[CP]Red Panda Bazaar", "manifest.json");
-        public string CpContent { get; } = Path.Combine(repoRoot, "[CP]Red Panda Bazaar", "content.json");
-        public string CpConfig { get; } = Path.Combine(repoRoot, "[CP]Red Panda Bazaar", "config.json");
+        public string I18nDefault { get; } = Path.Combine(repoRoot, "src", "RedPandaBazaar", "i18n", "default.json");
+        public string I18nZh { get; } = Path.Combine(repoRoot, "src", "RedPandaBazaar", "i18n", "zh.json");
+        public string I18nKeysCs { get; } = Path.Combine(repoRoot, "src", "RedPandaBazaar", "Constant", "I18nKeys.cs");
+        public string ModManifest { get; } = Path.Combine(repoRoot, "src", "RedPandaBazaar", "manifest.json");
+        public string Csproj { get; } = Path.Combine(repoRoot, "src", "RedPandaBazaar", "RedPandaBazaar.csproj");
+        public string CpManifest { get; } = Path.Combine(repoRoot, "content", "[CP]Red Panda Bazaar", "manifest.json");
+        public string CpContent { get; } = Path.Combine(repoRoot, "content", "[CP]Red Panda Bazaar", "content.json");
+        public string CpConfig { get; } = Path.Combine(repoRoot, "content", "[CP]Red Panda Bazaar", "config.json");
 
         public string[] JsonFiles =>
         [
@@ -322,10 +319,18 @@ public static class RepoValidator
         if (minApi is not null && !minApi.StartsWith("4."))
             ctx.Fail(ctx.Paths.ModManifest, $"MinimumApiVersion 应为 SMAPI 4.x，实际 '{minApi}'");
 
-        var expectedDll = Path.GetFileNameWithoutExtension(ctx.Paths.Csproj) + ".dll";
+        // 工程文件名（RedPandaBazaar）与程序集名（Red Panda Bazaar Code）已解耦：
+        // csproj 显式钉了 <AssemblyName>，EntryDll 必须与它一致而非文件名。
+        // 程序集名允许含空格，故取值用 [^<]+ 后 trim，不能用 [^<\s]+。
+        var assemblyName = File.Exists(ctx.Paths.Csproj)
+            ? Regex.Match(ReadText(ctx.Paths.Csproj), @"<AssemblyName>\s*([^<]+?)\s*</AssemblyName>").Groups[1].Value.Trim()
+            : "";
+        if (string.IsNullOrEmpty(assemblyName))
+            assemblyName = Path.GetFileNameWithoutExtension(ctx.Paths.Csproj);
+        var expectedDll = assemblyName + ".dll";
         var entryDll = Str(manifest.Get("EntryDll"));
         if (entryDll != expectedDll)
-            ctx.Fail(ctx.Paths.ModManifest, $"EntryDll 应为 '{expectedDll}'（csproj 项目名），实际 '{entryDll}'");
+            ctx.Fail(ctx.Paths.ModManifest, $"EntryDll 应为 '{expectedDll}'（csproj 的 AssemblyName），实际 '{entryDll}'");
 
         if (manifest.Find("Dependencies")?.Value is not JArray dependencies || dependencies.Items.Count == 0)
         {
@@ -390,7 +395,7 @@ public static class RepoValidator
 
     private static void CheckCpReadonly(Context ctx)
     {
-        ctx.WriteLine("-- [CP]Red Panda Bazaar/ 只读约束 --");
+        ctx.WriteLine("-- content/[CP]Red Panda Bazaar/ 只读约束 --");
         if (ctx.Options.AllowCpChange)
         {
             ctx.Skip("已通过 ALLOW_CP_CHANGE=1 豁免（CP 上游同步）");
@@ -406,7 +411,7 @@ public static class RepoValidator
 
         // 路径中的方括号会被 git 当作通配符，须显式声明为字面量
         var psi = new ProcessStartInfo("git",
-            $"-C \"{ctx.Options.RepoRoot}\" diff --name-only {baseSha} HEAD -- :(literal)[CP]Red Panda Bazaar")
+            $"-C \"{ctx.Options.RepoRoot}\" diff --name-only {baseSha} HEAD -- :(literal)content/[CP]Red Panda Bazaar")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -431,12 +436,12 @@ public static class RepoValidator
             var suffix = changed.Count > 5 ? $" 等 {changed.Count} 个文件" : "";
             ctx.Fail(
                 null,
-                $"[CP]Red Panda Bazaar/ 为只读内容包，本次改动了 {preview}{suffix}；" +
+                $"content/[CP]Red Panda Bazaar/ 为只读内容包，本次改动了 {preview}{suffix}；" +
                 "若是同步上游请给 PR 打上 cp-change-approved 标签");
         }
         else
         {
-            ctx.Ok("[CP]Red Panda Bazaar/ 未被改动");
+            ctx.Ok("content/[CP]Red Panda Bazaar/ 未被改动");
         }
     }
 

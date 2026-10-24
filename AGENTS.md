@@ -12,8 +12,8 @@
 
 | 组件 | 目录 | 承担 |
 |---|---|---|
-| C# 模组 | `Red Panda Bazaar Code/` | 全部玩法逻辑：银行、玩家摊位、春季展览会与其小游戏、特殊订单、交通、共享单车、抽奖机、菜单界面 |
-| Content Patcher 内容包 | `[CP]Red Panda Bazaar/` | 地图 TMX、NPC、商店、节日、邮件、物品定义与全部美术资源 |
+| C# 模组 | `src/RedPandaBazaar/` | 全部玩法逻辑：银行、玩家摊位、春季展览会与其小游戏、特殊订单、交通、共享单车、抽奖机、菜单界面 |
+| Content Patcher 内容包 | `content/[CP]Red Panda Bazaar/` | 地图 TMX、NPC、商店、节日、邮件、物品定义与全部美术资源 |
 
 C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: true`，缺失会硬报错。CP 包由他人维护，**本仓库只读**；CP 更新不随构建自动同步，需手动处理。
 
@@ -28,8 +28,12 @@ C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: 
 ## Repository Layout
 
 ```
-Red Panda Bazaar Code.sln          # 解决方案（mod / Code.Tests / RepoTools 三个工程）
-Red Panda Bazaar Code/             # C# SMAPI 模组
+RedPandaBazaar.sln                 # 解决方案（src / tests / tools 三个工程）
+Directory.Build.props              # 三工程共用的 MSBuild 属性（TFM 与 Version 不在此处，见下）
+global.json                        # 钉住的 .NET SDK 版本
+AGENTS.md                          # 本文件（协作契约，置于仓库根）
+src/RedPandaBazaar/                # C# SMAPI 模组
+├── RedPandaBazaar.csproj          # 工程名已标准化；AssemblyName/ModFolderName 钉为旧名
 ├── ModEntry.cs                    # 唯一入口
 ├── manifest.json                  # Version 为 %ProjectVersion% 占位符
 ├── Config/ModConfig.cs            # 2 个 GMCM 配置项
@@ -42,12 +46,16 @@ Red Panda Bazaar Code/             # C# SMAPI 模组
 ├── docs/                          # StardewUI API 速查、春季展览会小游戏方案
 ├── i18n/                          # default.json（英）+ zh.json（中），必须同步维护
 └── assets/                        # 6 个纹理 PNG + 2 个 Ogg 音效（共享单车）
-Red Panda Bazaar RepoTools/        # 仓库工具控制台工程（纯 net6.0）：validate / rc-version
-Red Panda Bazaar Code.Tests/       # xUnit 测试工程（与 mod 工程平级，链接编译纯逻辑源文件）
-[CP]Red Panda Bazaar/              # 只读：Content Patcher 内容包
+tests/RedPandaBazaar.Tests/        # xUnit 测试工程（链接编译 mod 的纯逻辑源文件）
+tools/RedPandaBazaar.RepoTools/    # 仓库工具控制台工程（纯 net6.0）：validate / rc-version
+content/[CP]Red Panda Bazaar/      # 只读：Content Patcher 内容包
 .github/workflows/ci.yml           # CI/CD 入口
 .github/actions/setup-build/       # 复合 action：SDK + 游戏参考程序集 + StardewUI，CI 与 CD 共用
 ```
+
+**目录与产物名已解耦**：工程目录标准化为 `src/RedPandaBazaar`，但 csproj 显式钉了 `<AssemblyName>Red Panda Bazaar Code</AssemblyName>` 与 `<ModFolderName>Red Panda Bazaar Code</ModFolderName>`，因此 DLL 名、`Mods/` 部署目录、release zip 名全部保持旧名。**不要改这两行**——改了会让老玩家的旧目录与新目录并存，SMAPI 报重复 UniqueID。同理 `manifest.json` 的 `EntryDll` 与它们绑定，由 RepoTools 校验。
+
+`Directory.Build.props` 只放三工程共用的编译属性。`<TargetFramework>` 与 `<Version>` **必须留在 mod 的 csproj 文本里**：`RepoValidator.CheckCsproj` 与 `RcVersion.ReadBaseVersion` 都直接对该文件做正则匹配，抽到公共 props 会让 `validate` 报「未找到」。
 
 ---
 
@@ -99,20 +107,20 @@ flowchart TD
 
 ```bash
 # 常规构建（部署到 Mods + 打包 zip，见下表）
-dotnet build "Red Panda Bazaar Code.sln"
+dotnet build "RedPandaBazaar.sln"
 
 # 仅编译检查（不部署、不打包，零副作用）
-dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
+dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
 ```
 
 | 副作用 | 触发时机 | 说明 |
 |---|---|---|
-| 重新部署 CP 包到 `Mods/`（`DeployCP`） | BeforeBuild | 以仓库内 `[CP]Red Panda Bazaar/` 为源，先 `rmdir /s /q` 再全量拷贝；`EnableModDeploy=false` 时跳过 |
+| 重新部署 CP 包到 `Mods/`（`DeployCP`） | BeforeBuild | 以仓库内 `content/[CP]Red Panda Bazaar/` 为源，先 `rmdir /s /q` 再全量拷贝；`EnableModDeploy=false` 时跳过 |
 | 编译产物 → `out\` + 打包 zip | Build | zip 名绑定构建版本，反复构建会在 `out/net6.0/` 堆积；`EnableModZip=false` 时只产出 dll |
 
 **构建不会改写任何仓库文件**：版本号只来自 csproj `<Version>`，`manifest.json` 写 `%ProjectVersion%` 占位符，由 ModBuildConfig 在打包时替换。只想验证编译时传入 `-p:EnableModDeploy=false -p:EnableModZip=false` 即可做到零副作用。CI 的编译检查正是这么跑的（见「Testing & QA」）。
 
-产物路径：`Red Panda Bazaar Code/out/net6.0/Red Panda Bazaar Code.dll`。
+产物路径：`src/RedPandaBazaar/out/net6.0/Red Panda Bazaar Code.dll`（文件名来自 `AssemblyName`，非工程名）。
 
 **本地构建会自动带上来源代码标识**：`AppendGitRevision` Target 在构建期用 `git rev-parse --short HEAD` 取短 SHA，配合 `git status --porcelain` 判断是否有未提交改动（含新增未跟踪文件），把结果作为 semver build metadata 追加到 `<Version>`：干净工作区是 `1.2.0-Beta+<短SHA>`，有改动是 `1.2.0-Beta+<短SHA>-dirty`。zip 名、`manifest.json` 的版本号、程序集版本三处同步带标识。
 
@@ -130,7 +138,7 @@ dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDe
 - **菜单界面必须使用 StardewUI.Core**：菜单继承 `ViewMenu` 并实现 `CreateView()`，窗口与构件走 `Utils/MenuUi.cs` 的工厂方法；**禁止**直接使用星露谷原版的 `IClickableMenu`，也不要自造布局系统（确需自绘时继承 `StardewUI.View`，重写 `OnMeasure` / `OnDrawContent`）。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
-- **禁止修改 `[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。
+- **禁止修改 `content/[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。
 - **新的 i18n 条目必须放在对应的版本注释下**，不能直接追加到文件末尾。
 - 每次提交时，需提交所有已跟踪文件（即未被 `.gitignore` 标注的文件）。
 
@@ -277,21 +285,21 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 
 | 文件 | 为什么重要 |
 |---|---|
-| `Red Panda Bazaar Code/ModEntry.cs` | 唯一入口；启动链与补丁注册点 |
-| `Red Panda Bazaar Code/Utils/ModInfo.cs` | 本 mod 专属信息（Helper/配置/Monitor/翻译/清单），启动时注入 `Utils.Tools` |
-| `Red Panda Bazaar Code/Utils/MenuUi.cs` | StardewUI 构件工厂（窗口/行/列/文本/按钮/分隔线），所有菜单共用 |
+| `src/RedPandaBazaar/ModEntry.cs` | 唯一入口；启动链与补丁注册点 |
+| `src/RedPandaBazaar/Utils/ModInfo.cs` | 本 mod 专属信息（Helper/配置/Monitor/翻译/清单），启动时注入 `Utils.Tools` |
+| `src/RedPandaBazaar/Utils/MenuUi.cs` | StardewUI 构件工厂（窗口/行/列/文本/按钮/分隔线），所有菜单共用 |
 | `Projects/StardewUI/Core/ViewMenu.cs`（仓库外） | 菜单基类：输入分发、焦点导航、每帧测量与居中都在这里 |
-| `Red Panda Bazaar Code/Utils/ItemSerializer.cs` | 物品 XML 快照；跨存档/网络传物品的唯一正确途径 |
-| `Red Panda Bazaar Code/Compatibility/Integrations.cs` | GMCM 配置注册与 Central Station 集成，可选依赖的统一入口 |
-| `Red Panda Bazaar Code/Constant/MPMessageType.cs` | 多人消息类型常量 |
-| `Red Panda Bazaar Code/Constant/StatsKeys.cs` | 存档 key 与游戏统计 key |
-| `Red Panda Bazaar Code/Red Panda Bazaar Code.csproj` | 版本号唯一来源（`<Version>`）与两个自定义 Target（`DeployCP`、`AppendGitRevision`）都在这里，改动前先读「Development Commands」 |
-| `Red Panda Bazaar Code/manifest.json` | `Version` 为 `%ProjectVersion%` 占位符，实际值由 csproj `<Version>` 在打包时替换 |
-| `Red Panda Bazaar RepoTools/` | 仓库工具（validate / rc-version）：校验逻辑在 `RepoValidator.cs`，JSONC 解析在 `Jsonc.cs`，RC 版本派生在 `RcVersion.cs` |
+| `src/RedPandaBazaar/Utils/ItemSerializer.cs` | 物品 XML 快照；跨存档/网络传物品的唯一正确途径 |
+| `src/RedPandaBazaar/Compatibility/Integrations.cs` | GMCM 配置注册与 Central Station 集成，可选依赖的统一入口 |
+| `src/RedPandaBazaar/Constant/MPMessageType.cs` | 多人消息类型常量 |
+| `src/RedPandaBazaar/Constant/StatsKeys.cs` | 存档 key 与游戏统计 key |
+| `src/RedPandaBazaar/RedPandaBazaar.csproj` | 版本号唯一来源（`<Version>`）、产物名钉定（`<AssemblyName>` / `<ModFolderName>`）与两个自定义 Target（`DeployCP`、`AppendGitRevision`）都在这里，改动前先读「Development Commands」 |
+| `src/RedPandaBazaar/manifest.json` | `Version` 为 `%ProjectVersion%` 占位符，实际值由 csproj `<Version>` 在打包时替换 |
+| `tools/RedPandaBazaar.RepoTools/` | 仓库工具（validate / rc-version）：校验逻辑在 `RepoValidator.cs`，JSONC 解析在 `Jsonc.cs`，RC 版本派生在 `RcVersion.cs` |
 | `.github/workflows/ci.yml` | CI/CD 入口：`validate` 跑 RepoTools 校验与单元测试；`build` 用参考程序集在 Linux 上编译；`release` 在校验与编译都通过后发布 RC |
 | `.github/actions/setup-build/action.yml` | 复合 action：安装 .NET SDK、游戏参考程序集与 StardewUI，CI 与 CD 共用 |
-| `Red Panda Bazaar Code/i18n/default.json` | 翻译基准，结构即规范 |
-| `[CP]Red Panda Bazaar/content.json` | CP 侧入口：`CustomLocations` 注册地图、`Changes` 拼装数据 |
+| `src/RedPandaBazaar/i18n/default.json` | 翻译基准，结构即规范 |
+| `content/[CP]Red Panda Bazaar/content.json` | CP 侧入口：`CustomLocations` 注册地图、`Changes` 拼装数据 |
 
 ---
 
@@ -303,22 +311,22 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 | 构建工具 | `dotnet` CLI 或 Rider / Visual Studio |
 | 构建助手 | `Pathoschild.Stardew.ModBuildConfig` 4.4.0（唯一 NuGet 依赖），自动探测游戏目录并引用游戏与 SMAPI 程序集，含 `0Harmony.dll`（因 `EnableHarmony=true`） |
 | **GitHub Actions 权限** | `ci.yml` 顶层 `contents: read`；仅 `release` job 单独提权到 `contents: write`，用于创建 / 刷新 Release |
-| **`Projects/StardewUI/Core`** | StardewUI.Core 源码，csproj 的 `StardewUICorePath` 默认 `..\..\..\..\Projects\StardewUI\Core`（相对项目目录向上四级），可用同名属性覆盖；缺失则构建硬失败。CI 钉在 `Mushymato/StardewUI` 的 `dev-unofficial` 分支固定提交 `355eefc`，升级本地框架检出时同步更新该 ref |
-| **C# 语言版本 / Newtonsoft** | StardewUI 源码用了 C# 12+ 语法，三个工程都设 `<LangVersion>Latest</LangVersion>`；其 Data 解析依赖 SMAPI 内置的 `$(GamePath)\smapi-internal\Newtonsoft.Json.dll`（csproj 里显式 `<Reference>`），二者都不要删 |
+| **`Projects/StardewUI/Core`** | StardewUI.Core 源码，csproj 的 `StardewUICorePath` 默认 `$(RepoRoot)..\..\..\Projects\StardewUI\Core`（从仓库根向上三级，绝对化后不受工程目录深度影响），可用同名属性覆盖；缺失则构建硬失败。CI 钉在 `Mushymato/StardewUI` 的 `dev-unofficial` 分支固定提交 `355eefc`，升级本地框架检出时同步更新该 ref |
+| **C# 语言版本 / Newtonsoft** | StardewUI 源码用了 C# 12+ 语法，`LangVersion` / `ImplicitUsings` / `Nullable` / `CheckEolTargetFramework` 统一在根目录 `Directory.Build.props` 设置（`<TargetFramework>` 与 `<Version>` 例外，必须留在 mod 的 csproj 里供校验器读取）；其 Data 解析依赖 SMAPI 内置的 `$(GamePath)\smapi-internal\Newtonsoft.Json.dll`（csproj 里显式 `<Reference>`），二者都不要删 |
 | **外部源码告警** | StardewUI 的 CS9336 冗余模式告警经 csproj `NoWarn` 豁免——钉住的外部共享源码不在本仓库修复范围 |
 | 游戏安装 | 本地构建必须能被 ModBuildConfig 自动探测到（注册表 / 常见路径），否则构建报错 |
 | 外部源 | NuGet 需可还原 `Pathoschild.Stardew.ModBuildConfig`；离线时首次构建可能失败 |
 
-版本号只写在 `Red Panda Bazaar Code.csproj` 的 `<Version>`（本地开发格式 `x.y.z-Beta`）。`manifest.json` 的 `Version` 写 `%ProjectVersion%` 占位符，ModBuildConfig 打包时替换为实际值；程序集版本也由它派生。本地构建由 `AppendGitRevision` Target 追加 `+<短SHA>[-dirty]`（见「Development Commands」）。CD 发布的 RC 包版本为 `x.y.z-rc.<日期>.<run>`（run = GitHub Actions 运行号），由 RepoTools 的 `rc-version` 子命令派生后经 `-p:Version=` 注入构建，不写回仓库。构建过程**不会改写任何仓库文件**。
+版本号只写在 `src/RedPandaBazaar/RedPandaBazaar.csproj` 的 `<Version>`（本地开发格式 `x.y.z-Beta`）。`manifest.json` 的 `Version` 写 `%ProjectVersion%` 占位符，ModBuildConfig 打包时替换为实际值；程序集版本也由它派生。本地构建由 `AppendGitRevision` Target 追加 `+<短SHA>[-dirty]`（见「Development Commands」）。CD 发布的 RC 包版本为 `x.y.z-rc.<日期>.<run>`（run = GitHub Actions 运行号），由 RepoTools 的 `rc-version` 子命令派生后经 `-p:Version=` 注入构建，不写回仓库。构建过程**不会改写任何仓库文件**。
 
 ---
 
 ## Testing & QA
 
-**自动化测试是 xUnit（`Red Panda Bazaar Code.Tests/`），测试对象分三块**：
+**自动化测试是 xUnit（`tests/RedPandaBazaar.Tests/`），测试对象分三块**：
 
 - **纯游戏逻辑**：以 `<Compile Include>` 链接方式直接编译 mod 工程里的纯逻辑源文件（如 `Features/Bank/BankCalculator.cs`——游戏状态由调用方注入，不引用游戏程序集），不引用 mod 工程本身——引用会连带触发 mod 构建与部署副作用。给纯逻辑文件加游戏依赖时测试工程会编译失败，这是「该文件不再可测」的信号，把文件移出列表而不是给测试工程补游戏引用。
-- **仓库工具**：`Red Panda Bazaar RepoTools`（纯 net6.0 控制台工程）的 JSONC 解析与 RC 版本派生；工程引用直接测内部函数。
+- **仓库工具**：`tools/RedPandaBazaar.RepoTools`（纯 net6.0 控制台工程）的 JSONC 解析与 RC 版本派生；工程引用直接测内部函数。
 - **仓库冒烟**：对当前检出副本运行完整校验（`RepoValidator.Run`，静默模式断言退出码）。
 
 仓库一致性校验（静态检查）与单元测试的本地入口：
@@ -326,9 +334,9 @@ var msg = Tools.GetI18n(I18nKeys.PlayerStall_TotalTax)
 ```bash
 # 校验：JSON 可解析性与重复键、i18n 双文件键集合 / 顺序 / 占位符、
 # I18nKeys.cs 与 default.json 双向对应、manifest 字段与版本号占位符、
-# csproj 的 TFM 与 Version、以及 PR 中 [CP]Red Panda Bazaar/ 是否被改动
-dotnet run --project "Red Panda Bazaar RepoTools" -- validate
-dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
+# csproj 的 TFM 与 Version、以及 PR 中 content/[CP]Red Panda Bazaar/ 是否被改动
+dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
+dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 ```
 
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
@@ -350,7 +358,7 @@ dotnet test "Red Panda Bazaar Code.Tests/Red Panda Bazaar Code.Tests.csproj"
 
 ```bash
 # 能做到的自动验证：编译通过（0 error），零副作用
-dotnet build "Red Panda Bazaar Code/Red Panda Bazaar Code.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
+dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
 ```
 
 改动完成后，交付前至少要保证编译通过；涉及游戏内行为的部分，需**列出可执行的验证清单**交给开发者在游戏内确认，而不是声称已验证。

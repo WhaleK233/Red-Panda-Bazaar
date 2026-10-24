@@ -1,10 +1,18 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red Panda Bazaar Code", "Red Panda Bazaar Code\Red Panda Bazaar Code.csproj", "{FFF67B70-0FDC-488C-BC7A-935B30E7F6F9}"
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedPandaBazaar", "src\RedPandaBazaar\RedPandaBazaar.csproj", "{FFF67B70-0FDC-488C-BC7A-935B30E7F6F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red Panda Bazaar Code.Tests", "Red Panda Bazaar Code.Tests\Red Panda Bazaar Code.Tests.csproj", "{533EBDE3-3D0A-4E25-8F9E-C7880BE92B22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedPandaBazaar.Tests", "tests\RedPandaBazaar.Tests\RedPandaBazaar.Tests.csproj", "{533EBDE3-3D0A-4E25-8F9E-C7880BE92B22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red Panda Bazaar RepoTools", "Red Panda Bazaar RepoTools\Red Panda Bazaar RepoTools.csproj", "{5CF076B1-EC43-45F5-A2E8-9CD52AB9F82B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedPandaBazaar.RepoTools", "tools\RedPandaBazaar.RepoTools\RedPandaBazaar.RepoTools.csproj", "{5CF076B1-EC43-45F5-A2E8-9CD52AB9F82B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A1000000-0000-0000-0000-000000000001}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A1000000-0000-0000-0000-000000000002}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{A1000000-0000-0000-0000-000000000003}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,5 +64,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FFF67B70-0FDC-488C-BC7A-935B30E7F6F9} = {A1000000-0000-0000-0000-000000000001}
+		{533EBDE3-3D0A-4E25-8F9E-C7880BE92B22} = {A1000000-0000-0000-0000-000000000002}
+		{5CF076B1-EC43-45F5-A2E8-9CD52AB9F82B} = {A1000000-0000-0000-0000-000000000003}
 	EndGlobalSection
 EndGlobal
