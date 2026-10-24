@@ -28,7 +28,7 @@ C# 侧 `manifest.json` 把 CP 包 `Lilaoliu.RedPandaBazaar` 标为 `IsRequired: 
 ## Repository Layout
 
 ```
-Red Panda Bazaar Code.sln          # 解决方案（仅含 mod 工程）
+Red Panda Bazaar Code.sln          # 解决方案（mod / Code.Tests / RepoTools 三个工程）
 Red Panda Bazaar Code/             # C# SMAPI 模组
 ├── ModEntry.cs                    # 唯一入口
 ├── manifest.json                  # Version 为 %ProjectVersion% 占位符
