@@ -1,0 +1,95 @@
+﻿{
+  /****** Delete "Bank.ServiceChecking", "Bank.ServiceFixed", "Bank.CheckingTab", "Bank.CheckingBalance", "Bank.InterestEarned", "Bank.TodayInterest", "Bank.ClaimInterest", "Bank.TodayRate", "Bank.Deposit", "Bank.Withdraw", "Bank.DepositTitle", "Bank.WithdrawTitle", "Bank.FixedTab", "Bank.Redeem", "Bank.EarlyWithdraw", "Bank.FixedAmount", "Bank.FixedTerm", "Bank.FixedStatus", "Bank.FixedStatusActive", "Bank.FixedStatusWithdrawn", "Bank.FixedStatusMature", "Bank.Days", "Bank.FixedEmpty", "Bank.NewFixedAmountTitle", "Bank.FixedEarlyWithdrawTip", "Bank.DailyRateLabel", "Bank.Apply", "Bank.LoanInterest", "Bank.DepositSuccess", "Bank.WithdrawSuccess", "Bank.InterestClaimed", "Bank.FixedCreated", "Bank.FixedRedeemed", "Bank.FixedEarlyWithdrawn", "Bank.FixedMatureReminder", "Bank.InvalidAmount", "Bank.NotEnoughBalance", "Bank.NoMoney" ******/
+  /****** Version 1.2.0 Added ******/
+  /****** Delete "Dialogue.BuyBackpack_PositiveResponseTo24Slots", "Dialogue.BuyBackpack_PositiveResponseTo36Slots" ******/
+  /****** Delete "Tetris.Score", "Tetris.Lines", "Tetris.Level", "Tetris.Next", "Tetris.Pause", "Tetris.Resume", "Tetris.Restart", "Tetris.Exit", "Tetris.Paused", "Tetris.GameOver", "Tetris.Help1", "Tetris.Help2" ******/
+  "Dialogue.XiaoMingRewardInventoryFull": "你的背包已满，腾出空间后再来领取奖励吧。",
+  "SharedBikes.NotEnoughGold": "金币不足",
+  "PlayerStall.CollectPending": "收取中…",
+  "PlayerStall.CollectTimeout": "收取请求超时，请重试。",
+  /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
+  /****** Version 1.1.2 Added ******/
+  "Bank.ServiceInvestment": "项目投资",
+  "Bank.InvestmentTitle": "项目投资",
+  "Bank.InvestmentBike": "共享单车",
+  "Bank.InvestmentBikeDesc": "在枫叶桥租用共享单车出行",
+  "Bank.InvestmentStatusUnlocked": "已开通",
+  "Bank.InvestmentStatusLocked": "未开通",
+  "Bank.InvestmentUnlock": "开通 ({{amount}}{{gold}})",
+  "SharedBikes.UnlockSuccess": "共享单车项目开通成功！去枫叶桥骑车吧！",
+  /****** Delete "PlayerStall.StatusForSale", "PlayerStall.StatusSold", "PlayerStall.CollectEarnings", "Config.DebugKey", "Config.DebugMenuKey", "Config.DebugTeleportKey", "Bank.ServiceTax", "Bank.TaxTab", "Bank.TotalTax", "PlayerStall.TotalTax" ******/
+  /****** Version 1.1.0 Added ******/
+  /****** 占位符说明：{{amount}} 金额，{{gold}} 金币单位，{{rate}} 百分比 ******/
+  "PlayerStall.UnitPrice": "单价",
+  "PlayerStall.DateUnknown": "未知",
+  "PlayerStall.ColHeader.Time": "时间",
+  "PlayerStall.PriceEditTitle": "修改价格",
+  "PlayerStall.BillTitle": "昨日账单",
+  "PlayerStall.BillEmpty": "昨日没有物品售出。",
+  "PlayerStall.ColHeader.Stall": "序号",
+  "PlayerStall.ColHeader.Item": "物品",
+  "PlayerStall.ColHeader.Qty": "数量",
+  "PlayerStall.ColHeader.Price": "金额",
+  "PlayerStall.Total": "合计: {{amount}}{{gold}}",
+  "PlayerStall.CollectAll": "全部收取",
+  "PlayerStall.Collected": "已收取",
+  "Bank.Title": "小熊猫集市银行",
+  "Bank.ServiceQuestion": "欢迎光临小熊猫集市银行，请问您要办理什么业务？",
+  "Bank.ServiceCancel": "取消",
+  /****** Version 1.0.5 Added ******/
+  /****** Delete "Config.NumberOfFirefly" ******/
+  "Config.NumberOfCritterMultiplier": "粒子数量倍数",
+  "Dialogue.GetXiaoMingReward": "你获得了陈小茗留下的奖励！",
+  "Dialogue.NoXiaoMingReward": "这里什么都没有，要不去给陈小茗供点货？",
+  /****** Version 1.0.3 Added ******/
+  /****** Delete "Text.50Glod" ******/
+  "Text.RedPandaBazaar": "小熊猫集市",
+  "Text.CalicoDesert": "卡利科沙漠",
+  "Text.PelicanTown": "星露谷-公交站",
+  "Text.CentralStation": "中央车站",
+  "Text.Gold": "金",
+  "Dialogue.WhereToGo": "你想去哪？",
+  /****** Version 1.0.2 Added ******/
+  "Config.AnimationSpeed.PrizeMenu": "抽奖动画速度",
+  "Dialogue.EntranceQuestion": "是否确定花费300金购买前往小熊猫集市的专车车票？",
+  /*********
+    ** Config
+    *********/
+  "Config.Enable": "启用",
+  /*********
+    ** Dialogue
+    *********/
+  "Dialogue.FishingGameQuestion": "你想玩钓鱼游戏吗？(50金)",
+  "Dialogue.TargetGameQuestion": "你想玩弹弓游戏吗？(50金)",
+  "Dialogue.WheelBetChargeQuestion": "你想拿一些星星币来赌吗？(50金)",
+  "Dialogue.PositiveResponse": "是",
+  "Dialogue.NegativeResponse": "否",
+  "Dialogue.MoneyNotEnough": "你的钱不够",
+  "Dialogue.WheelBet_RedResponse": "红色",
+  "Dialogue.WheelBet_WhiteResponse": "白色",
+  "Dialogue.WheelBet_GiveUpResponse": "我放弃 (不退款)",
+  /*********
+    ** Display
+    *********/
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplaySource": "精美毛绒玩具",
+  "Display.RedPandaBazaar_Golden_Delight.BuffDisplayName": "酒足饭饱",
+  "Display.RedPandaBazaar_Golden_Cupcake.BuffDisplaySource": "黄金小蛋糕",
+  "Display.RedPandaBazaar_Golden_Cupcake.BuffDisplayName": "美妙的味道, 爱来自黄金小蛋糕",
+  "Display.RedPandaBazaar_Golden_Flavor_Popsicle.BuffDisplaySource": "黄金口味冰棍",
+  "Display.RedPandaBazaar_Golden_Flavor_Popsicle.BuffDisplayName": "美妙的味道, 爱来自黄金口味冰棍",
+  "Display.RedPandaBazaar_Coffee_Popsicle.BuffDisplaySource": "咖啡冰棍",
+  "Display.RedPandaBazaar_Coffee_Popsicle.BuffDisplayName": "美妙的味道, 爱来自咖啡冰棍",
+  "Display.RedPandaBazaar_Fern_Popsicle.BuffDisplaySource": "蕨菜冰棍",
+  "Display.RedPandaBazaar_Fern_Popsicle.BuffDisplayName": "美妙的味道, 爱来自蕨菜冰棍",
+  "Display.RedPandaBazaar_Mango_Popsicle.BuffDisplaySource": "芒果冰棍",
+  "Display.RedPandaBazaar_Mango_Popsicle.BuffDisplayName": "美妙的味道, 爱来自芒果冰棍",
+  "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplaySource": "小桃子冰棍",
+  "Display.RedPandaBazaar_Peach_Popsicle.BuffDisplayName": "美妙的味道, 爱来自小桃子冰棍",
+  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplaySource": "南瓜冰棍",
+  "Display.RedPandaBazaar_Pumpkin_Popsicle.BuffDisplayName": "美妙的味道, 爱来自南瓜冰棍",
+  /****** Date ******/
+  "Date.Spring": "春",
+  "Date.Summer": "夏",
+  "Date.Fall": "秋",
+  "Date.Winter": "冬"
+}

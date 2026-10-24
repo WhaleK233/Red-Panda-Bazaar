@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <!-- StardewUI 是钉住提交的外部共享源码，其少量冗余模式告警（CS9336）不在本仓库修复范围 -->
+        <NoWarn>$(NoWarn);CS9336</NoWarn>
+        <RootNamespace>Red_Panda_Bazaar_Code</RootNamespace>
+        <EnableHarmony>true</EnableHarmony>
+        <OutputPath>out\</OutputPath>
+        <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+        <!-- 工程目录已标准化为 src/RedPandaBazaar，但玩家可见产物名保持不变：
+             程序集名决定 manifest 的 EntryDll，ModFolderName 决定部署到 Mods/ 下的目录名。
+             两者都钉死为旧名，现有玩家升级时不会出现新旧目录并存导致的重复 UniqueID。 -->
+        <AssemblyName>Red Panda Bazaar Code</AssemblyName>
+        <ModFolderName>Red Panda Bazaar Code</ModFolderName>
+        <!-- 版本号唯一来源：manifest.json 用 %ProjectVersion% 引用本值，
+             程序集版本也由它派生，不再有任何脚本改写 manifest。
+             本地开发格式 x.y.z-Beta；CI 发布时用 -p:Version= 覆盖为 x.y.z-rc.<日期>.<run>。
+             注意：本行必须留在 csproj 内，RepoTools 的校验器与 rc-version 都直接读它。 -->
+        <Version>1.2.0-Beta</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
+    </ItemGroup>
+
+    <!-- StardewUI.Core 的 Data 解析依赖 SMAPI 内置的 Newtonsoft.Json -->
+    <ItemGroup>
+        <Reference Include="Newtonsoft.Json" Private="False">
+            <HintPath>$(GamePath)\smapi-internal\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <!-- StardewUI.Core 源码依赖的全局 using 与类型别名，与其官方 csproj 保持一致 -->
+    <ItemGroup>
+        <Using Include="StardewValley" />
+        <Using Include="StardewModdingAPI" />
+        <Using Alias="Object" Include="System.Object" />
+        <Using Alias="SObject" Include="StardewValley.Object" />
+        <Using Alias="Color" Include="Microsoft.Xna.Framework.Color" />
+        <Using Alias="Rectangle" Include="Microsoft.Xna.Framework.Rectangle" />
+        <Using Alias="Vector2" Include="Microsoft.Xna.Framework.Vector2" />
+        <Using Alias="Trace" Include="StardewUI.Diagnostics.Trace" />
+    </ItemGroup>
+
+    <!-- CP 以仓库内副本（content/ 下）为源部署到 Mods；CP 包更新不随构建同步，需手动处理。
+         EnableModDeploy=false 时跳过，使「仅编译检查」真正无副作用。 -->
+    <Target Name="DeployCP" BeforeTargets="BeforeBuild" Condition="'$(EnableModDeploy)' != 'false'">
+        <Exec Command="if exist &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot; rmdir /s /q &quot;$(GameModsPath)\[CP]Red Panda Bazaar&quot;"
+              ContinueOnError="true"/>
+        <ItemGroup>
+            <CpToMods Include="$(RepoRoot)content\[CP]Red Panda Bazaar\**\*"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(CpToMods)"
+              DestinationFolder="$(GameModsPath)\[CP]Red Panda Bazaar\%(RecursiveDir)"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"/>
+    </Target>
+
+    <!-- 本地构建时把 git 标识追加为 semver build metadata（+ 后缀），
+         让 zip 名、manifest 版本号、程序集版本都带上来源代码标识：
+         工作区干净是 +<短SHA>，有未提交改动是 +<短SHA>-dirty。
+         build metadata 不参与版本优先级比较（semver 2.0），因此不会被误判为新版本。
+         CI 经 -p:Version= 注入 RC 版本号，并以 -p:AppendGitRevision=false 显式关闭。 -->
+    <Target Name="AppendGitRevision" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo;BeforeBuild"
+            Condition="'$(Version)' != '' AND !$(Version.Contains('+')) AND '$(AppendGitRevision)' != 'false'">
+        <!-- 非 git 工作副本（导出的源码包）下 git 会以 128 退出并把错误写到 stderr，
+             这里只关心输出内容，两个重要性都压到 low，避免每次构建刷无关信息 -->
+        <Exec Command="git rev-parse --short HEAD"
+              ConsoleToMSBuild="true" StandardOutputImportance="low" StandardErrorImportance="low"
+              IgnoreExitCode="true" ContinueOnError="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="_GitSha" />
+        </Exec>
+        <!-- 未跟踪的新文件同样算改动，避免「新增文件没提交就打包」被漏标 -->
+        <Exec Command="git status --porcelain"
+              ConsoleToMSBuild="true" StandardOutputImportance="low" StandardErrorImportance="low"
+              IgnoreExitCode="true" ContinueOnError="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="_GitChanges" />
+        </Exec>
+        <PropertyGroup>
+            <!-- 正则提取：非 git 副本（如导出的源码包）会输出错误信息，
+                 此处取不到 SHA，版本号安全退回 csproj 中的值 -->
+            <_GitSha>$([System.Text.RegularExpressions.Regex]::Match('$(_GitSha)', '^\s*([0-9a-f]{4,})\s*$').Groups[1].Value)</_GitSha>
+            <_GitRevision Condition="'$(_GitSha)' != '' AND '$(_GitChanges)' != ''">$(_GitSha)-dirty</_GitRevision>
+            <_GitRevision Condition="'$(_GitSha)' != '' AND '$(_GitChanges)' == ''">$(_GitSha)</_GitRevision>
+            <Version Condition="'$(_GitRevision)' != ''">$(Version)+$(_GitRevision)</Version>
+        </PropertyGroup>
+    </Target>
+
+    <!-- StardewUI Core（共享源码项目，本 mod 的 UI 框架），默认取 Projects 下的本地副本。
+         用 RepoRoot 绝对化，工程目录深度变化时不再需要数 `..`。CI 以 -p:StardewUICorePath= 覆盖。 -->
+    <PropertyGroup>
+        <StardewUICorePath Condition="'$(StardewUICorePath)' == ''">$(RepoRoot)..\..\..\Projects\StardewUI\Core</StardewUICorePath>
+    </PropertyGroup>
+    <Import Project="$(StardewUICorePath)\StardewUI.projitems" Label="Shared"/>
+
+</Project>
