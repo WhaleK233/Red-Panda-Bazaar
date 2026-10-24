@@ -51,7 +51,17 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj"
 dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false -p:EnableModZip=false
 ```
 
-常规构建会把编译产物连同仓库内的 `[CP]Red Panda Bazaar/` 一并部署到 `Stardew Valley/Mods/`（CP 包为全量覆盖，先删后拷），并在 `out/net6.0/` 下打包 zip；反复构建会在这里堆积历史 zip。只想验证能否编译时请用上面第二条命令。构建**不会改写任何仓库文件**。
+常规构建会把编译产物连同仓库内 `content/` 下的 `[CP]Red Panda Bazaar/` 一并部署到 `Stardew Valley/Mods/`（CP 包为全量覆盖，先删后拷），并在 `src/RedPandaBazaar/out/net6.0/` 下打包 zip；反复构建会在这里堆积历史 zip。只想验证能否编译时请用上面第二条命令。构建**不会改写任何仓库文件**。
+
+## 校验与测试
+
+```bash
+# 仓库一致性校验：JSON、i18n 双文件、manifest、csproj、CP 只读约束
+dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
+
+# 单元测试 + 仓库冒烟
+dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
+```
 
 ## 依赖
 
