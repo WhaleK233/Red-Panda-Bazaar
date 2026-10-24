@@ -11,6 +11,9 @@ public class SharedBikesSaveData
 public class SharedBikesSyncData
 {
     public bool Unlocked { get; set; }
+
+    /// <summary>静默同步：只更新状态缓存，不弹「开通成功」的 HUD（日更广播与中途加入的补发用）。</summary>
+    public bool Silent { get; set; }
 }
 
 /// <summary>客机→主机的操作请求数据。</summary>
