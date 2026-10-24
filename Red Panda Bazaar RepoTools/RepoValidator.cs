@@ -221,10 +221,9 @@ public static class RepoValidator
         var mismatch = 0;
         foreach (var key in keysToCheck)
         {
-            var defaultValue = Str(defaultObj.Find(key)!.Value);
-            var zhValue = Str(zhObj.Find(key)!.Value);
-            var defaultTokens = Tokens(defaultValue);
-            var zhTokens = Tokens(zhValue);
+            // i18n 值应为字符串；null 值按空串比对，让占位符检查报出差异
+            var defaultTokens = Tokens(Str(defaultObj.Find(key)!.Value) ?? "");
+            var zhTokens = Tokens(Str(zhObj.Find(key)!.Value) ?? "");
             if (defaultTokens.SetEquals(zhTokens))
                 continue;
             mismatch++;

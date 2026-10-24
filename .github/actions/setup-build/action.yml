@@ -10,7 +10,7 @@ runs:
     # 因此不用 Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment——
     # 它会把 SDK 固定回 6.0，只借用它的参考程序集步骤。
     - name: 准备 .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0.x'
 
@@ -25,7 +25,7 @@ runs:
     # ref 钉到本地 Projects/StardewUI 的同一提交（dev-unofficial 分支），保证 CI 产物与本地构建
     # 完全一致；升级本地框架检出时同步更新此值，不钉住会随上游移动产生构建漂移
     - name: 检出 StardewUI
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: Mushymato/StardewUI
         ref: 355eefc0358c8e39ba925ad7800d6cc93e51c9f8

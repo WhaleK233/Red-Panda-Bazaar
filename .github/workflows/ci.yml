@@ -22,14 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # PR 需要与基线提交比对 [CP] 目录的改动，必须拉取完整历史
           fetch-depth: 0
 
       # 校验工具与单元测试都是纯 net6.0 工程，只需要 SDK，不需要游戏参考程序集
       - name: 准备 .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 准备构建环境
         uses: ./.github/actions/setup-build
@@ -78,7 +78,7 @@ jobs:
       contents: write
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 准备构建环境
         uses: ./.github/actions/setup-build
