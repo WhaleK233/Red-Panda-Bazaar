@@ -187,13 +187,23 @@ public static class SharedBikes
         _riddenBike = null;
     }
 
-    /// <summary>主机广播开通状态给全部玩家。</summary>
-    private static void BroadcastSyncData()
+    /// <summary>主机广播开通状态给全部玩家。silent 用于日更等例行同步，不触发「开通成功」提示。</summary>
+    private static void BroadcastSyncData(bool silent = false)
     {
         ModInfo.Helper.Multiplayer.SendMessage(
-            new SharedBikesSyncData { Unlocked = Data.Unlocked },
+            new SharedBikesSyncData { Unlocked = Data.Unlocked, Silent = silent },
             MPMessageType.SharedBikes_SyncData,
             modIDs: new[] { ModInfo.ModManifest.UniqueID });
+    }
+
+    /// <summary>向单个客机定向静默同步开通状态（中途加入补发、幂等请求纠正用）。</summary>
+    private static void SendSyncData(long playerId)
+    {
+        ModInfo.Helper.Multiplayer.SendMessage(
+            new SharedBikesSyncData { Unlocked = Data.Unlocked, Silent = true },
+            MPMessageType.SharedBikes_SyncData,
+            modIDs: new[] { ModInfo.ModManifest.UniqueID },
+            playerIDs: new[] { playerId });
     }
 
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
@@ -209,11 +219,17 @@ public static class SharedBikes
                 {
                     var wasUnlocked = _clientUnlocked;
                     _clientUnlocked = syncData.Unlocked;
-                    // 客机操作者经广播得知开通成功（主机已在主机侧提示过）
-                    if (wasUnlocked != true && _clientUnlocked.Value)
+                    // 客机操作者经非静默广播得知开通成功（主机已在主机侧提示过）；
+                    // 例行同步与中途加入的补发都是静默的，不弹提示
+                    if (!syncData.Silent && wasUnlocked != true && _clientUnlocked.Value)
                         Game1.addHUDMessage(new HUDMessage(
                             Tools.GetI18n(I18nKeys.SharedBikes_UnlockSuccess).ToString(), HUDMessage.achievement_type));
                 }
+                break;
+
+            case MPMessageType.SharedBikes_SyncRequest:
+                if (!Context.IsMainPlayer) break;
+                SendSyncData(e.FromPlayerID);
                 break;
 
             case MPMessageType.SharedBikes_ActionRequest:
@@ -223,9 +239,15 @@ public static class SharedBikes
                 switch (request.Action)
                 {
                     case "unlock":
+                        var wasUnlocked = Data.Unlocked;
                         if (ExecuteUnlock(e.FromPlayerID))
                         {
-                            BroadcastSyncData();
+                            // 首次开通广播全员（操作者客机弹「开通成功」）；
+                            // 幂等重放（客机状态滞后的重复请求）没有扣款，只定向纠正该客机，不广播成功
+                            if (wasUnlocked)
+                                SendSyncData(e.FromPlayerID);
+                            else
+                                BroadcastSyncData();
                         }
                         else
                         {
@@ -316,19 +338,26 @@ public static class SharedBikes
         }
     }
 
-    /// <summary>每天开始：清掉散落各图的旧坐骑，已开通则在枫叶桥固定坐标生成两匹，并向客机广播状态。</summary>
+    /// <summary>每天开始：清掉散落各图的旧坐骑，已开通则在枫叶桥固定坐标生成两匹；客机向主机请求一次开通状态。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        // 生成 NPC 属于改世界，仅主机执行；客机屏幕上的实体由 netcode 自动同步
+        // 中途加入的客机同样会触发 DayStarted：主动向主机请求开通状态，
+        // 否则要等到主机下一次日更广播才能知道项目已开通
         if (!Context.IsMainPlayer)
+        {
+            ModInfo.Helper.Multiplayer.SendMessage(
+                true, MPMessageType.SharedBikes_SyncRequest,
+                modIDs: new[] { ModInfo.ModManifest.UniqueID },
+                playerIDs: new[] { Game1.MasterPlayer.UniqueMultiplayerID });
             return;
+        }
 
         try
         {
             RemoveAllBikes();
             if (Data.Unlocked)
                 SpawnTestBikes();
-            BroadcastSyncData();
+            BroadcastSyncData(silent: true);
         }
         catch (Exception ex)
         {
