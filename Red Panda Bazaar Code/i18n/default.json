@@ -2,19 +2,8 @@
   /****** Delete "Bank.ServiceChecking", "Bank.ServiceFixed", "Bank.CheckingTab", "Bank.CheckingBalance", "Bank.InterestEarned", "Bank.TodayInterest", "Bank.ClaimInterest", "Bank.TodayRate", "Bank.Deposit", "Bank.Withdraw", "Bank.DepositTitle", "Bank.WithdrawTitle", "Bank.FixedTab", "Bank.Redeem", "Bank.EarlyWithdraw", "Bank.FixedAmount", "Bank.FixedTerm", "Bank.FixedStatus", "Bank.FixedStatusActive", "Bank.FixedStatusWithdrawn", "Bank.FixedStatusMature", "Bank.Days", "Bank.FixedEmpty", "Bank.NewFixedAmountTitle", "Bank.FixedEarlyWithdrawTip", "Bank.DailyRateLabel", "Bank.Apply", "Bank.LoanInterest", "Bank.DepositSuccess", "Bank.WithdrawSuccess", "Bank.InterestClaimed", "Bank.FixedCreated", "Bank.FixedRedeemed", "Bank.FixedEarlyWithdrawn", "Bank.FixedMatureReminder", "Bank.InvalidAmount", "Bank.NotEnoughBalance", "Bank.NoMoney" ******/
   /****** Version 1.2.0 Added ******/
   /****** Delete "Dialogue.BuyBackpack_PositiveResponseTo24Slots", "Dialogue.BuyBackpack_PositiveResponseTo36Slots" ******/
+  /****** Delete "Tetris.Score", "Tetris.Lines", "Tetris.Level", "Tetris.Next", "Tetris.Pause", "Tetris.Resume", "Tetris.Restart", "Tetris.Exit", "Tetris.Paused", "Tetris.GameOver", "Tetris.Help1", "Tetris.Help2" ******/
   "Dialogue.XiaoMingRewardInventoryFull": "Your inventory is full. Make some room and come back for the reward.",
-  "Tetris.Score": "Score",
-  "Tetris.Lines": "Lines",
-  "Tetris.Level": "Level",
-  "Tetris.Next": "Next",
-  "Tetris.Pause": "Pause",
-  "Tetris.Resume": "Resume",
-  "Tetris.Restart": "Restart",
-  "Tetris.Exit": "Exit",
-  "Tetris.Paused": "Paused",
-  "Tetris.GameOver": "Game Over",
-  "Tetris.Help1": "Rotate: Up key   Hard Drop: Space",
-  "Tetris.Help2": "Move / Soft Drop: movement keys",
   "SharedBikes.NotEnoughGold": "Not enough gold",
   /****** Delete "Config.TaxRate", "PlayerStall.TaxLine", "PlayerStall.TaxRemaining", "Bank.InvestmentTaxPool", "SharedBikes.TaxNotEnough" ******/
   /****** Version 1.1.2 Added ******/

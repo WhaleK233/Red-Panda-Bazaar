@@ -19,7 +19,6 @@ Red Panda Bazaar Code/       # C# SMAPI 模组
 │   ├── PrizeMachines/        # 兑奖机
 │   ├── SpecialOrders/        # 特殊订单
 │   ├── SharedBikes/          # 共享单车
-│   ├── Tetris/               # 俄罗斯方块小游戏
 │   ├── Transportation/       # 交通系统
 │   ├── Critters/             # 生物粒子效果
 │   ├── ButterflyNight/       # 秋 11 萤火虫之夜
