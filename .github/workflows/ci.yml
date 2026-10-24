@@ -134,12 +134,43 @@ jobs:
             gh release edit rc --title "RC ${VERSION}" --notes "$NOTES" --latest --prerelease=false
             # 先传新资产再清旧资产：cancel-in-progress 取消运行时，最坏是新旧资产短暂并存，
             # 反过来（先删后传）会留下零资产的 release，玩家手里的下载链接直接失效。
-            # --clobber 兜底同版本重跑（重试同一 run number）时的同名资产冲突
+            # --clobber 兜底同版本重跑（重试同一 run number）时的同名资产冲突。
+            #
+            # 认领「本次上传的资产」不能按文件名比对：GitHub 会重命名含空格等特殊字符的资产名
+            # （REST「Upload a release asset」的 Notes），本地 zip 名与线上名字对不上，刚上传的
+            # 资产就会被当成旧资产删掉，release 归零而 CI 仍报成功。改为按上传时间认领：
+            # createdAt 不早于本次上传起点，留 120s 余量吸收 runner 与 GitHub 的时钟偏差；
+            # 同版本重跑时 --clobber 会替换同名资产并刷新其 createdAt，同样能被认领。
+            upload_start=$(date -u -d '-120 seconds' +%Y-%m-%dT%H:%M:%SZ)
             gh release upload rc "$zip" --clobber
-            gh release view rc --json assets --jq '.assets[].name' | while read -r name; do
-              [ "$name" = "Red Panda Bazaar Code ${VERSION}.zip" ] && continue
-              [ -n "$name" ] && gh release delete-asset rc "$name" --yes || true
+            assets_after=$(gh release view rc --json assets --jq '.assets[] | "\(.createdAt)\t\(.name)"')
+            uploaded=$(printf '%s\n' "$assets_after" | awk -F'\t' -v s="$upload_start" '$1 >= s { print $2 }' | head -n 1)
+            if [ -z "$uploaded" ]; then
+              # 兜底：同版本重跑且 createdAt 未刷新时，release 里应只剩本次上传的那一个。
+              # 数量不为 1 就无从判断，宁可失败也不误删刚上传的资产。
+              total=$(printf '%s\n' "$assets_after" | grep -c . || true)
+              if [ "$total" -eq 1 ]; then
+                uploaded=$(printf '%s\n' "$assets_after" | cut -f2)
+              fi
+            fi
+            [ -n "$uploaded" ] || {
+              echo "上传后无法确认本次构建的资产（不会回退发旧包）：" >&2
+              printf '%s\n' "$assets_after" >&2
+              exit 1
+            }
+            echo "本次上传的资产：$uploaded"
+            printf '%s\n' "$assets_after" | cut -f2 | while read -r name; do
+              [ -n "$name" ] || continue
+              [ "$name" = "$uploaded" ] && continue
+              gh release delete-asset rc "$name" --yes || true
             done
+            # 后置断言：清理循环任何一步出错都必须在这里暴露，而不是静默留下零资产的 release
+            remaining=$(gh release view rc --json assets --jq '.assets | length')
+            [ "$remaining" -eq 1 ] || {
+              echo "刷新后 release 资产数应为 1，实际 ${remaining}：" >&2
+              gh release view rc --json assets --jq '.assets[].name' >&2
+              exit 1
+            }
           else
             # --verify-tag 复用上面已指好的 tag，阻止 gh 自行拿默认分支当 target
             gh release create rc "$zip" --verify-tag --latest --title "RC ${VERSION}" --notes "$NOTES"
