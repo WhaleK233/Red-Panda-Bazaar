@@ -140,13 +140,38 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false
 - **菜单界面必须使用 StardewUI.Core**：菜单继承 `ViewMenu` 并实现 `CreateView()`，窗口与构件走 `Utils/MenuUi.cs` 的工厂方法；**禁止**直接使用星露谷原版的 `IClickableMenu`，也不要自造布局系统（确需自绘时继承 `StardewUI.View`，重写 `OnMeasure` / `OnDrawContent`）。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
-- **禁止修改 `content/[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。
+- **AI 助手不得修改 `content/[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。该约束只针对 AI 协作者：人类维护者在同步上游更新时可以改动，此时 PR 需打 `cp-change-approved` 标签以豁免 CI 的只读检查。
 - **新的 i18n 条目必须放在对应的版本注释下**，不能直接追加到文件末尾。
 - 每次提交时，需提交所有已跟踪文件（即未被 `.gitignore` 标注的文件）。
 
+### 代码格式
+
+格式由工具执行，不靠人工记忆：
+
+```bash
+# 检查格式是否合规（CI 会跑，返回非 0 即不合规）
+dotnet format "RedPandaBazaar.sln" whitespace --verify-no-changes --no-restore
+
+# 自动修正
+dotnet format "RedPandaBazaar.sln" whitespace --no-restore
+```
+
+风格规则集中在根目录 `.editorconfig`，行尾策略在 `.gitattributes`：
+
+- **缩进**：4 空格，续行同宽；JSON / YAML 为 2 空格。
+- **大括号**：Allman 风格，所有大括号另起一行（`csharp_new_line_before_open_brace = all`）。
+- **单行 `if`**：允许 `if (x) return;` 不加大括号（`csharp_prefer_braces = false`），这是全仓既有风格。
+- **using**：按字母序，不做 System 优先分组。
+- **命名空间**：文件级（`namespace X;`）。
+- **日志前缀**：一律 `[模块名] 消息`，模块名与目录 / 类名一致。
+- **行尾**：仓库内一律 LF（`text=auto eol=lf`），检出形态不随各人的 `core.autocrlf` 变化。
+- **BOM**：不写入。
+
+修改风格规则时改 `.editorconfig`，再跑一次 `dotnet format` 统一落地；不要手工逐文件调整。
+
 ### 新增功能的标准姿势
 
-1. 在 `Features/<Name>/` 新建静态类，暴露 `public static void Init()`，首尾各一行 `Tools.Log("<Name> Initializing.")` / `Inited.`。
+1. 在 `Features/<Name>/` 新建静态类，暴露 `public static void Init()`，首尾各一行 `Tools.Log("[<Name>] Initializing.")` / `Tools.Log("[<Name>] Initialized.")`。日志前缀一律 `[模块名]`，与目录/类名保持一致。
 2. 在 `ModEntry.FeatureInit()` 末尾追加调用。
 3. 面向玩家的文本走 `Tools.GetI18n(I18nKeys.X)`；常量加进 `Constant/I18nKeys.cs` 对应 `#region`。
 4. 物品 / 机器 / 家具 ID 加进 `Constant/ItemsKeys.cs` 的嵌套类，不要散落字符串。

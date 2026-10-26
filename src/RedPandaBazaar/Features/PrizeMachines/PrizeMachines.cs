@@ -1,4 +1,4 @@
-﻿using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 
@@ -24,12 +24,12 @@ public static class PrizeMachines
     /// <summary>注册 Tile Action 并初始化奖池。</summary>
     public static void Init()
     {
-        Tools.Log("PrizeMachine Initializing.");
+        Tools.Log("[PrizeMachines] Initializing.");
 
         InitCustomMenus();
         InitPrizeList();
 
-        Tools.Log("PrizeMachine Initialized.");
+        Tools.Log("[PrizeMachines] Initialized.");
     }
 
     /// <summary>注册经典抽奖机和 Joja 抽奖机的 Tile Action。</summary>

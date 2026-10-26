@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 
@@ -138,7 +138,7 @@ public class ClassicPrizeMachineMenu : IClickableMenu
                 if (!Game1.player.addItemToInventoryBool(prize)) // 加入玩家物品栏
                     Game1.createItemDebris(prize, Game1.player.getStandingPosition(), 1,
                         Game1.player.currentLocation);
-                Tools.Log($"Get Prize: {prize.Name}"); // 打印日志
+                Tools.Log($"[PrizeMachines] 出奖：{prize.Name}");
                 // 扣除费用
                 if (Game1.player.Items.CountId(ItemsKeys.Tickets.ClassicTicket) > 0)
                 {

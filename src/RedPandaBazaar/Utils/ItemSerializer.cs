@@ -25,7 +25,7 @@ public static class ItemSerializer
         }
         catch (Exception e)
         {
-            Tools.LogErr($"物品序列化失败（{item.QualifiedItemId}）：{e}");
+            Tools.LogErr($"[ItemSerializer] 物品序列化失败（{item.QualifiedItemId}）：{e}");
             return null;
         }
     }
@@ -43,7 +43,7 @@ public static class ItemSerializer
         }
         catch (Exception e)
         {
-            Tools.LogErr($"物品反序列化失败：{e}");
+            Tools.LogErr($"[ItemSerializer] 物品反序列化失败：{e}");
             return null;
         }
     }

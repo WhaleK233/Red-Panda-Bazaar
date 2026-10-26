@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI.Events;
@@ -12,10 +12,10 @@ public static class Bank
 
     public static void Init()
     {
-        Tools.Log("Bank Initializing.");
+        Tools.Log("[Bank] Initializing.");
         GameLocation.RegisterTileAction("RedPandaBazaar_BankMenu", OnTileAction);
         ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
-        Tools.Log("Bank Initialized.");
+        Tools.Log("[Bank] Initialized.");
     }
 
     private static bool OnTileAction(GameLocation location, string[] args, Farmer who, Point tile)
@@ -26,13 +26,16 @@ public static class Bank
 
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e)) return;
-        if (Game1.currentLocation is not { Name: BankLocation }) return;
+        if (!Tools.IsValidButtonAction(e))
+            return;
+        if (Game1.currentLocation is not { Name: BankLocation })
+            return;
 
         var tile = e.Cursor.GrabTile;
         var action = Game1.currentLocation.doesTileHaveProperty(
             (int)tile.X, (int)tile.Y, "Action", "Buildings");
-        if (action != "RedPandaBazaar_BankMenu") return;
+        if (action != "RedPandaBazaar_BankMenu")
+            return;
 
         ShowBankServiceDialogue(Game1.currentLocation);
         ModInfo.Helper.Input.Suppress(e.Button);

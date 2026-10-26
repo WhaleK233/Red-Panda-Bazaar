@@ -35,9 +35,15 @@ static int RunRcVersion(List<string> args)
     {
         switch (args[i])
         {
-            case "--csproj": csproj = args[i + 1]; break;
-            case "--run": run = args[i + 1]; break;
-            case "--date": date = args[i + 1]; break;
+            case "--csproj":
+                csproj = args[i + 1];
+                break;
+            case "--run":
+                run = args[i + 1];
+                break;
+            case "--date":
+                date = args[i + 1];
+                break;
             default:
                 Console.Error.WriteLine($"未知参数 '{args[i]}'");
                 return 2;

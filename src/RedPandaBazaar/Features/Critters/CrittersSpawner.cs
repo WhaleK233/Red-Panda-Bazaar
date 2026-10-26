@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -53,7 +53,8 @@ public static class CrittersSpawner
     public static void SpawnUpTo(GameLocation loc, int type)
     {
         var target = GetNumber(loc, type);
-        if (target <= 0) return;
+        if (target <= 0)
+            return;
 
         loc.instantiateCrittersList();
         var existing = type == Firefly
@@ -101,7 +102,8 @@ public static class CrittersSpawner
     {
         // 地图尚未加载完成时没有 Back 层，此时不生成
         var layer = loc.Map?.GetLayer("Back");
-        if (layer is null) return 0;
+        if (layer is null)
+            return 0;
 
         var area = layer.LayerSize.Area;
 

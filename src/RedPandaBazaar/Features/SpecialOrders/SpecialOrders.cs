@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -15,7 +15,7 @@ public static class SpecialOrders
     /// <summary>注册事件和 Tile Action。</summary>
     public static void Init()
     {
-        Tools.Log("Quests Initializing.");
+        Tools.Log("[SpecialOrders] Initializing.");
 
         _itemsTexture = ModInfo.Helper.ModContent.Load<Texture2D>("assets/Textures/RedPandaBazaar_Items.png");
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
@@ -28,7 +28,7 @@ public static class SpecialOrders
             return false;
         });
 
-        Tools.Log("Quests Initialized.");
+        Tools.Log("[SpecialOrders] Initialized.");
     }
 
     /// <summary>客机接收主机补发的陈小茗奖励计数（Farmer.stats 不是网络同步字段）。</summary>
@@ -71,10 +71,12 @@ public static class SpecialOrders
     /// <summary>陈小明商店内点击领取位置时，发放经典抽奖券奖励。</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains("Custom_ChenQiShop1")) return;
+        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains("Custom_ChenQiShop1"))
+            return;
 
         var tile = e.Cursor.GrabTile;
-        if (tile is not { X: 10, Y: 6 }) return;
+        if (tile is not { X: 10, Y: 6 })
+            return;
 
         if (Game1.stats.Get(StatsKeys.ChenXiaomingRewardCount) > 0)
         {

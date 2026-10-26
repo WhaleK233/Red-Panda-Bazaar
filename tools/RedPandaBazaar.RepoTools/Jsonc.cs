@@ -50,12 +50,15 @@ public static class Jsonc
             var ch = text[i];
             if (inString)
             {
-                if (ch == '\\') { i += 2; continue; }
-                if (ch == '"') inString = false;
+                if (ch == '\\')
+                { i += 2; continue; }
+                if (ch == '"')
+                    inString = false;
                 i++;
                 continue;
             }
-            if (ch == '"') { inString = true; i++; continue; }
+            if (ch == '"')
+            { inString = true; i++; continue; }
             if (ch == '/' && i + 1 < n && text[i + 1] == '*')
             {
                 var end = text.IndexOf("*/", i + 2, StringComparison.Ordinal);
@@ -88,12 +91,15 @@ public static class Jsonc
             var ch = text[i];
             if (inString)
             {
-                if (ch == '\\') { i += 2; continue; }
-                if (ch == '"') inString = false;
+                if (ch == '\\')
+                { i += 2; continue; }
+                if (ch == '"')
+                    inString = false;
                 i++;
                 continue;
             }
-            if (ch == '"') { inString = true; i++; continue; }
+            if (ch == '"')
+            { inString = true; i++; continue; }
             if (ch == ',')
             {
                 var j = i + 1;
@@ -176,7 +182,8 @@ public static class Jsonc
             pos++; // '{'
             var members = new List<JMember>();
             SkipWhitespace();
-            if (Peek == '}') { pos++; return new JObject(members); }
+            if (Peek == '}')
+            { pos++; return new JObject(members); }
             while (true)
             {
                 SkipWhitespace();
@@ -195,8 +202,10 @@ public static class Jsonc
                 members.Add(new JMember(key, value, keyLine));
                 SkipWhitespace();
                 var ch = Peek;
-                if (ch == ',') { pos++; continue; }
-                if (ch == '}') { pos++; return new JObject(members); }
+                if (ch == ',')
+                { pos++; continue; }
+                if (ch == '}')
+                { pos++; return new JObject(members); }
                 throw Err("期望 ',' 或 '}'");
             }
         }
@@ -206,14 +215,17 @@ public static class Jsonc
             pos++; // '['
             var items = new List<JNode>();
             SkipWhitespace();
-            if (Peek == ']') { pos++; return new JArray(items); }
+            if (Peek == ']')
+            { pos++; return new JArray(items); }
             while (true)
             {
                 items.Add(ParseValue());
                 SkipWhitespace();
                 var ch = Peek;
-                if (ch == ',') { pos++; continue; }
-                if (ch == ']') { pos++; return new JArray(items); }
+                if (ch == ',')
+                { pos++; continue; }
+                if (ch == ']')
+                { pos++; return new JArray(items); }
                 throw Err("期望 ',' 或 ']'");
             }
         }
@@ -227,7 +239,8 @@ public static class Jsonc
                 if (pos >= s.Length)
                     throw Err("字符串未闭合");
                 var c = s[pos];
-                if (c == '"') { pos++; return sb.ToString(); }
+                if (c == '"')
+                { pos++; return sb.ToString(); }
                 if (c == '\n')
                     throw Err("字符串内出现换行");
                 if (c == '\\')
@@ -238,14 +251,30 @@ public static class Jsonc
                     pos += 2;
                     switch (escape)
                     {
-                        case '"': sb.Append('"'); break;
-                        case '\\': sb.Append('\\'); break;
-                        case '/': sb.Append('/'); break;
-                        case 'b': sb.Append('\b'); break;
-                        case 'f': sb.Append('\f'); break;
-                        case 'n': sb.Append('\n'); break;
-                        case 'r': sb.Append('\r'); break;
-                        case 't': sb.Append('\t'); break;
+                        case '"':
+                            sb.Append('"');
+                            break;
+                        case '\\':
+                            sb.Append('\\');
+                            break;
+                        case '/':
+                            sb.Append('/');
+                            break;
+                        case 'b':
+                            sb.Append('\b');
+                            break;
+                        case 'f':
+                            sb.Append('\f');
+                            break;
+                        case 'n':
+                            sb.Append('\n');
+                            break;
+                        case 'r':
+                            sb.Append('\r');
+                            break;
+                        case 't':
+                            sb.Append('\t');
+                            break;
                         case 'u':
                             if (pos + 4 > s.Length ||
                                 !ushort.TryParse(s.Substring(pos, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var code))
@@ -266,24 +295,31 @@ public static class Jsonc
         private JNode ParseNumber()
         {
             var start = pos;
-            if (Peek == '-') pos++;
-            if (Peek == '0') pos++;
-            else if (char.IsDigit(Peek)) { while (pos < s.Length && char.IsDigit(s[pos])) pos++; }
-            else throw Err("非法数字");
+            if (Peek == '-')
+                pos++;
+            if (Peek == '0')
+                pos++;
+            else if (char.IsDigit(Peek))
+            { while (pos < s.Length && char.IsDigit(s[pos])) pos++; }
+            else
+                throw Err("非法数字");
             if (pos < s.Length && s[pos] == '.')
             {
                 pos++;
                 if (pos >= s.Length || !char.IsDigit(s[pos]))
                     throw Err("数字缺少小数部分");
-                while (pos < s.Length && char.IsDigit(s[pos])) pos++;
+                while (pos < s.Length && char.IsDigit(s[pos]))
+                    pos++;
             }
             if (pos < s.Length && s[pos] is 'e' or 'E')
             {
                 pos++;
-                if (pos < s.Length && s[pos] is '+' or '-') pos++;
+                if (pos < s.Length && s[pos] is '+' or '-')
+                    pos++;
                 if (pos >= s.Length || !char.IsDigit(s[pos]))
                     throw Err("指数缺少数字");
-                while (pos < s.Length && char.IsDigit(s[pos])) pos++;
+                while (pos < s.Length && char.IsDigit(s[pos]))
+                    pos++;
             }
             return new JNumber(s[start..pos]);
         }

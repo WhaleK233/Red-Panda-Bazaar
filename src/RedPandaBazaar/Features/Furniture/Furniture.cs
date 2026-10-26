@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
@@ -16,34 +16,38 @@ public static class Furniture
 
     public static void Init()
     {
-        Tools.Log("Furniture Initializing.");
+        Tools.Log("[Furniture] Initializing.");
 
         ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
-        Tools.Log("Furniture Initialized.");
+        Tools.Log("[Furniture] Initialized.");
     }
 
     /// <summary>存档加载时由主机创建鱼缸。</summary>
     private static void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         _initialized = false;
-        if (!Context.IsMainPlayer) return;
+        if (!Context.IsMainPlayer)
+            return;
         EnsureTanksExist();
     }
 
     /// <summary>若 SaveLoaded 时地图尚未加载，由主机首次进入时补充创建。</summary>
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        if (!Context.IsMainPlayer || _initialized) return;
-        if (e.NewLocation.Name != MarlinShopLocation) return;
+        if (!Context.IsMainPlayer || _initialized)
+            return;
+        if (e.NewLocation.Name != MarlinShopLocation)
+            return;
         EnsureTanksExist();
     }
 
     private static void EnsureTanksExist()
     {
         var loc = Game1.getLocationFromName(MarlinShopLocation);
-        if (loc == null) return;
+        if (loc == null)
+            return;
 
         foreach (var (x, y) in DisplayTankTiles)
         {

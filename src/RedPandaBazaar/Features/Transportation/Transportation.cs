@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
@@ -13,7 +13,7 @@ public static class Transportation
     /// <summary>注册 Tile Action 和事件。</summary>
     public static void Init()
     {
-        Tools.Log("Entrance Initializing.");
+        Tools.Log("[Transportation] Initializing.");
 
         // 没装 CentralStation 时用按钮交互进集市
         if (!Integrations.Installed.CentralStation)
@@ -23,7 +23,7 @@ public static class Transportation
 
         RegisterActions();
 
-        Tools.Log("Entrance Initialized.");
+        Tools.Log("[Transportation] Initialized.");
     }
 
     /// <summary>注册 TouchAction 和 TileAction。</summary>
@@ -131,7 +131,8 @@ public static class Transportation
     {
         // 精确匹配原版地图名：子串匹配会把第三方地图名含 "BusStop" 的内容包误判为入口；
         // 可交互 Y 范围与 CP 侧 EditMap 的两格贴图（19,10)-(19,11)）对齐
-        if (!Tools.IsValidButtonAction(e) || Game1.currentLocation.Name != "BusStop") return;
+        if (!Tools.IsValidButtonAction(e) || Game1.currentLocation.Name != "BusStop")
+            return;
 
         var tile = e.Cursor.GrabTile;
 

@@ -1,4 +1,4 @@
-﻿using Red_Panda_Bazaar_Code.Features.Critters;
+using Red_Panda_Bazaar_Code.Features.Critters;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -10,17 +10,18 @@ public static class ButterflyNight
 {
     public static void Init()
     {
-        Tools.Log("Butterfly Night Initializing.");
+        Tools.Log("[ButterflyNight] Initializing.");
 
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
-        Tools.Log("Butterfly Night Initialized.");
+        Tools.Log("[ButterflyNight] Initialized.");
     }
 
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        if (!Context.IsMainPlayer) return;
+        if (!Context.IsMainPlayer)
+            return;
 
         // 如果今天是秋10, 调整第二天天气为大风
         if (Game1.Date.Season == Season.Fall && Game1.Date.DayOfMonth == 10)
@@ -42,7 +43,8 @@ public static class ButterflyNight
 
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        if (Game1.Date.Season != Season.Fall || Game1.dayOfMonth != 11) return;
+        if (Game1.Date.Season != Season.Fall || Game1.dayOfMonth != 11)
+            return;
 
         if (Game1.timeOfDay >= 1600 && e.NewLocation.IsOutdoors)
             CrittersSpawner.SpawnUpTo(e.NewLocation, CrittersSpawner.Butterfly);

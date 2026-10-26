@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Red_Panda_Bazaar_Code.Compatibility.ModApi;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Constant;
@@ -26,7 +26,8 @@ public static class Integrations
     private static void AddCentralStationDestination()
     {
         var centralStationApi = ModInfo.Helper.ModRegistry.GetApi<ICentralStationApi>(ID.CentralStation);
-        if (centralStationApi == null) return;
+        if (centralStationApi == null)
+            return;
 
         Installed.CentralStation = true;
 
@@ -46,7 +47,8 @@ public static class Integrations
     {
         // 获取通用模组配置菜单的API
         var configMenuApi = ModInfo.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>(ID.GenericModConfigMenu);
-        if (configMenuApi == null) return;
+        if (configMenuApi == null)
+            return;
 
         Installed.GenericModConfigMenu = true;
 
