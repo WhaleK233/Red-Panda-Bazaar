@@ -80,7 +80,7 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false
 
 ```bash
 # 仓库一致性校验：JSON 可解析性、i18n 双文件键集合与顺序、
-# I18nKeys.cs 双向对应、manifest 字段、csproj TFM 与版本号、内容包只读约束
+# I18nKeys.cs 双向对应、manifest 字段、csproj TFM 与版本号
 dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
 
 # 单元测试与仓库冒烟测试

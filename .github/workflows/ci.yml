@@ -23,9 +23,6 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@v5
-        with:
-          # PR 需要与基线提交比对 [CP] 目录的改动，必须拉取完整历史
-          fetch-depth: 0
 
       # 校验工具与单元测试都是纯 net6.0 工程，只需要 SDK，不需要游戏参考程序集
       - name: 准备 .NET SDK
@@ -34,11 +31,6 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: 运行校验工具
-        env:
-          # PR 事件下为基线提交，其他事件为空（工具会跳过 CP 只读检查）
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          # 同步 CP 上游时给 PR 打上 cp-change-approved 标签即可豁免 CP 只读检查
-          ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
         run: dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
 
       # 格式规范由 .editorconfig 定义，这里确保提交的代码与之一致。

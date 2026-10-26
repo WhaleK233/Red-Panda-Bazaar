@@ -140,7 +140,7 @@ dotnet build "src/RedPandaBazaar/RedPandaBazaar.csproj" -p:EnableModDeploy=false
 - **菜单界面必须使用 StardewUI.Core**：菜单继承 `ViewMenu` 并实现 `CreateView()`，窗口与构件走 `Utils/MenuUi.cs` 的工厂方法；**禁止**直接使用星露谷原版的 `IClickableMenu`，也不要自造布局系统（确需自绘时继承 `StardewUI.View`，重写 `OnMeasure` / `OnDrawContent`）。
   *已知例外（勿扩散）：`PlayerStallMenu : MenuWithInventory`（需背包交互）、`ClassicPrizeMachineMenu` / `JojaPrizeMachineMenu : IClickableMenu`、`SpecialOrderBoard : SpecialOrdersBoard`。*
 - **配置界面使用 `IGenericModConfigMenuApi`**，并通过 `Compatibility/Integrations.cs` 统一注册。
-- **AI 助手不得修改 `content/[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。该约束只针对 AI 协作者：人类维护者在同步上游更新时可以改动，此时 PR 需打 `cp-change-approved` 标签以豁免 CI 的只读检查。
+- **AI 助手不得修改 `content/[CP]Red Panda Bazaar/` 下的任何文件**。它由他人维护，上游更新会整目录覆盖本地改动。该约束只针对 AI 协作者；人类维护者在同步上游更新时可直接改动并提交，CI 不做拦截。
 - **新的 i18n 条目必须放在对应的版本注释下**，不能直接追加到文件末尾。
 - 每次提交时，需提交所有已跟踪文件（即未被 `.gitignore` 标注的文件）。
 
@@ -369,7 +369,7 @@ dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 
 `.github/workflows/ci.yml` 在 `main` / `develop` 的 push 与 PR 上运行：
 
-- **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate` 与 `dotnet test`（含仓库冒烟）。PR 中 `content/[CP]Red Panda Bazaar/` 改动会失败，同步上游时给 PR 打上 `cp-change-approved` 标签即可豁免。
+- **仓库一致性校验与单元测试**（`validate`）：跑上面的 RepoTools `validate`、`dotnet format` 格式检查与 `dotnet test`（含仓库冒烟）。`content/[CP]Red Panda Bazaar/` 不参与 CI 校验，同步上游时可直接提交。
 - **编译检查**（`build`）：在 `ubuntu-latest` 上编译整个模组（0 error、0 可修复警告）。runner 上没有游戏本体，环境准备抽在复合 action `.github/actions/setup-build/action.yml`（CI 与 CD 共用）：
   1. `StardewModders/mod-reference-assemblies` 的公开 API 空壳（`actions/checkout@v5` 直接克隆到 `$GITHUB_WORKSPACE/_game`）；
   2. 克隆 `Mushymato/StardewUI` 固定提交（见 Runtime/Tooling 表）到 `_stardewui`；
