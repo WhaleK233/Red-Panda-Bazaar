@@ -1,4 +1,4 @@
-﻿using Red_Panda_Bazaar_Code.Constant;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -43,27 +43,31 @@ public static class Critter
     /// <summary>启用粒子效果。</summary>
     public static void Init()
     {
-        Tools.Log("CritterEffects Initializing.");
+        Tools.Log("[Critters] Initializing.");
 
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
         ModInfo.Helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
 
-        Tools.Log("CritterEffects Initialized.");
+        Tools.Log("[Critters] Initialized.");
     }
 
     /// <summary>计数器控制生成频率。每 30 tick ≈ 0.5 秒检查一次是否需要生成/移除氛围生物。</summary>
     private static void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
-        if (!Context.IsWorldReady) return;
-        if (Counter.Value < 30) { Counter.Value++; return; }
+        if (!Context.IsWorldReady)
+            return;
+        if (Counter.Value < 30)
+        { Counter.Value++; return; }
         Counter.Value = 0;
 
         var loc = Game1.currentLocation;
-        if (loc?.Map is null) return;
+        if (loc?.Map is null)
+            return;
 
         // Warped 事件比本事件晚一 tick 触发（warp 发生在两者之间的游戏更新里），
         // 此时缓存的地图名还停留在上一张地图，不比对就会拿到未初始化 critters 的新地图
-        if (RightLocName.Value != loc.Name) return;
+        if (RightLocName.Value != loc.Name)
+            return;
 
         // 原版只对带 Outdoors 属性的地图初始化 critters，自定义地图缺该属性时列表为 null，直接访问会空引用
         loc.instantiateCrittersList();
@@ -72,21 +76,28 @@ public static class Critter
         // 不分类型就会「移除列表尾部恰好是刚补的萤火虫」，且直接移除会泄漏它挂在场景里的光源
         var butterflies = 0;
         var fireflies = 0;
-        foreach (var c in loc.critters) {
-            if (c is StardewValley.BellsAndWhistles.Firefly) fireflies++;
-            else butterflies++;
+        foreach (var c in loc.critters)
+        {
+            if (c is StardewValley.BellsAndWhistles.Firefly)
+                fireflies++;
+            else
+                butterflies++;
         }
 
         // 白天补蝴蝶，直到达到上限
-        if (TimeUtils.IsDayTime(loc) && butterflies < ButterflyCount.Value) {
+        if (TimeUtils.IsDayTime(loc) && butterflies < ButterflyCount.Value)
+        {
             var tile = loc.getRandomTile();
             loc.critters.Add(CrittersSpawner.GetNewCritter(loc, tile, CrittersSpawner.Butterfly));
         }
 
         // 黄昏逐渐移除蝴蝶（不动萤火虫）
-        if (TimeUtils.IsDuskTime(loc) && butterflies > 0) {
-            for (var i = loc.critters.Count - 1; i >= 0; i--) {
-                if (loc.critters[i] is StardewValley.BellsAndWhistles.Firefly) continue;
+        if (TimeUtils.IsDuskTime(loc) && butterflies > 0)
+        {
+            for (var i = loc.critters.Count - 1; i >= 0; i--)
+            {
+                if (loc.critters[i] is StardewValley.BellsAndWhistles.Firefly)
+                    continue;
                 loc.critters.RemoveAt(i);
                 break;
             }
@@ -94,7 +105,8 @@ public static class Critter
 
         // 入夜补萤火虫
         if (Game1.timeOfDay > Game1.getTrulyDarkTime(loc) - 100 &&
-            fireflies < FireflyCount.Value) {
+            fireflies < FireflyCount.Value)
+        {
             var tile = loc.getRandomTile();
             loc.critters.Add(CrittersSpawner.GetNewCritter(loc, tile, CrittersSpawner.Firefly));
         }
@@ -122,9 +134,12 @@ public static class Critter
             foreach (var pair in loc.Objects.Pairs)
             {
                 var bc = pair.Value;
-                if (!bc.bigCraftable.Value || !BCs.Contains(bc.ItemId)) continue;
-                if (TimeUtils.IsDayTime(loc)) CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Butterfly);
-                else if (TimeUtils.IsNightTime(loc)) CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Firefly);
+                if (!bc.bigCraftable.Value || !BCs.Contains(bc.ItemId))
+                    continue;
+                if (TimeUtils.IsDayTime(loc))
+                    CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Butterfly);
+                else if (TimeUtils.IsNightTime(loc))
+                    CrittersSpawner.SpawnUpTo(loc, CrittersSpawner.Firefly);
                 hasStatue = true;
                 break;
             }

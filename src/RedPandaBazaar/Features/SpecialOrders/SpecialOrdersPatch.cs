@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
@@ -63,7 +63,7 @@ public static class SpecialOrdersPatch
                         modIDs: new[] { ModInfo.ModManifest.UniqueID },
                         playerIDs: new[] { player.UniqueMultiplayerID });
             }
-            Tools.Log("A SpecialOrders of Chen Xiaoming has been completed.");
+            Tools.Log($"[SpecialOrders] 陈小明的特殊订单已完成。");
         }
         catch (Exception e)
         {

@@ -79,7 +79,7 @@ public static class SharedBikes
     /// <summary>订阅世界事件。</summary>
     public static void Init()
     {
-        Tools.Log("SharedBikes Initializing.");
+        Tools.Log("[SharedBikes] Initializing.");
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
         ModInfo.Helper.Events.GameLoop.Saving += OnSaving;
@@ -87,7 +87,7 @@ public static class SharedBikes
         ModInfo.Helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         ModInfo.Helper.Events.World.NpcListChanged += OnNpcListChanged;
         ModInfo.Helper.Events.Multiplayer.ModMessageReceived += OnModMessageReceived;
-        Tools.Log("SharedBikes Inited.");
+        Tools.Log("[SharedBikes] Initialized.");
     }
 
     /// <summary>
@@ -144,7 +144,8 @@ public static class SharedBikes
     /// <summary>主机执行开通：扣操作者金币、置位并立即生成单车（幂等：已开通直接返回成功）。</summary>
     private static bool ExecuteUnlock(long playerId)
     {
-        if (Data.Unlocked) return true;
+        if (Data.Unlocked)
+            return true;
 
         // 开通费由操作者个人金币支付：主机本地扣自己，客机请求时扣发起者的钱
         if (!Tools.TryCharge(Game1.GetPlayer(playerId), UnlockPrice, showDialogue: false))
@@ -169,7 +170,8 @@ public static class SharedBikes
     {
         // 分屏玩家中途加入会在本机再次触发本事件：Data 是进程内共享的当日最新状态，
         // 重置或重读都会把它回滚到上次存档（当日开通记录会凭空消失）
-        if (Context.IsSplitScreen && !Context.IsMainPlayer) return;
+        if (Context.IsSplitScreen && !Context.IsMainPlayer)
+            return;
 
         Data = new SharedBikesSaveData();
         _clientUnlocked = null;
@@ -213,12 +215,14 @@ public static class SharedBikes
 
     private static void OnModMessageReceived(object? sender, ModMessageReceivedEventArgs e)
     {
-        if (e.FromModID != ModInfo.ModManifest.UniqueID) return;
+        if (e.FromModID != ModInfo.ModManifest.UniqueID)
+            return;
 
         switch (e.Type)
         {
             case MPMessageType.SharedBikes_SyncData:
-                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID)
+                    break;
                 var syncData = e.ReadAs<SharedBikesSyncData>();
                 if (syncData != null)
                 {
@@ -234,14 +238,17 @@ public static class SharedBikes
 
             case MPMessageType.SharedBikes_SyncRequest:
                 // 用进程级判据：混合联机下消息可能在主机进程的任意屏上下文触发
-                if (!Game1.IsMasterGame) break;
+                if (!Game1.IsMasterGame)
+                    break;
                 SendSyncData(e.FromPlayerID);
                 break;
 
             case MPMessageType.SharedBikes_ActionRequest:
-                if (!Game1.IsMasterGame) break;
+                if (!Game1.IsMasterGame)
+                    break;
                 var request = e.ReadAs<SharedBikesActionRequestData>();
-                if (request == null) break;
+                if (request == null)
+                    break;
                 switch (request.Action)
                 {
                     case "unlock":
@@ -270,7 +277,8 @@ public static class SharedBikes
 
             case MPMessageType.SharedBikes_ActionResult:
                 // 与其余主机→客机消息一致：客机应用前必须确认发送方是主机
-                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID) break;
+                if (Context.IsMainPlayer || e.FromPlayerID != Game1.MasterPlayer.UniqueMultiplayerID)
+                    break;
                 var result = e.ReadAs<SharedBikesActionResultData>();
                 if (result is { Success: false })
                     NotifyNotEnoughGold();
@@ -346,7 +354,7 @@ public static class SharedBikes
         }
         catch (Exception ex)
         {
-            Tools.LogErr($"SharedBikes: 单车贴图更换失败：{ex}");
+            Tools.LogErr($"[SharedBikes] 单车贴图更换失败：{ex}");
         }
     }
 
@@ -377,7 +385,7 @@ public static class SharedBikes
         }
         catch (Exception ex)
         {
-            Tools.LogErr($"SharedBikes: 验证坐骑生成失败：{ex}");
+            Tools.LogErr($"[SharedBikes] 验证坐骑生成失败：{ex}");
         }
     }
 
@@ -397,7 +405,7 @@ public static class SharedBikes
         GameLocation? loc = FindMapleBridge();
         if (loc == null)
         {
-            Tools.LogWarn("SharedBikes: 未找到地图 Custom_MapleBridge，本轮生成跳过。");
+            Tools.LogWarn($"[SharedBikes] 未找到地图 Custom_MapleBridge，本轮生成跳过。");
             return;
         }
 
@@ -414,7 +422,7 @@ public static class SharedBikes
             // onFootstepAction 是原版公开扩展点（Horse.cs:41）：屏蔽马蹄声，只保留手柄震动（音效由骑行循环音承担）
             bike.onFootstepAction = stepType => PerformBikeFootstep(bike, stepType);
         }
-        Tools.LogInfo($"SharedBikes: 已在 Custom_MapleBridge 生成 {TestTiles.Length} 匹验证坐骑。");
+        Tools.LogInfo($"[SharedBikes] 已在 Custom_MapleBridge 生成 {TestTiles.Length} 匹验证坐骑。");
     }
 
     /// <summary>在已实例化的地图中查找枫叶桥；找不到返回 null，不强制实例化。</summary>

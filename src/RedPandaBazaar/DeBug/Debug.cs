@@ -8,6 +8,7 @@ namespace Red_Panda_Bazaar_Code.DeBug;
 /// 这里只保留本模组专属调试 UI（如摊位菜单的 Action ID 叠层）对开关状态的查询入口；
 /// 未安装 Dev Debug Kit 时恒为 false，本模组正常工作。
 /// </summary>
-public static class Debug {
+public static class Debug
+{
     public static bool IsEnabled => Integrations.Installed.DevDebugKitApi?.IsEnabled ?? false;
 }

@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Red_Panda_Bazaar_Code.Compatibility;
 using Red_Panda_Bazaar_Code.Config;
 using Red_Panda_Bazaar_Code.Features.Bank;
@@ -18,8 +18,10 @@ using StardewModdingAPI.Events;
 
 namespace Red_Panda_Bazaar_Code;
 
-public class ModEntry : Mod {
-    public override void Entry(IModHelper helper) {
+public class ModEntry : Mod
+{
+    public override void Entry(IModHelper helper)
+    {
         ModInfo.Init(helper, helper.ReadConfig<ModConfig>(), Monitor, ModManifest);
 
         // StardewUI.Core 是编译进本 mod 的 UI 框架，必须在 Entry 里初始化（内部会订阅 GameLoop 事件）
@@ -32,15 +34,17 @@ public class ModEntry : Mod {
     }
 
 
-    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e) {
-        Tools.LogInfo("Red Panda Bazaar Code Initializing...");
+    private static void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    {
+        Tools.LogInfo("[RedPandaBazaar] Initializing...");
 
         Integrations.Init();
         FeatureInit();
         HarmonyPatch();
     }
 
-    private static void FeatureInit() {
+    private static void FeatureInit()
+    {
         Bank.Init();
         Buffs.Init();
         Critter.Init();
@@ -54,7 +58,8 @@ public class ModEntry : Mod {
         SharedBikes.Init();
     }
 
-    private static void HarmonyPatch() {
+    private static void HarmonyPatch()
+    {
         var harmony = new Harmony(ModInfo.ModManifest.UniqueID);
         SpringFairPatch.ApplyPatch(harmony);
         BuffsPatch.ApplyPatch(harmony);

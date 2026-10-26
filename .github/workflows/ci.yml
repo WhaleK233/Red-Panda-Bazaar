@@ -41,6 +41,15 @@ jobs:
           ALLOW_CP_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'cp-change-approved') && '1' || '0' }}
         run: dotnet run --project "tools/RedPandaBazaar.RepoTools" -- validate
 
+      # 格式规范由 .editorconfig 定义，这里确保提交的代码与之一致。
+      # 只校验 whitespace（缩进、大括号位置、行尾等），不做 style 自动改写，
+      # 避免因分析器版本差异产生与本地不一致的失败。
+      # content/ 下无 .cs 文件，不会被格式检查触及。
+      - name: 检查代码格式
+        run: >
+          dotnet format "RedPandaBazaar.sln" whitespace
+          --verify-no-changes --no-restore
+
       - name: 运行 C# 单元测试
         run: dotnet test "tests/RedPandaBazaar.Tests/RedPandaBazaar.Tests.csproj"
 

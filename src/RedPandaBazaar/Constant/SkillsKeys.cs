@@ -1,4 +1,4 @@
-﻿namespace Red_Panda_Bazaar_Code.Constant;
+namespace Red_Panda_Bazaar_Code.Constant;
 
 public static class SkillsKeys
 {

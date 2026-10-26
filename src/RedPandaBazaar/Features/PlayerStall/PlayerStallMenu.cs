@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Red_Panda_Bazaar_Code.Constant;
@@ -10,7 +10,8 @@ using StardewValley.Menus;
 namespace Red_Panda_Bazaar_Code.Features.PlayerStall;
 
 /// <summary>玩家商店界面。每个 ActionId 对应一个独立摊位。</summary>
-public class PlayerStallMenu : MenuWithInventory {
+public class PlayerStallMenu : MenuWithInventory
+{
     private readonly string _actionId;
     private readonly ClickableComponent _stallSlot;
     private readonly ClickableComponent _priceButton;
@@ -25,7 +26,8 @@ public class PlayerStallMenu : MenuWithInventory {
         PlayerStall.GetItems(_actionId);
 
     public PlayerStallMenu(string actionId)
-        : base(okButton: true, trashCan: true) {
+        : base(okButton: true, trashCan: true)
+    {
         _actionId = actionId;
 
         var slotSize = 64;
@@ -60,15 +62,18 @@ public class PlayerStallMenu : MenuWithInventory {
         _stallSlot.upNeighborID = _priceButton.myID;
         _priceButton.upNeighborID = upperRightCloseButton?.myID ?? 102;
         _priceButton.downNeighborID = _stallSlot.myID;
-        if (firstInv != null) firstInv.upNeighborID = 101;
+        if (firstInv != null)
+            firstInv.upNeighborID = 101;
 
         allClickableComponents = new();
         allClickableComponents.Add(_stallSlot);
         allClickableComponents.Add(_priceButton);
     }
 
-    public override void receiveLeftClick(int x, int y, bool playSound = true) {
-        if (_priceButton.bounds.Contains(x, y)) {
+    public override void receiveLeftClick(int x, int y, bool playSound = true)
+    {
+        if (_priceButton.bounds.Contains(x, y))
+        {
             var items = GetUnsoldItems();
             if (_stallItem != null && items.Count > 0)
                 OpenPriceEditor(items[0]);
@@ -76,25 +81,32 @@ public class PlayerStallMenu : MenuWithInventory {
         }
 
         // 点击库存物品 → 放入摊位或与现有物品叠加
-        for (var i = 0; i < inventory.inventory.Count; i++) {
-            if (!inventory.inventory[i].bounds.Contains(x, y)) continue;
+        for (var i = 0; i < inventory.inventory.Count; i++)
+        {
+            if (!inventory.inventory[i].bounds.Contains(x, y))
+                continue;
             var item = Game1.player.Items[i];
-            if (item is null or Tool) return;
+            if (item is null or Tool)
+                return;
 
             var unsoldItems = GetUnsoldItems();
-            if (unsoldItems.Count > 0) {
+            if (unsoldItems.Count > 0)
+            {
                 var existing = unsoldItems[0];
                 var stocked = existing.GetItem();
-                if (stocked == null || !stocked.canStackWith(item)) return; // 摊位有不可叠加的物品
+                if (stocked == null || !stocked.canStackWith(item))
+                    return; // 摊位有不可叠加的物品
 
                 // Item.Stack 的 setter 会把超出 maximumStackSize 的赋值静默钳到上限（差额凭空消失），
                 // 因此只转移摊位放得下的部分，剩余留在背包
                 var moved = Math.Min(stocked.maximumStackSize() - stocked.Stack, item.Stack);
-                if (moved <= 0) return;
+                if (moved <= 0)
+                    return;
 
                 PlayerStall.UpdateItem(existing.Id, moved, existing.Price);
                 item.Stack -= moved;
-                if (item.Stack <= 0) Game1.player.Items[i] = null;
+                if (item.Stack <= 0)
+                    Game1.player.Items[i] = null;
                 _stallItem = stocked;
                 Game1.playSound("coin");
                 return;
@@ -102,7 +114,8 @@ public class PlayerStallMenu : MenuWithInventory {
 
             // 摊位空 → 放入
             var price = Math.Max(1, item.sellToStorePrice());
-            if (!PlayerStall.AddItem(_actionId, item, price)) return;
+            if (!PlayerStall.AddItem(_actionId, item, price))
+                return;
             Game1.player.Items[i] = null;
             _stallItem = item;
             Game1.playSound("coin");
@@ -110,31 +123,39 @@ public class PlayerStallMenu : MenuWithInventory {
         }
 
         // 摊位格子
-        if (_stallSlot.bounds.Contains(x, y)) {
+        if (_stallSlot.bounds.Contains(x, y))
+        {
             var items = GetUnsoldItems();
             var stocked = items.Count > 0 ? items[0] : null;
             var stockedItem = stocked?.GetItem();
 
             // 手上有物品
-            if (heldItem != null) {
-                if (heldItem is Tool) return;
+            if (heldItem != null)
+            {
+                if (heldItem is Tool)
+                    return;
 
                 // 摊位有可叠加物品 → 合并（同上，只转移放得下的数量，剩余留在手上）
-                if (stockedItem != null && stockedItem.canStackWith(heldItem)) {
+                if (stockedItem != null && stockedItem.canStackWith(heldItem))
+                {
                     var moved = Math.Min(stockedItem.maximumStackSize() - stockedItem.Stack, heldItem.Stack);
-                    if (moved <= 0) return;
+                    if (moved <= 0)
+                        return;
                     PlayerStall.UpdateItem(stocked!.Id, moved, stocked.Price);
                     heldItem.Stack -= moved;
-                    if (heldItem.Stack <= 0) heldItem = null;
+                    if (heldItem.Stack <= 0)
+                        heldItem = null;
                     _stallItem = stockedItem;
                     Game1.playSound("coin");
                     return;
                 }
 
                 // 格子空 → 放入
-                if (stocked == null) {
+                if (stocked == null)
+                {
                     var price = Math.Max(1, heldItem.sellToStorePrice());
-                    if (!PlayerStall.AddItem(_actionId, heldItem, price)) return;
+                    if (!PlayerStall.AddItem(_actionId, heldItem, price))
+                        return;
                     _stallItem = heldItem;
                     heldItem = null;
                     Game1.playSound("coin");
@@ -144,10 +165,12 @@ public class PlayerStallMenu : MenuWithInventory {
             }
 
             // 没拿物品，格子有物品 → 取回背包
-            if (stockedItem != null) {
+            if (stockedItem != null)
+            {
                 var stackBefore = stockedItem.Stack;
                 var leftover = Game1.player.addItemToInventory(stockedItem);
-                if (leftover != null) {
+                if (leftover != null)
+                {
                     // 背包只放得下一部分：原版吸收时已原地改小缓存物品，
                     // 把被吸收的数量以负增量写回快照并同步主机，否则存档与联机数据都会回滚
                     var taken = stackBefore - stockedItem.Stack;
@@ -166,9 +189,11 @@ public class PlayerStallMenu : MenuWithInventory {
         base.receiveLeftClick(x, y, playSound);
     }
 
-    public override void receiveRightClick(int x, int y, bool playSound = true) {
+    public override void receiveRightClick(int x, int y, bool playSound = true)
+    {
         // 仅允许右键摊位格子修改价格，其余右键操作全部忽略
-        if (_stallSlot.bounds.Contains(x, y) && _stallItem != null) {
+        if (_stallSlot.bounds.Contains(x, y) && _stallItem != null)
+        {
             var items = GetUnsoldItems();
             if (items.Count > 0)
                 OpenPriceEditor(items[0]);
@@ -176,13 +201,15 @@ public class PlayerStallMenu : MenuWithInventory {
     }
 
     /// <summary>打开价格编辑器；直接替换菜单不会触发旧菜单的手持物回收。</summary>
-    private void OpenPriceEditor(StallItem stallItem) {
+    private void OpenPriceEditor(StallItem stallItem)
+    {
         var carried = heldItem;
         heldItem = null;
         Game1.activeClickableMenu = new PriceEditMenu(this, stallItem, carried);
     }
 
-    public override void draw(SpriteBatch b) {
+    public override void draw(SpriteBatch b)
+    {
         b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.5f);
         base.draw(b, drawUpperPortion: false, drawDescriptionArea: false);
 
@@ -224,8 +251,10 @@ public class PlayerStallMenu : MenuWithInventory {
                 _priceButton.bounds.Y + (_priceButton.bounds.Height - _priceButtonLabelSize.Y) / 2),
             buttonTextColor);
 
-        if (_stallItem != null) {
-            if (unsoldItems.Count > 0) {
+        if (_stallItem != null)
+        {
+            if (unsoldItems.Count > 0)
+            {
                 var si = unsoldItems[0];
                 _stallItem.drawInMenu(b, new Vector2(_stallSlot.bounds.X + 4, _stallSlot.bounds.Y + 4), 0.75f);
 
@@ -242,22 +271,26 @@ public class PlayerStallMenu : MenuWithInventory {
         drawMouse(b);
     }
 
-    public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds) {
+    public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+    {
         var carried = heldItem;
         heldItem = null;
         Game1.activeClickableMenu = new PlayerStallMenu(_actionId) { heldItem = carried };
     }
 
-    private class PriceEditMenu : NumberSelectionMenu {
+    private class PriceEditMenu : NumberSelectionMenu
+    {
         private readonly PlayerStallMenu _parent;
         private readonly Item? _carriedItem;
 
         public PriceEditMenu(PlayerStallMenu parent, StallItem stallItem, Item? carriedItem)
             : base(
                 Tools.GetI18n(I18nKeys.PlayerStall_PriceEditTitle).ToString(),
-                (number, price, who) => {
+                (number, price, who) =>
+                {
                     var stocked = stallItem.GetItem();
-                    if (stocked != null) PlayerStall.UpdateItem(stallItem.Id, 0, number);
+                    if (stocked != null)
+                        PlayerStall.UpdateItem(stallItem.Id, 0, number);
                     Game1.playSound("coin");
                     parent._stallItem = stocked;
                     Game1.activeClickableMenu = new PlayerStallMenu(parent._actionId) { heldItem = carriedItem };
@@ -265,28 +298,35 @@ public class PlayerStallMenu : MenuWithInventory {
                 price: -1,
                 minValue: Math.Max(1, (int)Math.Ceiling(stallItem.GetItem()!.sellToStorePrice() * 0.01)),
                 maxValue: Math.Max(1, stallItem.GetItem()!.sellToStorePrice() * 3),
-                defaultNumber: Math.Max(1, stallItem.Price)) {
+                defaultNumber: Math.Max(1, stallItem.Price))
+        {
             _parent = parent;
             _carriedItem = carriedItem;
         }
 
-        public override void emergencyShutDown() {
-            if (_carriedItem != null) {
+        public override void emergencyShutDown()
+        {
+            if (_carriedItem != null)
+            {
                 Game1.player.addItemToInventory(_carriedItem);
             }
             base.emergencyShutDown();
         }
 
-        protected override void cleanupBeforeExit() {
+        protected override void cleanupBeforeExit()
+        {
             // ESC / 手柄菜单键走 exitThisMenu，不经过 emergencyShutDown；退出时同样要归还手持物
-            if (_carriedItem != null) {
+            if (_carriedItem != null)
+            {
                 Game1.player.addItemToInventory(_carriedItem);
             }
             base.cleanupBeforeExit();
         }
 
-        public override void receiveLeftClick(int x, int y, bool playSound = true) {
-            if (cancelButton.containsPoint(x, y)) {
+        public override void receiveLeftClick(int x, int y, bool playSound = true)
+        {
+            if (cancelButton.containsPoint(x, y))
+            {
                 Game1.activeClickableMenu = new PlayerStallMenu(_parent._actionId) { heldItem = _carriedItem };
                 return;
             }
@@ -294,8 +334,10 @@ public class PlayerStallMenu : MenuWithInventory {
             base.receiveLeftClick(x, y, playSound);
         }
 
-        public override void receiveKeyPress(Keys key) {
-            if (key != Keys.None && Game1.options.doesInputListContain(Game1.options.menuButton, key)) {
+        public override void receiveKeyPress(Keys key)
+        {
+            if (key != Keys.None && Game1.options.doesInputListContain(Game1.options.menuButton, key))
+            {
                 Game1.activeClickableMenu = new PlayerStallMenu(_parent._actionId) { heldItem = _carriedItem };
                 Game1.playSound("bigDeSelect");
                 Game1.player.canMove = true;

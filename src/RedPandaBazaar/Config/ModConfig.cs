@@ -1,4 +1,4 @@
-﻿namespace Red_Panda_Bazaar_Code.Config;
+namespace Red_Panda_Bazaar_Code.Config;
 
 public class ModConfig
 {

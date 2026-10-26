@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley.Objects;
@@ -38,7 +38,8 @@ public static class FurniturePatch
     {
         try
         {
-            if (!IsTargetTank(__instance)) return true;
+            if (!IsTargetTank(__instance))
+                return true;
             return false;
         }
         catch (Exception e)
@@ -53,7 +54,8 @@ public static class FurniturePatch
     {
         try
         {
-            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank)) return true;
+            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank))
+                return true;
             return false;
         }
         catch (Exception e)
@@ -68,7 +70,8 @@ public static class FurniturePatch
     {
         try
         {
-            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank)) return true;
+            if (__instance is not FishTankFurniture tank || !IsTargetTank(tank))
+                return true;
             return false;
         }
         catch (Exception e)
@@ -82,8 +85,10 @@ public static class FurniturePatch
     /// 必须比对物品 ID：只按地图+坐标判定会把玩家自己搬到这两个坐标的鱼缸一并锁死。</summary>
     private static bool IsTargetTank(FishTankFurniture tank)
     {
-        if (tank.Location?.Name != "Custom_MarlinShop1") return false;
-        if (tank.QualifiedItemId != "(F)" + ItemsKeys.Furniture.MarlinFishTank1) return false;
+        if (tank.Location?.Name != "Custom_MarlinShop1")
+            return false;
+        if (tank.QualifiedItemId != "(F)" + ItemsKeys.Furniture.MarlinFishTank1)
+            return false;
         var pos = tank.TileLocation;
         return pos is ({ X: 17f, Y: 12f } or { X: 20f, Y: 17f });
     }

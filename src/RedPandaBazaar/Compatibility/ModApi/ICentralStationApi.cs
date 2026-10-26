@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using StardewValley;
 
 namespace Red_Panda_Bazaar_Code.Compatibility.ModApi;

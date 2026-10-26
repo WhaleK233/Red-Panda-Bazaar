@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Features.Critters;
@@ -34,14 +34,14 @@ public static class SpringFair
     /// <summary>注册节日事件。</summary>
     public static void Init()
     {
-        Tools.Log("Spring Fair Initializing.");
+        Tools.Log("[SpringFair] Initializing.");
 
         ModInfo.Helper.Events.GameLoop.DayStarted += OnDayStarted;
         ModInfo.Helper.Events.Input.ButtonPressed += OnButtonPressed;
         ModInfo.Helper.Events.Display.RenderedWorld += OnRenderedWorld;
         ModInfo.Helper.Events.Player.Warped += OnPlayerWarped;
 
-        Tools.Log("Spring Fair Initialized.");
+        Tools.Log("[SpringFair] Initialized.");
     }
 
     internal static void StartTargetGame()
@@ -73,7 +73,8 @@ public static class SpringFair
     /// <summary>春 7 设次日微风，春 8 覆盖当天为微风。</summary>
     private static void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
-        if (!Context.IsMainPlayer) return;
+        if (!Context.IsMainPlayer)
+            return;
 
         if (Game1.Date.Season == Season.Spring && Game1.Date.DayOfMonth == 7)
         {
@@ -94,8 +95,10 @@ public static class SpringFair
     /// <summary>进入室外地图时生成氛围生物（白天蝴蝶/入夜萤火虫），并确保微风天气（兼容 CJB 跳日期）。</summary>
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        if (!IsSpringFairActive) return;
-        if (!e.NewLocation.IsOutdoors || !IsSpringFairLocation) return;
+        if (!IsSpringFairActive)
+            return;
+        if (!e.NewLocation.IsOutdoors || !IsSpringFairLocation)
+            return;
 
         var critterType = TimeUtils.IsDayTime(e.NewLocation)
             ? CrittersSpawner.Butterfly
@@ -116,8 +119,10 @@ public static class SpringFair
     /// <summary>渲染星星币数量（左上角）。</summary>
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
     {
-        if (!IsSpringFairActive) return;
-        if (!IsSpringFairLocation) return;
+        if (!IsSpringFairActive)
+            return;
+        if (!IsSpringFairLocation)
+            return;
 
         e.SpriteBatch.Draw(Game1.fadeToBlackRect,
             new Rectangle(16, 16, 128 + (Game1.player.festivalScore > 999 ? 16 : 0), 64),
@@ -136,7 +141,8 @@ public static class SpringFair
     /// <summary>根据点击坐标派发到对应的交互处理。</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e) || !IsSpringFairActive || !IsSpringFairLocation) return;
+        if (!Tools.IsValidButtonAction(e) || !IsSpringFairActive || !IsSpringFairLocation)
+            return;
 
         var tile = e.Cursor.GrabTile;
 

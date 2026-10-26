@@ -1,6 +1,7 @@
 namespace Red_Panda_Bazaar_Code.Constant;
 
-public static class MPMessageType {
+public static class MPMessageType
+{
     // SpecialOrders
     public const string SpecialOrders_RewardSync = "SpecialOrdersRewardSync";
 

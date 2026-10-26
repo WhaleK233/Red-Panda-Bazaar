@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewValley;
@@ -18,11 +18,11 @@ public static class Buffs
     /// <summary>启用自定义 Buff。</summary>
     public static void Init()
     {
-        Tools.Log("Buffs Initializing.");
+        Tools.Log("[Buffs] Initializing.");
 
         InitCustomBuffs();
 
-        Tools.Log("Buffs Initialized.");
+        Tools.Log("[Buffs] Initialized.");
     }
 
     private static void InitCustomBuffs()
@@ -37,9 +37,14 @@ public static class Buffs
             iconIndex: 0, duration: Buff.ENDLESS,
             effects: new BuffEffects
             {
-                Speed = { 2 }, Defense = { 4 }, Attack = { 10 },
-                LuckLevel = { 3 }, CriticalChanceMultiplier = { 4 },
-                FishingLevel = { 6 }, ForagingLevel = { 4 }, FarmingLevel = { 4 }
+                Speed = { 2 },
+                Defense = { 4 },
+                Attack = { 10 },
+                LuckLevel = { 3 },
+                CriticalChanceMultiplier = { 4 },
+                FishingLevel = { 6 },
+                ForagingLevel = { 4 },
+                FarmingLevel = { 4 }
             });
 
         BuffFactories[ItemsKeys.Food.Golden_Cupcake] = () => CreateBuff(
@@ -56,8 +61,10 @@ public static class Buffs
             iconIndex: 2, duration: 300000,
             effects: new BuffEffects
             {
-                LuckLevel = { 5 }, ForagingLevel = { 5 },
-                MagneticRadius = { 50 }, Attack = { 3 }
+                LuckLevel = { 5 },
+                ForagingLevel = { 5 },
+                MagneticRadius = { 50 },
+                Attack = { 3 }
             });
 
         BuffFactories[ItemsKeys.Food.Coffee_Popsicle] = () => CreateBuff(
