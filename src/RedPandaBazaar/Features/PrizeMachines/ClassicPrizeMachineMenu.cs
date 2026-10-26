@@ -76,10 +76,10 @@ public class ClassicPrizeMachineMenu : IClickableMenu
         switch (chance)
         {
             case < 0.01: // 1% 古代种子
-                prize = ItemRegistry.Create("(O)114");
+                prize = ItemRegistry.Create(ItemsKeys.Vanilla.AncientSeed);
                 break;
             case < 0.11: // 10% 星之果茶
-                prize = ItemRegistry.Create("(O)StardropTea");
+                prize = ItemRegistry.Create(ItemsKeys.Vanilla.StardropTea);
                 break;
             case < 0.31: // 20% 18种兑换券
                 i = random % couponList.Count;

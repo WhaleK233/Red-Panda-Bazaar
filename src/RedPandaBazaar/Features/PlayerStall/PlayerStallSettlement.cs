@@ -71,9 +71,7 @@ public static partial class PlayerStall
 
         // 用存档 ID + 天数做种子，同一天内所有玩家随机序列一致
         var rnd = new RandomUtils.RandomSeed("PlayerStall");
-        var luckMod = 1.0 + Game1.player.DailyLuck * 2;
-        var weatherMod = Tools.IsGoodWeather() ? 1.0 : 0.85;
-        var factor = luckMod * weatherMod;
+        var factor = StallSettlementMath.Modifier(Game1.player.DailyLuck, Tools.IsGoodWeather());
         var totalSold = 0;
 
         foreach (var (actionId, config) in RegisteredStalls)
@@ -87,9 +85,8 @@ public static partial class PlayerStall
             var first = stock.FirstOrDefault(i => i.GetItem() != null);
             if (first == null)
                 continue;
-            var priceFactor = (double)Math.Max(1, first.GetItem()!.sellToStorePrice()) / first.Price;
-            var chance = config.BaseSellChance * luckMod * weatherMod * priceFactor;
-            chance = Math.Clamp(chance, 0, 1);
+            var priceFactor = StallSettlementMath.PriceFactor(first.GetItem()!.sellToStorePrice(), first.Price);
+            var chance = StallSettlementMath.OpenChance(config.BaseSellChance, factor, priceFactor);
 
             // 随机值 >= 概率则该摊位今晚不开张
             if (rnd.NextDouble() >= chance)
@@ -104,9 +101,8 @@ public static partial class PlayerStall
             }
 
             var totalStock = unsold.Sum(i => i.GetItem()!.Stack);
-            var baseAmount = Math.Sqrt(totalStock) * 1.5;
             // 夜销销量同样乘定价因子（负相关），实际售出受当日库存封顶（清仓式销售）
-            var targetSell = (int)(rnd.Next((int)(baseAmount * 0.5), (int)(baseAmount * 1.5)) * factor * priceFactor);
+            var targetSell = StallSettlementMath.TargetSellAmount(totalStock, factor, priceFactor, rnd.NextDouble());
             var remaining = targetSell;
             var soldCount = 0;
 

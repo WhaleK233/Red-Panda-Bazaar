@@ -19,4 +19,12 @@
         <ProjectReference Include="..\..\tools\RedPandaBazaar.RepoTools\RedPandaBazaar.RepoTools.csproj"/>
     </ItemGroup>
 
+    <!-- 以链接方式编译 mod 中的纯逻辑源文件：不引用 mod 工程（会连带触发游戏依赖、
+         构建与部署副作用），文件一旦引入游戏类型，这里的链接编译会立刻失败，
+         那就是「该文件不再可测」的信号——把它从列表中移出，而不是给测试补游戏引用。 -->
+    <ItemGroup>
+        <Compile Include="..\..\src\RedPandaBazaar\Features\PlayerStall\StallSettlementMath.cs"
+                 Link="Linked\StallSettlementMath.cs"/>
+    </ItemGroup>
+
 </Project>
