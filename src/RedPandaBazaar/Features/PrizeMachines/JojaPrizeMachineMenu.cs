@@ -79,13 +79,13 @@ public class JojaPrizeMachineMenu : IClickableMenu
         switch (chance)
         {
             case < 0.01: // 1% 自动抚摸机
-                prize = ItemRegistry.Create("(BC)272");
+                prize = ItemRegistry.Create(ItemsKeys.Vanilla.AutoPetter);
                 break;
             case < 0.03: // 2% 五彩碎片
-                prize = ItemRegistry.Create("(O)74");
+                prize = ItemRegistry.Create(ItemsKeys.Vanilla.PrismaticShard);
                 break;
             case < 0.13: // 10% JOJA兑换券
-                prize = ItemRegistry.Create("(O)RedPandaBazaar_Redemption_Coupon_19");
+                prize = ItemRegistry.Create(ItemsKeys.Tickets.JojaRedemptionCoupon);
                 break;
             case < 0.33: // 20% 18种兑换券 2张
                 i = random % couponList.Count;

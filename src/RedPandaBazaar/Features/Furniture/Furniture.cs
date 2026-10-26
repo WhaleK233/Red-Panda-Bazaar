@@ -70,8 +70,8 @@ public static class Furniture
             AllowLocalRemoval = false,
             Fragility = 2
         };
-        tank.heldItems.Add(ItemRegistry.Create("(O)143"));
-        tank.heldItems.Add(ItemRegistry.Create("(O)145"));
+        tank.heldItems.Add(ItemRegistry.Create(ItemsKeys.Vanilla.Catfish));
+        tank.heldItems.Add(ItemRegistry.Create(ItemsKeys.Vanilla.Sunfish));
         loc.furniture.Add(tank);
     }
 }
