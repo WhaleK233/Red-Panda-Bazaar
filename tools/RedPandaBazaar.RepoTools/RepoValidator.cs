@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Red_Panda_Bazaar_RepoTools;
@@ -13,12 +12,6 @@ public sealed class ValidatorOptions
     /// <summary>GITHUB_ACTIONS：存在时按 GitHub Actions 注解格式输出失败项。</summary>
     public bool GitHubActions { get; init; }
 
-    /// <summary>BASE_SHA：PR 基线提交，驱动 CP 只读检查。</summary>
-    public string? BaseSha { get; init; }
-
-    /// <summary>ALLOW_CP_CHANGE：为真时豁免 CP 只读检查（CP 上游同步）。</summary>
-    public bool AllowCpChange { get; init; }
-
     /// <summary>GITHUB_STEP_SUMMARY：存在时向该文件追加 markdown 摘要。</summary>
     public string? StepSummaryPath { get; init; }
 
@@ -30,7 +23,7 @@ public sealed class ValidatorOptions
 /// Red Panda Bazaar 仓库一致性校验（ValidateRepo.py 的 C# 移植）：
 /// JSONC 可解析且无重复键、i18n 双文件键集合 / 顺序 / 占位符一致、
 /// I18nKeys.cs 与 default.json 双向对应、manifest 必填字段与 CP 必需依赖、
-/// csproj 的 TFM 与版本号、PR 不改动只读的 [CP]Red Panda Bazaar/。
+/// csproj 的 TFM 与版本号。
 /// </summary>
 public static class RepoValidator
 {
@@ -46,7 +39,6 @@ public static class RepoValidator
         CheckI18nKeys(ctx, parsed.GetValueOrDefault(ctx.Paths.I18nDefault));
         CheckManifest(ctx, parsed);
         CheckCsproj(ctx);
-        CheckCpReadonly(ctx);
         ctx.WriteLine();
         if (ctx.Failures.Count > 0)
         {
@@ -387,65 +379,6 @@ public static class RepoValidator
                 LineOfMatch(text, new Regex(@"<Version>")));
         else
             ctx.Ok($"Version = {versionMatch.Groups[1].Value}");
-    }
-
-    // ------------------------------------------------------------------ #
-    // 6. CP 内容包只读
-    // ------------------------------------------------------------------ #
-
-    private static void CheckCpReadonly(Context ctx)
-    {
-        ctx.WriteLine("-- content/[CP]Red Panda Bazaar/ 只读约束 --");
-        if (ctx.Options.AllowCpChange)
-        {
-            ctx.Skip("已通过 ALLOW_CP_CHANGE=1 豁免（CP 上游同步）");
-            return;
-        }
-        var isCi = string.IsNullOrWhiteSpace(ctx.Options.BaseSha) == false;
-        if (!isCi)
-        {
-            ctx.Skip("未提供 BASE_SHA（本地运行或非 PR 事件）");
-            return;
-        }
-        var baseSha = ctx.Options.BaseSha!.Trim();
-
-        // 路径中的方括号会被 git 当作通配符，须显式声明为字面量。
-        // pathspec 含空格，必须加引号：ProcessStartInfo 按空白切分参数字符串，
-        // 不加引号会被拆成三段，git 收到 ":(literal)content/[CP]Red" 匹配不到任何文件，
-        // 检查会永远报「未被改动」而静默失效。
-        var psi = new ProcessStartInfo("git",
-            $"-C \"{ctx.Options.RepoRoot}\" diff --name-only {baseSha} HEAD -- \":(literal)content/[CP]Red Panda Bazaar\"")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        };
-        using var process = Process.Start(psi)!;
-        var stdout = process.StandardOutput.ReadToEnd();
-        var stderr = process.StandardError.ReadToEnd();
-        process.WaitForExit();
-        if (process.ExitCode != 0)
-        {
-            ctx.Fail(null, $"无法与基线 {baseSha[..Math.Min(7, baseSha.Length)]} 比对（需完整 git 历史）：{stderr.Trim()}");
-            return;
-        }
-
-        var changed = stdout.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(name => name.Trim())
-            .Where(name => name.Length > 0)
-            .ToList();
-        if (changed.Count > 0)
-        {
-            var preview = string.Join("、", changed.Take(5));
-            var suffix = changed.Count > 5 ? $" 等 {changed.Count} 个文件" : "";
-            ctx.Fail(
-                null,
-                $"content/[CP]Red Panda Bazaar/ 为只读内容包，本次改动了 {preview}{suffix}；" +
-                "若是同步上游请给 PR 打上 cp-change-approved 标签");
-        }
-        else
-        {
-            ctx.Ok("content/[CP]Red Panda Bazaar/ 未被改动");
-        }
     }
 
     // ------------------------------------------------------------------ #

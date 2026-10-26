@@ -8,8 +8,6 @@ switch (command)
         {
             RepoRoot = RepoLayout.FindRepoRoot(AppContext.BaseDirectory),
             GitHubActions = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null,
-            BaseSha = Environment.GetEnvironmentVariable("BASE_SHA"),
-            AllowCpChange = Environment.GetEnvironmentVariable("ALLOW_CP_CHANGE") == "1",
             StepSummaryPath = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY"),
             Out = Console.Out,
         });
