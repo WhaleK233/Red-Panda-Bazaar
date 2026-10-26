@@ -1,0 +1,20 @@
+# 行尾策略：仓库内一律存 LF，检出时也保持 LF。
+#
+# 背景：Windows 上 core.autocrlf=true 会把工作区文件转成 CRLF，而部分文件
+# （历史上在 Linux/CI 或不同工具下创建）保持 LF，形成同一仓库内两种行尾混杂。
+# 显式声明后，检出形态不再取决于各人的 core.autocrlf 设置。
+#
+# 注意：不要给 content/ 加 `-text` 豁免。索引里 content/ 的文件本就以 LF 存储，
+# 关闭文本属性会让 git 把工作区的 CRLF 原样写入索引，反而把整个内容包标记为已修改。
+* text=auto eol=lf
+
+# Windows 原生脚本必须 CRLF，否则 cmd.exe 解析会出错
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制资源不做行尾转换
+*.png binary
+*.ogg binary
+*.dll binary
+*.pdb binary
+*.zip binary

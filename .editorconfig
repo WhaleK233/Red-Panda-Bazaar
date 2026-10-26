@@ -1,0 +1,71 @@
+# Red Panda Bazaar 代码风格基线
+#
+# 本文件只固化代码里已经稳定成立的约定，不引入新的格式要求：
+# 缩进 4 空格、续行 4 空格、单行 if 允许不加大括号、using 按字母序。
+# 大括号换行位置（同行 / 下一行）两种写法在现有代码中并存，
+# 因此不对 csharp_new_line_before_open_brace 做强制，留待后续统一。
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# JSON 在 SMAPI / CP 侧常用 2 空格缩进
+[*.json]
+indent_size = 2
+
+# Markdown 行尾双空格表示换行，不能裁掉
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{csproj,props,targets,projitems,sln}]
+indent_size = 4
+
+[*.{yml,yaml}]
+indent_size = 2
+
+# Windows 原生脚本必须 CRLF
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Content Patcher 内容包由他人维护、本仓库只读，不施加任何格式约束
+[content/**]
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
+charset = unset
+
+[*.cs]
+# using 按字母序，不做 System 优先分组（现有代码即如此）
+dotnet_sort_system_directives_first = false
+
+# 允许 `if (x) return;` 这类单行语句（全仓 131 处，属既有风格）
+csharp_prefer_braces = false
+dotnet_diagnostic.IDE0011.severity = none
+
+# 文件级命名空间（全仓 46/46 已采用）
+csharp_style_namespace_declarations = file_scoped:warning
+
+# 私有字段用 _camelCase
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel.required_prefix = _
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+
+# 静态只读字段保持 PascalCase（如 RegisteredStalls 之外的 Data 等既有写法不强制）
+dotnet_naming_rule.constants_pascal.severity = suggestion
+dotnet_naming_rule.constants_pascal.symbols = constants
+dotnet_naming_rule.constants_pascal.style = pascal
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+dotnet_naming_style.pascal.capitalization = pascal_case
