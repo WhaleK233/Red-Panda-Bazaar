@@ -13,24 +13,21 @@ public static class FurniturePatch
     public static void ApplyPatch(Harmony harmony)
     {
         Tools.LogPatch(NAME, "FishTankFurniture.checkForAction()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(FishTankFurniture), nameof(FishTankFurniture.checkForAction)),
-            prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_checkForAction))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(FishTankFurniture), nameof(FishTankFurniture.checkForAction)), "FishTankFurniture.checkForAction()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_checkForAction))));
 
         // clicked 由 Furniture 声明，FishTankFurniture 未重写，需补丁基类
         Tools.LogPatch(NAME, "Furniture.clicked()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.clicked)),
-            prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_clicked))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.clicked)), "Furniture.clicked()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_clicked))));
 
         // canBeRemoved 由 StorageFurniture 重写，FishTankFurniture 未重写，需补丁基类
         Tools.LogPatch(NAME, "StorageFurniture.canBeRemoved()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.canBeRemoved)),
-            prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_canBeRemoved))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(StorageFurniture), nameof(StorageFurniture.canBeRemoved)), "StorageFurniture.canBeRemoved()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(Prefix_canBeRemoved))));
     }
 
     /// <returns>false = 跳过原方法（阻止右键菜单/放鱼等交互）。</returns>

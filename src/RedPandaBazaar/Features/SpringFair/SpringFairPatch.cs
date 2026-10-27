@@ -14,28 +14,24 @@ public static class SpringFairPatch
     public static void ApplyPatch(Harmony harmony)
     {
         Tools.LogPatch(NAME, "Event.caughtFish()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(Event), "caughtFish"),
-            prefix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Prefix_Event_caughtFish))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(Event), "caughtFish"), "Event.caughtFish()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Prefix_Event_caughtFish))));
 
         Tools.LogPatch(NAME, "Event.perfectFishing()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(Event), "perfectFishing"),
-            prefix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Prefix_Event_perfectFishing))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(Event), "perfectFishing"), "Event.perfectFishing()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Prefix_Event_perfectFishing))));
 
         Tools.LogPatch(NAME, "FishingGame.unload()", PatchType.Postfix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(FishingGame), nameof(FishingGame.unload)),
-            postfix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Postfix_FishingGame_unload))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(FishingGame), nameof(FishingGame.unload)), "FishingGame.unload()",
+            target => harmony.Patch(target,
+                postfix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Postfix_FishingGame_unload))));
 
         Tools.LogPatch(NAME, "TargetGame.unload()", PatchType.Postfix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(TargetGame), nameof(TargetGame.unload)),
-            postfix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Postfix_TargetGame_unload))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(TargetGame), nameof(TargetGame.unload)), "TargetGame.unload()",
+            target => harmony.Patch(target,
+                postfix: new HarmonyMethod(typeof(SpringFairPatch), nameof(Postfix_TargetGame_unload))));
     }
 
     private static bool Prefix_Event_caughtFish(int size)

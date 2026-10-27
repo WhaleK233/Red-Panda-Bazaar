@@ -20,11 +20,10 @@ public static class SpecialOrdersPatch
     {
         Tools.LogPatch(NAME, "SpecialOrder.CheckCompletion()", PatchType.Prefix);
         Tools.LogPatch(NAME, "SpecialOrder.CheckCompletion()", PatchType.Postfix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(SpecialOrder), "CheckCompletion"),
-            prefix: new HarmonyMethod(typeof(SpecialOrdersPatch), nameof(Prefix_SpecialOrder_CheckCompletion)),
-            postfix: new HarmonyMethod(typeof(SpecialOrdersPatch), nameof(Postfix_SpecialOrder_CheckCompletion))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(SpecialOrder), "CheckCompletion"), "SpecialOrder.CheckCompletion()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(SpecialOrdersPatch), nameof(Prefix_SpecialOrder_CheckCompletion)),
+                postfix: new HarmonyMethod(typeof(SpecialOrdersPatch), nameof(Postfix_SpecialOrder_CheckCompletion))));
     }
 
     private static void Prefix_SpecialOrder_CheckCompletion(SpecialOrder __instance)

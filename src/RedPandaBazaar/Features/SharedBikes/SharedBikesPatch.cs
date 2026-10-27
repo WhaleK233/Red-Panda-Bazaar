@@ -14,10 +14,9 @@ public static class SharedBikesPatch
     public static void ApplyPatch(Harmony harmony)
     {
         Tools.LogPatch(NAME, "Horse.dismount()", PatchType.Postfix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(Horse), nameof(Horse.dismount)),
-            postfix: new HarmonyMethod(typeof(SharedBikesPatch), nameof(Postfix_Horse_dismount))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(Horse), nameof(Horse.dismount)), "Horse.dismount()",
+            target => harmony.Patch(target,
+                postfix: new HarmonyMethod(typeof(SharedBikesPatch), nameof(Postfix_Horse_dismount))));
     }
 
     /// <summary>下马后把共享单车补回骑手当前地图的 characters，恢复实体的更新与绘制。</summary>

@@ -61,10 +61,25 @@ public class ModEntry : Mod
     private static void HarmonyPatch()
     {
         var harmony = new Harmony(ModInfo.ModManifest.UniqueID);
-        SpringFairPatch.ApplyPatch(harmony);
-        BuffsPatch.ApplyPatch(harmony);
-        SpecialOrdersPatch.ApplyPatch(harmony);
-        FurniturePatch.ApplyPatch(harmony);
-        SharedBikesPatch.ApplyPatch(harmony);
+        // 每个补丁类单独兜底：某一个类里的 AccessTools 查找或 Patch 抛异常时，
+        // 其余补丁仍能装上，而不是整个 HarmonyPatch 中断、所有补丁一起失效
+        ApplySafely(SpringFairPatch.ApplyPatch, harmony);
+        ApplySafely(BuffsPatch.ApplyPatch, harmony);
+        ApplySafely(SpecialOrdersPatch.ApplyPatch, harmony);
+        ApplySafely(FurniturePatch.ApplyPatch, harmony);
+        ApplySafely(SharedBikesPatch.ApplyPatch, harmony);
+    }
+
+    /// <summary>应用一个补丁类，异常只记录不抛出，避免拖垮其余补丁。</summary>
+    private static void ApplySafely(Action<Harmony> apply, Harmony harmony)
+    {
+        try
+        {
+            apply(harmony);
+        }
+        catch (Exception e)
+        {
+            Tools.LogErr($"[RedPandaBazaar] 应用补丁时出错，该补丁将不生效：{e}");
+        }
     }
 }

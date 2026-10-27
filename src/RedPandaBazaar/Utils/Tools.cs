@@ -1,3 +1,4 @@
+using System.Reflection;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -47,6 +48,32 @@ public static class Tools
         _monitor?.LogOnce(
             $"Harmony patch \"{ob}\" has encountered an error. Full error message: \n{e}",
             LogLevel.Error);
+
+    /// <summary>
+    /// 应用单个 Harmony 补丁，目标方法找不到时记警告并跳过，而不是让异常中断整个启动流程。
+    /// 游戏更新改名或改签名时 AccessTools.Method 会返回 null，直接传给 harmony.Patch
+    /// 会抛 ArgumentNullException，导致后续补丁全部不生效且玩家只看到一条难以定位的报错。
+    /// </summary>
+    /// <param name="patchClass">补丁类名，仅用于日志。</param>
+    /// <param name="target">AccessTools.Method 的查找结果，可能为 null。</param>
+    /// <param name="description">目标方法描述，用于日志。</param>
+    /// <param name="apply">拿到非 null 目标后执行的实际 patch 动作。</param>
+    /// <returns>补丁是否成功应用。</returns>
+    public static bool PatchSafe(
+        string patchClass,
+        MethodInfo? target,
+        string description,
+        Action<MethodInfo> apply)
+    {
+        if (target == null)
+        {
+            LogWarn($"[{patchClass}] 找不到目标方法 {description}，跳过该补丁（游戏版本可能已变更）。");
+            return false;
+        }
+
+        apply(target);
+        return true;
+    }
 
     public static bool TryCharge(int cost)
     {

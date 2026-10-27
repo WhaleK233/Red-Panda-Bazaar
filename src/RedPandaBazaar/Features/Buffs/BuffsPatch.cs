@@ -15,16 +15,14 @@ public static class BuffsPatch
     public static void ApplyPatch(Harmony harmony)
     {
         Tools.LogPatch(NAME, "Farmer.doneEating()", PatchType.Prefix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(Farmer), "doneEating"),
-            prefix: new HarmonyMethod(typeof(BuffsPatch), nameof(Prefix_Farmer_doneEating))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(Farmer), "doneEating"), "Farmer.doneEating()",
+            target => harmony.Patch(target,
+                prefix: new HarmonyMethod(typeof(BuffsPatch), nameof(Prefix_Farmer_doneEating))));
 
         Tools.LogPatch(NAME, "Item.AddEquipmentEffects()", PatchType.Postfix);
-        harmony.Patch(
-            original: AccessTools.Method(typeof(Item), nameof(Item.AddEquipmentEffects)),
-            postfix: new HarmonyMethod(typeof(BuffsPatch), nameof(Postfix_Item_AddEquipmentEffects))
-        );
+        Tools.PatchSafe(NAME, AccessTools.Method(typeof(Item), nameof(Item.AddEquipmentEffects)), "Item.AddEquipmentEffects()",
+            target => harmony.Patch(target,
+                postfix: new HarmonyMethod(typeof(BuffsPatch), nameof(Postfix_Item_AddEquipmentEffects))));
     }
 
     /// <summary>赌徒帽的加速走装备效果通道：不占 Buff 栏、不与任何 Buff 互相覆盖。</summary>
