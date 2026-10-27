@@ -85,7 +85,7 @@ public static class FurniturePatch
     /// 必须比对物品 ID：只按地图+坐标判定会把玩家自己搬到这两个坐标的鱼缸一并锁死。</summary>
     private static bool IsTargetTank(FishTankFurniture tank)
     {
-        if (tank.Location?.Name != "Custom_MarlinShop1")
+        if (tank.Location?.Name != Locations.MarlinShop)
             return false;
         if (tank.QualifiedItemId != "(F)" + ItemsKeys.Furniture.MarlinFishTank1)
             return false;

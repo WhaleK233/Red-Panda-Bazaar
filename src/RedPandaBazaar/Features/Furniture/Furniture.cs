@@ -10,7 +10,7 @@ namespace Red_Panda_Bazaar_Code.Features.Furniture;
 
 public static class Furniture
 {
-    private const string MarlinShopLocation = "Custom_MarlinShop1";
+    private const string MarlinShopLocation = Locations.MarlinShop;
     private static readonly (float X, float Y)[] DisplayTankTiles = { (17f, 12f), (20f, 17f) };
     private static bool _initialized;
 

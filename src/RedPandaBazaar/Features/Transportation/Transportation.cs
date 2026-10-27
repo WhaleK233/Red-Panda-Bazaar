@@ -10,6 +10,12 @@ namespace Red_Panda_Bazaar_Code.Features.Transportation;
 /// <summary>小熊猫集市交通系统：入口传送 + 票务站目的地选择。</summary>
 public static class Transportation
 {
+    /// <summary>巴士站到枫木桥的票价。中央车站集成（Integrations）用同一价格。</summary>
+    public const int MapleBridgeFare = 300;
+
+    /// <summary>巴士站到沙漠的车费（与票务站其他目的地分开计价）。</summary>
+    private const int DesertFare = 500;
+
     /// <summary>注册 Tile Action 和事件。</summary>
     public static void Init()
     {
@@ -77,7 +83,7 @@ public static class Transportation
                     Game1.content.LoadString("Strings\\Locations:BusStop_DesertOutOfService"));
                 return;
             }
-            if (!Tools.TryCharge(500))
+            if (!Tools.TryCharge(DesertFare))
                 return;
 
             TravelTo("Desert", 18, 28, 2);
@@ -147,8 +153,8 @@ public static class Transportation
                 },
                 (_, answer) =>
                 {
-                    if (answer == "Positive" && Tools.TryCharge(300))
-                        TravelTo("Custom_MapleBridge", 27, 40, 2);
+                    if (answer == "Positive" && Tools.TryCharge(MapleBridgeFare))
+                        TravelTo(Locations.MapleBridge, 27, 40, 2);
                 }
             );
         }

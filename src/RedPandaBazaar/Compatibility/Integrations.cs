@@ -34,10 +34,10 @@ public static class Integrations
         centralStationApi?.RegisterStop(
             id: "RedPandaBazaarStation",
             displayName: () => Tools.GetI18n(I18nKeys.Text_RedPandaBazaar), //"Red Panda Bazaar"
-            toLocation: "Custom_MapleBridge",
+            toLocation: Locations.MapleBridge,
             toTile: new Point(27, 40),
             toFacingDirection: Game1.down,
-            cost: 300,
+            cost: Features.Transportation.Transportation.MapleBridgeFare,
             network: "Bus",
             condition: null
         );

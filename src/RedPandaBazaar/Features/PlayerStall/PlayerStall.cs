@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Red_Panda_Bazaar_Code.Constant;
 using Red_Panda_Bazaar_Code.Utils;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -49,7 +50,7 @@ public static partial class PlayerStall
     {
         if (!Tools.IsValidButtonAction(e))
             return;
-        if (Game1.currentLocation is not { Name: "Custom_FarmerShop1" })
+        if (Game1.currentLocation is not { Name: Locations.FarmerShop })
             return;
 
         var tile = e.Cursor.GrabTile;
@@ -69,10 +70,10 @@ public static partial class PlayerStall
     /// <summary>进入摊位地图时扫描所有 tile，缓存 Action 对应的图块坐标。</summary>
     private static void OnPlayerWarped(object? sender, WarpedEventArgs e)
     {
-        if (e.NewLocation.Name != "Custom_FarmerShop1")
+        if (e.NewLocation.Name != Locations.FarmerShop)
         {
             // 离开地图时清理缓存
-            if (StallTilePositions.Count > 0 && e.OldLocation?.Name == "Custom_FarmerShop1")
+            if (StallTilePositions.Count > 0 && e.OldLocation?.Name == Locations.FarmerShop)
                 StallTilePositions.Clear();
             return;
         }
@@ -100,7 +101,7 @@ public static partial class PlayerStall
     {
         if (!Context.IsWorldReady)
             return;
-        if (Game1.currentLocation?.Name != "Custom_FarmerShop1")
+        if (Game1.currentLocation?.Name != Locations.FarmerShop)
             return;
         if (StallTilePositions.Count == 0)
             return;

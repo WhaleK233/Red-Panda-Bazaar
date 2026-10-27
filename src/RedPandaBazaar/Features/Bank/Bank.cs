@@ -8,7 +8,7 @@ namespace Red_Panda_Bazaar_Code.Features.Bank;
 
 public static class Bank
 {
-    private const string BankLocation = "Custom_RedPandaBazaarBank1";
+    private const string BankLocation = Locations.Bank;
 
     public static void Init()
     {

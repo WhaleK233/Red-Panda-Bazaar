@@ -22,7 +22,7 @@ namespace Red_Panda_Bazaar_Code.Features.SharedBikes;
 public static class SharedBikes
 {
     /// <summary>枫叶桥地图内部名(CP CustomLocations 注册)。</summary>
-    private const string MapleBridgeLocation = "Custom_MapleBridge";
+    private const string MapleBridgeLocation = Locations.MapleBridge;
 
     /// <summary>单车标记：原版 Horse 类型 + modData 附加状态标识身份，不做子类。</summary>
     public const string BikeMarkerKey = "WhaleK233.RedPandaBazaar.Bike";

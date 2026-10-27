@@ -12,13 +12,13 @@ public static class Critter
 {
     private static readonly List<string> Maps = new()
     {
-        "Custom_RedPandaBazaar",
-        "Custom_RedPandaLake",
-        "Custom_RedPandaBridge",
-        "Custom_MirrorLake",
-        "Custom_MapleBridge",
-        "Custom_LiQingFengCourtyard",
-        "Custom_BazaarWest"
+        Locations.Bazaar,
+        Locations.RedPandaLake,
+        Locations.RedPandaBridge,
+        Locations.MirrorLake,
+        Locations.MapleBridge,
+        Locations.LiQingFengCourtyard,
+        Locations.BazaarWest
     };
 
     private static readonly List<string> BCs = new()

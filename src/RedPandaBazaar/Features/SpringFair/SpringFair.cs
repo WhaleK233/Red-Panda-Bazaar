@@ -20,6 +20,10 @@ public static class SpringFair
     private const int TargetGameTileX = 72, TargetGameTileY = 75;
     private const int WheelBetTileX1 = 67, WheelBetTileY1 = 75;
     private const int WheelBetTileX2 = 68, WheelBetTileY2 = 75;
+
+    /// <summary>小游戏入场费（钓鱼、打靶、转盘均同一价格）。</summary>
+    private const int MiniGameFee = 50;
+
     private static readonly PerScreen<Vector2?> MiniGameReturnPosition = new();
 
     /// <summary>是否处于春 8 节日状态（兼容 CJB 跳日期，不依赖 Game1.CurrentEvent）。</summary>
@@ -172,7 +176,7 @@ public static class SpringFair
             },
             (_, answer) =>
             {
-                if (answer == "Positive" && Tools.TryCharge(50))
+                if (answer == "Positive" && Tools.TryCharge(MiniGameFee))
                 {
                     Response[] answerChoices = new Response[]
                     {
@@ -199,7 +203,7 @@ public static class SpringFair
             },
             (_, answer) =>
             {
-                if (answer == "Positive" && Tools.TryCharge(50))
+                if (answer == "Positive" && Tools.TryCharge(MiniGameFee))
                 {
                     StartTargetGame();
                 }
@@ -217,7 +221,7 @@ public static class SpringFair
             },
             (_, answer) =>
             {
-                if (answer == "Positive" && Tools.TryCharge(50))
+                if (answer == "Positive" && Tools.TryCharge(MiniGameFee))
                 {
                     StartFishingGame();
                 }

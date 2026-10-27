@@ -47,7 +47,7 @@ public static class SpecialOrders
     /// <summary>陈小明商店内有可领取奖励时，渲染浮动提示图标。</summary>
     private static void OnRenderedWorld(object? sender, RenderedWorldEventArgs e)
     {
-        if (Game1.currentLocation.Name != "Custom_ChenQiShop1" ||
+        if (Game1.currentLocation.Name != Locations.ChenQiShop ||
             Game1.player.stats.Get(StatsKeys.ChenXiaomingRewardCount) <= 0U)
             return;
 
@@ -71,7 +71,7 @@ public static class SpecialOrders
     /// <summary>陈小明商店内点击领取位置时，发放经典抽奖券奖励。</summary>
     private static void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains("Custom_ChenQiShop1"))
+        if (!Tools.IsValidButtonAction(e) || !Game1.currentLocation.Name.Contains(Locations.ChenQiShop))
             return;
 
         var tile = e.Cursor.GrabTile;
