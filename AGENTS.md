@@ -208,6 +208,8 @@ public static class XxxPatch {
 - 被重写遮蔽时改补父类，并写注释说明（见 `FurniturePatch.cs`，`clicked` 补 `Furniture` 基类、`canBeRemoved` 补 `StorageFurniture` 基类）。
 - 补丁参数名必须与原方法**完全一致**；用 `AccessTools.Method(type, name, new[] { typeof(...) })` 精确定位重载。
 
+**不要抽取 try/catch 模板**：5 个补丁类共 12 处 `catch (Exception e) { LogPatchErr(NAME, e); ... }` 形态一致，看似可抽成 `Tools.SafePatch(NAME, () => {...})`，但那样会给每次补丁调用多包一层闭包与委托间接层。补丁位于游戏循环的高频路径（`FurniturePatch` 的 `clicked`、`BuffsPatch` 的 `doneEating` 等每帧可能触发），这点重复换来的可读性收益不值得性能代价，也不利于在 catch 里做特例处理（`SpecialOrdersPatch` 就有一处需要在 catch 中额外设置 `_wasCompleteBeforeCheck`）。
+
 ### 多人同步
 
 ```csharp
