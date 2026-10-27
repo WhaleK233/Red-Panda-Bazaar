@@ -1,4 +1,5 @@
 using System.Reflection;
+using HarmonyLib;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -52,7 +53,7 @@ public static class Tools
     /// <summary>
     /// 应用单个 Harmony 补丁，目标方法找不到时记警告并跳过，而不是让异常中断整个启动流程。
     /// 游戏更新改名或改签名时 AccessTools.Method 会返回 null，直接传给 harmony.Patch
-    /// 会抛 ArgumentNullException，导致后续补丁全部不生效且玩家只看到一条难以定位的报错。
+    /// 会抛 NullReferenceException（实测于 0Harmony 2.x），导致该补丁类之后的调用全部不生效。
     /// </summary>
     /// <param name="patchClass">补丁类名，仅用于日志。</param>
     /// <param name="target">AccessTools.Method 的查找结果，可能为 null。</param>
@@ -73,6 +74,28 @@ public static class Tools
 
         apply(target);
         return true;
+    }
+
+    /// <summary>
+    /// 应用一个补丁类，异常只记录不抛出。
+    /// 补丁类之间相互隔离：某个类的 AccessTools 查找或 Patch 抛异常时，
+    /// 其余补丁仍能装上，而不是整个注册流程中断、所有补丁一起失效。
+    /// </summary>
+    /// <param name="apply">补丁类的 ApplyPatch 方法。</param>
+    /// <param name="harmony">共享的 Harmony 实例。</param>
+    /// <returns>补丁类是否成功应用。</returns>
+    public static bool ApplySafely(Action<Harmony> apply, Harmony harmony)
+    {
+        try
+        {
+            apply(harmony);
+            return true;
+        }
+        catch (Exception e)
+        {
+            LogErr($"[Harmony] 应用补丁时出错，该补丁将不生效：{e}");
+            return false;
+        }
     }
 
     public static bool TryCharge(int cost)
